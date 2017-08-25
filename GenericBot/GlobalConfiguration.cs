@@ -38,25 +38,15 @@ namespace GenericBot
             BlacklistedUserIds = new List<ulong>();
         }
         
-        //Add To various blacklists
-        //return values
+        //Add Blacklist
         //0 SUCCESS, 1 FORBIDDEN, 2 ALREADY CONTAINED
-        //Add a guildId to the guild blacklist
         public int AddGuildBlacklist(DiscordSocketClient socketClient, ulong guildId)
         {
             try
             {
                 var guild = socketClient.GetGuild(guildId);
-                if (OwnerId.Equals(guild.OwnerId))
-                {
-                    Console.WriteLine("Cannot Blacklist a Guild owned by the Bot Owner");
+                if (OwnerId.Equals(guild.OwnerId) || GlobalAdminIds.Contains(guild.OwnerId))
                     return 1;
-                }
-                if (GlobalAdminIds.Contains(guild.OwnerId))
-                {
-                    Console.WriteLine("Cannot Blacklist a Guild owned by a Global Admin");
-                    return 1;
-                }
             }
             catch (Exception e)
             {
@@ -64,59 +54,57 @@ namespace GenericBot
             }
 
             if (BlacklistedGuildIds.Contains(guildId))
-            {
-                Console.WriteLine("Requested Guild is already Blacklisted");
                 return 2;
-            }
             
             BlacklistedGuildIds.Add(guildId);
-            Console.WriteLine($"Added {guildId} to the Guild Blacklist");
             return 0;
         } 
-        //Add a userId to the guildOwner blacklist
         public int AddOwnerBlacklist(ulong userId)
         {
-            if (OwnerId.Equals(userId))
-            {
-                Console.WriteLine("Cannot Blacklist Bot Owner");
+            if (OwnerId.Equals(userId) || (GlobalAdminIds.Contains(userId)))
                 return 1;
-            }
-            if (GlobalAdminIds.Contains(userId))
-            {
-                Console.WriteLine("Cannot Blacklist Global Admin");
-                return 1;
-            }
             if (BlacklistedOwnerIds.Contains(userId))
-            {
-                Console.WriteLine("Requested GuildOwner is already Blacklisted");
                 return 2;
-            }
             
             BlacklistedOwnerIds.Add(userId);
             Console.WriteLine($"Added {userId} to the Guild Owner Blacklist");
             return 0;
         }
-        //Add a userId to the User blacklist
         public int AddUserBlacklist(ulong userId)
         {
-            if (OwnerId.Equals(userId))
-            {
-                Console.WriteLine("Cannot Blacklist Bot Owner");
+            if (OwnerId.Equals(userId) || GlobalAdminIds.Contains(userId))
                 return 1;
-            }
-            if (GlobalAdminIds.Contains(userId))
-            {
-                Console.WriteLine("Cannot Blacklist Global Admin");
-                return 1;
-            }
             if (BlacklistedOwnerIds.Contains(userId))
-            {
-                Console.WriteLine("Requested User is already Blacklisted");
                 return 2;
-            }
             
             BlacklistedOwnerIds.Add(userId);
-            Console.WriteLine($"Added {userId} to the User Blacklist");
+            return 0;
+        }
+        
+        //Remove Blacklist
+        //0 SUCCESS, 1 NOT IN LIST
+        public int RemoveGuildBlacklist(ulong guildId)
+        {
+            if (!BlacklistedGuildIds.Contains(guildId)) 
+                return 1;
+
+            BlacklistedGuildIds.RemoveAll(guildId);
+            return 0;
+        }
+        public int RemoveOwnerBlacklist(ulong ownerId)
+        {
+            if (!BlacklistedOwnerIds.Contains(ownerId))
+                return 1;
+
+            BlacklistedOwnerIds.RemoveAll(ownerId);
+            return 0;
+        }
+        public int RemoveUserBlacklist(ulong userId)
+        {
+            if (!BlacklistedUserIds.Contains(userId))
+                return 1;
+
+            BlacklistedUserIds.RemoveAll(userId);
             return 0;
         }
     }
