@@ -38,7 +38,7 @@ namespace GenericBot
             BlacklistedUserIds = new List<ulong>();
         }
 
-        public GlobalConfiguration(DiscordSocketClient socketClient, string tok, string pref, bool edit)
+        public GlobalConfiguration(DiscordShardedClient socketClient, string tok, string pref, bool edit)
         {
             Token = tok;
             DefaultPrefix = pref;
@@ -53,7 +53,7 @@ namespace GenericBot
         
         //Add Blacklist
         //0 SUCCESS, 1 FORBIDDEN, 2 ALREADY CONTAINED
-        public int AddGuildBlacklist(DiscordSocketClient socketClient, ulong guildId)
+        public int AddGuildBlacklist(DiscordShardedClient socketClient, ulong guildId)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace GenericBot
             if (!BlacklistedGuildIds.Contains(guildId)) 
                 return 1;
 
-            BlacklistedGuildIds.RemoveAll(guildId);
+            BlacklistedGuildIds.Remove(guildId);
             return 0;
         }
         public int RemoveOwnerBlacklist(ulong ownerId)
@@ -109,7 +109,7 @@ namespace GenericBot
             if (!BlacklistedOwnerIds.Contains(ownerId))
                 return 1;
 
-            BlacklistedOwnerIds.RemoveAll(ownerId);
+            BlacklistedOwnerIds.Remove(ownerId);
             return 0;
         }
         public int RemoveUserBlacklist(ulong userId)
@@ -117,7 +117,7 @@ namespace GenericBot
             if (!BlacklistedUserIds.Contains(userId))
                 return 1;
 
-            BlacklistedUserIds.RemoveAll(userId);
+            BlacklistedUserIds.Remove(userId);
             return 0;
         }
     }
