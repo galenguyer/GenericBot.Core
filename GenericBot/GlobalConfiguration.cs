@@ -37,6 +37,19 @@ namespace GenericBot
             BlacklistedOwnerIds = new List<ulong>();
             BlacklistedUserIds = new List<ulong>();
         }
+
+        public GlobalConfiguration(DiscordSocketClient socketClient, string tok, string pref, bool edit)
+        {
+            Token = tok;
+            DefaultPrefix = pref;
+            DefaultExecuteEdits = edit;
+            OwnerId = socketClient.GetApplicationInfoAsync().Result.Owner.Id;
+            GlobalAdminIds.Add(OwnerId);
+            
+            BlacklistedGuildIds = new List<ulong>();
+            BlacklistedOwnerIds = new List<ulong>();
+            BlacklistedUserIds = new List<ulong>();
+        }
         
         //Add Blacklist
         //0 SUCCESS, 1 FORBIDDEN, 2 ALREADY CONTAINED
