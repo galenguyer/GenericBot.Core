@@ -7,7 +7,7 @@ namespace GenericBot.Entities
         public ulong GuildId;
         public List<ulong> AdminRoleIds;
         public List<ulong> ModRoleIds;
-        public List<ulong> GiveableRoleIds;
+        public List<ulong> UserRoleIds;
         public Dictionary<Command, List<string>> LocalAliases;
         public string Prefix;
 
@@ -16,7 +16,7 @@ namespace GenericBot.Entities
             GuildId = id;
             AdminRoleIds = new List<ulong>();
             ModRoleIds = new List<ulong>();
-            GiveableRoleIds = new List<ulong>();
+            UserRoleIds = new List<ulong>();
             Prefix = GenericBot.GlobalConfiguration.DefaultPrefix;
         }
     }

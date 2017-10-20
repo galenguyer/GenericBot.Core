@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Discord.WebSocket;
@@ -11,7 +12,9 @@ namespace GenericBot.Entities
         public enum PermissionLevels
         {
             User,
-            Contributor,
+            Moderator,
+            Admin,
+            GuildOwner,
             GlobalAdmin,
             BotOwner,
             Laterallyimpossible
@@ -39,7 +42,7 @@ namespace GenericBot.Entities
         {
             try
             {
-                if (GetPermissions(msg.Author) < RequiredPermission) return;
+                if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) < RequiredPermission) return;
                 if (Delete)
                 {
                     try
@@ -56,15 +59,22 @@ namespace GenericBot.Entities
             }
             catch (Exception ex)
             {
-
+                await GenericBot.Logger.LogErrorMessage(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
         }
 
-        private PermissionLevels GetPermissions(SocketUser user)
+        public PermissionLevels GetPermissions(SocketUser user, ulong guildId)
         {
             if (user.Id.Equals(GenericBot.GlobalConfiguration.OwnerId)) return PermissionLevels.BotOwner;
             else if (GenericBot.GlobalConfiguration.GlobalAdminIds.Contains(user.Id))
                 return PermissionLevels.GlobalAdmin;
+            else if(GenericBot.DiscordClient.GetGuild(guildId).Owner.Id == user.Id)
+                return PermissionLevels.GuildOwner;
+            else if ((user as SocketGuildUser).Roles.Select(r => r.Id).Intersect(GenericBot.GuildConfigs[guildId].AdminRoleIds).Any())
+                return PermissionLevels.Admin;
+            else if ((user as SocketGuildUser).Roles.Select(r => r.Id).Intersect(GenericBot.GuildConfigs[guildId].ModRoleIds).Any())
+                return PermissionLevels.Moderator;
             else return PermissionLevels.User;
         }
     }

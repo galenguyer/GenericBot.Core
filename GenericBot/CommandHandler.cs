@@ -35,6 +35,8 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new BotCommands().GetBotCommands());
             GenericBot.Commands.AddRange(new HelpModule().GetHelpCommands());
             GenericBot.Commands.AddRange(new TestCommands().GetTestCommands());
+            GenericBot.Commands.AddRange(new ConfigCommands().GetConfigComamnds());
+            GenericBot.Commands.AddRange(new RoleCommands().GetRoleCommands());
         }
 
         public async Task HandleCommand(SocketMessage parameterMessage)

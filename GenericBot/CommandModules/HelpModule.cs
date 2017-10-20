@@ -32,6 +32,10 @@ namespace GenericBot.CommandModules
                     foreach (var cmd in GenericBot.Commands.Where(c => GetPermissions(msg.Author) >= c.RequiredPermission).Where(c => c.Name.Contains(paramList[0])))
                     {
                         commands += $"`{cmd.Name}`: {cmd.Description} (`{cmd.Usage}`)\n";
+                        if(cmd.Aliases.Any(a => !string.IsNullOrEmpty(a.Trim())))
+                        {
+                            commands += $"\tAliases: {cmd.Aliases.Aggregate((i, j) => "`" + i + "`, " + j)}\n";
+                        }
                     }
                 }
                 foreach (var str in commands.SplitSafe())

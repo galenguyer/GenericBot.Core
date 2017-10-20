@@ -79,6 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandHandler.cs" />
+    <Compile Include="CommandModules\ConfigCommands.cs" />
+    <Compile Include="CommandModules\RoleCommands.cs" />
     <Compile Include="Entities\Command.cs" />
     <Compile Include="Entities\GlobalConfiguration.cs" />
     <Compile Include="Entities\GuildConfig.cs" />
