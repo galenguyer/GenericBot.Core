@@ -11,6 +11,7 @@ namespace GenericBot.Entities
         public enum PermissionLevels
         {
             User,
+            Contributor,
             GlobalAdmin,
             BotOwner,
             Laterallyimpossible
@@ -23,6 +24,11 @@ namespace GenericBot.Entities
         public bool Delete = false;
         public bool SendTyping = true;
         public PermissionLevels RequiredPermission = PermissionLevels.User;
+
+        public Command(string n)
+        {
+            Name = n;
+        }
 
 
         public delegate Task ExecuteDelegate(DiscordShardedClient client, SocketMessage msg, List<string> parameters);

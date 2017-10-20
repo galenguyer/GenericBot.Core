@@ -11,8 +11,7 @@ namespace GenericBot.CommandModules
         {
             List<Command> helpCommands = new List<Command>();
 
-            Command help = new Command();
-            help.Name = "help";
+            Command help = new Command("help");
             help.Description = "The help command, duh";
             help.RequiredPermission = Command.PermissionLevels.User;
             help.Aliases = new List<string> {"halp"};

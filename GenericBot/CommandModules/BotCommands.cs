@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using Discord.Net.Queue;
 using GenericBot.Entities;
 using ThreadState = System.Diagnostics.ThreadState;
 
@@ -15,8 +16,7 @@ namespace GenericBot.CommandModules
         {
             List<Command> botCommands = new List<Command>();
 
-            Command ping = new Command();
-            ping.Name = "ping";
+            Command ping = new Command("ping");
             ping.Description = $"Get the ping time to the bot";
             ping.Usage = $"ping <verbose>";
             ping.RequiredPermission = Command.PermissionLevels.User;
@@ -34,8 +34,7 @@ namespace GenericBot.CommandModules
             };
             botCommands.Add(ping);
 
-            Command global = new Command();
-            global.Name = "global";
+            Command global = new Command("global");
             global.Description = "Get the global information for the bot";
             global.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             global.ToExecute += async (client, msg, paramList) =>
@@ -52,6 +51,19 @@ namespace GenericBot.CommandModules
                 await msg.Channel.SendMessageAsync(stats);
             };
             botCommands.Add(global);
+
+            Command say = new Command("say");
+            say.Delete = true;
+            say.Aliases = new List<string>{"echo"};
+            say.Description = "Say something a contributor said";
+            say.SendTyping = true;
+            say.Usage = "say <phrase>";
+            say.ToExecute += async (client, msg, paramList) =>
+            {
+                await msg.Channel.SendMessageAsync(paramList.Aggregate((i, j) => i + " " + j));
+            };
+
+            botCommands.Add(say);
 
             return botCommands;
         }

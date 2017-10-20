@@ -12,8 +12,7 @@ namespace GenericBot.CommandModules
         {
             List<Command> TestCommands = new List<Command>();
 
-            Command test = new Command();
-            test.Name = "test";
+            Command test = new Command("test");
             test.Delete = true;
             test.Aliases = new List<string>{"testcommand"};
             test.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
