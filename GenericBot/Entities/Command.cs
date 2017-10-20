@@ -62,11 +62,4 @@ namespace GenericBot.Entities
             else return PermissionLevels.User;
         }
     }
-
-    public class CommandGroup
-    {
-        public string GroupName;
-        public List<Command> GroupCommands;
-
-    }
 }
