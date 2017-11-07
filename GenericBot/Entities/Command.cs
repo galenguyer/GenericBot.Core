@@ -20,17 +20,18 @@ namespace GenericBot.Entities
             Laterallyimpossible
         }
 
-        public string Name = "";
-        public List<string> Aliases = new List<string>(){""};
+        public string Name;
+        public List<string> Aliases = new List<string>();
         public string Description = "Not Available";
-        public string Usage = "Not Available";
+        public string Usage;
         public bool Delete = false;
         public bool SendTyping = true;
         public PermissionLevels RequiredPermission = PermissionLevels.User;
 
         public Command(string n)
         {
-            Name = n;
+            this.Name = n;
+            this.Usage = this.Name;
         }
 
 
@@ -71,9 +72,9 @@ namespace GenericBot.Entities
                 return PermissionLevels.GlobalAdmin;
             else if(GenericBot.DiscordClient.GetGuild(guildId).Owner.Id == user.Id)
                 return PermissionLevels.GuildOwner;
-            else if ((user as SocketGuildUser).Roles.Select(r => r.Id).Intersect(GenericBot.GuildConfigs[guildId].AdminRoleIds).Any())
+            else if (((SocketGuildUser) user).Roles.Select(r => r.Id).Intersect(GenericBot.GuildConfigs[guildId].AdminRoleIds).Any())
                 return PermissionLevels.Admin;
-            else if ((user as SocketGuildUser).Roles.Select(r => r.Id).Intersect(GenericBot.GuildConfigs[guildId].ModRoleIds).Any())
+            else if (((SocketGuildUser) user).Roles.Select(r => r.Id).Intersect(GenericBot.GuildConfigs[guildId].ModRoleIds).Any())
                 return PermissionLevels.Moderator;
             else return PermissionLevels.User;
         }

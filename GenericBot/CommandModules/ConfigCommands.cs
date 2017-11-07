@@ -209,6 +209,23 @@ namespace GenericBot.CommandModules
                             await msg.ReplyAsync($"You don't have the permissions to do that");
                         }
                         break;
+                    case "twitter":
+                        if (paramList[1].ToLower() == "true")
+                        {
+                            GenericBot.GuildConfigs[msg.GetGuild().Id].AllowTwitter = true;
+                            await msg.ReplyAsync("Tweeting on this server has been enabled");
+                        }
+                        else if (paramList[1].ToLower() == "false")
+                        {
+                            GenericBot.GuildConfigs[msg.GetGuild().Id].AllowTwitter = false;
+                            await msg.ReplyAsync("Tweeting on this server has been disabled");
+                        }
+                        else
+                        {
+                            await msg.ReplyAsync("That's not a valid option");
+                        }
+
+                        break;
 
                     default:
                         await msg.ReplyAsync($"Unknown property `{paramList[0]}`.");

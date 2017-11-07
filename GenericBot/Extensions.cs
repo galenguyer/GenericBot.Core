@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 
@@ -15,12 +18,12 @@ namespace GenericBot
 
         public static SocketGuild GetGuild(this SocketMessage msg)
         {
-            return (msg.Channel as SocketGuildChannel).Guild;
+            return ((SocketGuildChannel) msg.Channel).Guild;
         }
 
-        public static Task<RestUserMessage> ReplyAsync(this SocketMessage msg, string text)
+        public static Task<RestUserMessage> ReplyAsync(this SocketMessage msg, object text)
         {
-            return msg.Channel.SendMessageAsync(text);
+            return msg.Channel.SendMessageAsync(text.ToString());
         }
 
         public static bool Empty(this List<string> list)
@@ -31,6 +34,53 @@ namespace GenericBot
         public static string reJoin(this List<string> list)
         {
             return list.Aggregate((i, j) => i + " " + j);
+        }
+
+        public static List<SocketUser> GetMentionedUsers(this SocketMessage msg)
+        {
+            var users = msg.MentionedUsers.ToList();
+
+            var allUsers = GenericBot.DiscordClient.Guilds.SelectMany(g => g.Users);
+
+            foreach (Match match in Regex.Matches(msg.Content, "[0-9]{17,18}"))
+            {
+                if (allUsers.Any(u => u.Id.ToString() == match.Value) &&
+                    users.All(u => u.Id.ToString() != match.Value))
+                {
+                    users.Add(GenericBot.DiscordClient.GetUser(Convert.ToUInt64(match.Value)));
+                }
+            }
+            return users.ToList();
+        }
+
+        public static async Task<List<IMessage>> GetManyMessages(this SocketTextChannel channel, int count)
+        {
+            count++;
+            var msgs = (channel as IMessageChannel).GetMessagesAsync().Flatten().Result;
+            await Task.Yield();
+
+            while (true)
+            {
+                var newmsgs = (channel as IMessageChannel).GetMessagesAsync(msgs.Last(), Direction.Before).Flatten().Result;
+                msgs = msgs.Concat(newmsgs);
+                await Task.Yield();
+                if (newmsgs.Count() < 100 || msgs.Count() > count) break;
+            }
+
+            return msgs.Distinct().Take(count).ToList();
+        }
+
+        public static ulong GetRandomItem(this List<ulong> list)
+        {
+            var timeStarted = DateTime.Now;
+            int counter = 0;
+            while (timeStarted - DateTime.Now < TimeSpan.FromMilliseconds(5000))
+            {
+                 counter += new Random().Next(0, list.Count);
+                counter = counter % list.Count;
+            }
+            int item = counter % list.Count;
+            return list[item];
         }
 
         public static List<string> SplitSafe(this string input, char spl = ' ')

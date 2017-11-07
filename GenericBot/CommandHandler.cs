@@ -37,13 +37,17 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new TestCommands().GetTestCommands());
             GenericBot.Commands.AddRange(new ConfigCommands().GetConfigComamnds());
             GenericBot.Commands.AddRange(new RoleCommands().GetRoleCommands());
+            GenericBot.Commands.AddRange(new ModCommands().GetModCommands());
+            GenericBot.Commands.AddRange(new FunCommands().GetFunCommands());
+            GenericBot.Commands.AddRange(new SocialCommands().GetSocialCommands());
         }
 
         public async Task HandleCommand(SocketMessage parameterMessage)
         {
             // Don't handle the command if it is a system message
             var message = parameterMessage as SocketUserMessage;
-            if (message == null) return;
+
+//            if (message?.Author.Id != 169918990313848832 && message?.Author.Id != 354739264359104514) return;
 
             var commandInfo = ParseMessage(parameterMessage);
 

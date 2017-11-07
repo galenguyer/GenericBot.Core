@@ -10,6 +10,8 @@ namespace GenericBot.Entities
         public List<ulong> UserRoleIds;
         public Dictionary<Command, List<string>> LocalAliases;
         public string Prefix;
+        public bool AllowTwitter = true;
+        public Giveaway Giveaway;
 
         public GuildConfig(ulong id)
         {

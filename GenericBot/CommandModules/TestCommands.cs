@@ -12,13 +12,12 @@ namespace GenericBot.CommandModules
         {
             List<Command> TestCommands = new List<Command>();
 
-            Command test = new Command("test");
+            Command test = new Command("getperms");
             test.Delete = true;
-            test.Aliases = new List<string>{"testcommand"};
-            test.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            //test.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             test.ToExecute += async (client, msg, paramList) =>
             {
-                await msg.Channel.SendMessageAsync(paramList.Aggregate((i, j) => i + " " + j));
+                await msg.Channel.SendMessageAsync($"{test.GetPermissions(msg.Author, msg.GetGuild().Id)}");
             };
 
             TestCommands.Add(test);
