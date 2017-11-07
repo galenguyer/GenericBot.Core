@@ -53,7 +53,7 @@ namespace GenericBot.CommandModules
                     {
                         await msg.ReplyAsync($"There's no existing giveaway.");
                     }
-                    if (guildConfig.Giveaway.Open)
+                    else if (guildConfig.Giveaway.Open)
                     {
                         await msg.ReplyAsync("You have to close the giveaway first!");
                     }

@@ -72,15 +72,7 @@ namespace GenericBot
 
         public static ulong GetRandomItem(this List<ulong> list)
         {
-            var timeStarted = DateTime.Now;
-            int counter = 0;
-            while (timeStarted - DateTime.Now < TimeSpan.FromMilliseconds(5000))
-            {
-                 counter += new Random().Next(0, list.Count);
-                counter = counter % list.Count;
-            }
-            int item = counter % list.Count;
-            return list[item];
+            return list[new Random().Next(0, list.Count - 1)];
         }
 
         public static List<string> SplitSafe(this string input, char spl = ' ')
