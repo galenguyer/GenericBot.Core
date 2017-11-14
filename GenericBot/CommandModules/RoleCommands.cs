@@ -161,6 +161,38 @@ namespace GenericBot.CommandModules
 
             RoleCommands.Add(getrole);
 
+            Command membersOf = new Command("membersof");
+            membersOf.Description = "List all members of a role";
+            membersOf.Usage = "membersof <rolename>";
+            membersOf.RequiredPermission = Command.PermissionLevels.Moderator;
+            membersOf.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync($"You need to specify a role");
+                    return;
+                }
+                string result = "";
+                foreach (var role in msg.GetGuild().Roles.OrderByDescending(r => r.Position).Where(r => r.Name.ToLower().Contains(parameters.reJoin())))
+                {
+                    result += $"\n**`{role.Name}` ({role.Members.Count()} Members)**\n";
+                    foreach (var user in role.Members.OrderBy(u => u.Username))
+                    {
+                        if (!string.IsNullOrEmpty(user.Nickname)) result += $"{user.Nickname} ";
+                        else result += $"{user.Username} ";
+                        result += $"(`{user}`)\n";
+                    }
+                }
+
+                foreach (var str in result.SplitSafe('\n'))
+                {
+                    await msg.ReplyAsync(str);
+                }
+
+            };
+
+            RoleCommands.Add(membersOf);
+
             return RoleCommands;
         }
     }
