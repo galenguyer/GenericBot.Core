@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using GenericBot.Entities;
+using Newtonsoft.Json;
 
 namespace GenericBot.CommandModules
 {
@@ -12,6 +14,7 @@ namespace GenericBot.CommandModules
             Command giveaway = new Command("giveaway");
             giveaway.Usage = "giveaway <start|close|roll>";
             giveaway.Description = "Start or end a giveaway";
+            giveaway.RequiredPermission = Command.PermissionLevels.Admin;
             giveaway.ToExecute += async (client, msg, parameters) =>
             {
                 if (parameters.Empty())
@@ -66,6 +69,7 @@ namespace GenericBot.CommandModules
                 {
                     await msg.ReplyAsync($"That's not a valid option");
                 }
+                File.WriteAllText($"files/guildConfigs.json", JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
             };
 
             SocialCommands.Add(giveaway);
@@ -94,6 +98,7 @@ namespace GenericBot.CommandModules
                         }
                     }
                 }
+                File.WriteAllText($"files/guildConfigs.json", JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
             };
 
             SocialCommands.Add(g);
