@@ -139,6 +139,7 @@ namespace GenericBot
             var _handler = new CommandHandler();
             await _handler.Install(serviceProvider);
 
+            Updater.Start();
             // Block this program until it is closed.
             await Task.Delay(-1);
         }
