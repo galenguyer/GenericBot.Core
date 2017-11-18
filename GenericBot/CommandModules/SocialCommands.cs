@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Discord;
+using Discord.Rest;
 using GenericBot.Entities;
 using Newtonsoft.Json;
 
@@ -80,22 +83,31 @@ namespace GenericBot.CommandModules
             {
                 var guildConfig = GenericBot.GuildConfigs[msg.GetGuild().Id];
                 {
+                    RestUserMessage resMessge;
                     if (guildConfig.Giveaway == null || !guildConfig.Giveaway.Open)
                     {
-                        await msg.ReplyAsync($"There's no open giveaway.");
+                        resMessge = msg.ReplyAsync($"There's no open giveaway.").Result;
                     }
                     else
                     {
                         var guildConfigGiveaway = guildConfig.Giveaway;
                         if (guildConfigGiveaway.Hopefuls.Contains(msg.Author.Id))
                         {
-                            await msg.ReplyAsync($"You're already in this giveaway.");
+                            resMessge = msg.ReplyAsync($"You're already in this giveaway.").Result;
                         }
                         else
                         {
                             guildConfigGiveaway.Hopefuls.Add(msg.Author.Id);
-                            await msg.ReplyAsync($"You're in, {msg.Author.Mention}. Good luck!");
+                            resMessge = msg.ReplyAsync($"You're in, {msg.Author.Mention}. Good luck!").Result;
                         }
+                    }
+                    try
+                    {
+                        GenericBot.MessageDeleteQueue.Add(msg.Channel.Id, new List<IMessage> {msg, resMessge});
+                    }
+                    catch (Exception ex)
+                    {
+                        GenericBot.MessageDeleteQueue[msg.Channel.Id].AddRange(new List<IMessage>{msg, resMessge});
                     }
                 }
                 File.WriteAllText($"files/guildConfigs.json", JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
