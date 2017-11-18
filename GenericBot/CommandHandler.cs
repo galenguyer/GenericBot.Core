@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using GenericBot.CommandModules;
@@ -40,6 +41,7 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new ModCommands().GetModCommands());
             GenericBot.Commands.AddRange(new FunCommands().GetFunCommands());
             GenericBot.Commands.AddRange(new SocialCommands().GetSocialCommands());
+            GenericBot.Commands.AddRange(new MuteCommands().GetMuteCommands());
         }
 
         public async Task HandleCommand(SocketMessage parameterMessage)

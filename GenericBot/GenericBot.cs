@@ -28,6 +28,7 @@ namespace GenericBot
         public static List<GenericTweet> TweetStore;
         public static LinkedList<QueuedTweet> TweetQueue = new LinkedList<QueuedTweet>();
         public static Timer TweetSender = new Timer();
+        public static Timer Updater = new Timer();
 
         static void Main(string[] args)
         {
@@ -44,7 +45,26 @@ namespace GenericBot
             TweetSender.Elapsed += TweetSenderOnElapsed;
             TweetSender.Start();
 
+            Updater.AutoReset = true;
+            Updater.Interval = 5 * 1000;
+            Updater.Elapsed += CheckMuteRemoval;
             new GenericBot().Start().GetAwaiter().GetResult();
+        }
+
+        private static void CheckMuteRemoval(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            foreach (var mute in GuildConfigs.SelectMany(g => g.Value.ChannelMutes))
+            {
+                if (mute.RemovealTime < DateTime.UtcNow)
+                {
+                    (DiscordClient.GetChannel(mute.ChannelId) as SocketTextChannel)
+                        .RemovePermissionOverwriteAsync(DiscordClient.GetUser(mute.UserId));
+                    GuildConfigs[((SocketGuildChannel) DiscordClient.GetChannel(mute.ChannelId)).Guild.Id].ChannelMutes
+                        .Remove(mute);
+                    GenericBot.Logger.LogGenericMessage($"Unmuted {mute.UserId} from {mute.ChannelId}");
+                }
+            }
+            File.WriteAllText("files/guildConfigs.json", JsonConvert.SerializeObject(GuildConfigs, Formatting.Indented));
         }
 
         private static async void TweetSenderOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)

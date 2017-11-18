@@ -13,6 +13,8 @@ namespace GenericBot.Entities
         public bool AllowTwitter = true;
         public Giveaway Giveaway;
 
+        public List<ChannelMute> ChannelMutes = new List<ChannelMute>();
+
         public GuildConfig(ulong id)
         {
             GuildId = id;
