@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -30,6 +31,10 @@ namespace GenericBot
         public static Timer TweetSender = new Timer();
         public static Timer Updater = new Timer();
 
+        public static Dictionary<ulong, List<IMessage>> MessageDeleteQueue = new Dictionary<ulong, List<IMessage>>();
+        public static Timer MessageDeleteTimer = new Timer();
+        public static bool Test = true;
+
         static void Main(string[] args)
         {
             Logger = new Logger(GetStringSha256Hash(DateTime.UtcNow.ToString()));
@@ -48,7 +53,22 @@ namespace GenericBot
             Updater.AutoReset = true;
             Updater.Interval = 5 * 1000;
             Updater.Elapsed += CheckMuteRemoval;
+
+            MessageDeleteTimer.AutoReset = true;
+            MessageDeleteTimer.Interval = 60 * 1000;
+            MessageDeleteTimer.Elapsed += MessageDeleteTimerOnElapsed;
+            MessageDeleteTimer.Start();
+
             new GenericBot().Start().GetAwaiter().GetResult();
+        }
+
+        private static void MessageDeleteTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            foreach (var kvp in MessageDeleteQueue)
+            {
+                ((ISocketMessageChannel) DiscordClient.GetChannel(kvp.Key)).DeleteMessagesAsync(kvp.Value);
+                MessageDeleteQueue.Remove(kvp.Key);
+            }
         }
 
         private static void CheckMuteRemoval(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -140,6 +160,7 @@ namespace GenericBot
             await _handler.Install(serviceProvider);
 
             Updater.Start();
+
             // Block this program until it is closed.
             await Task.Delay(-1);
         }
