@@ -37,6 +37,7 @@ namespace GenericBot.CommandModules
                     {
                         var users = msg.GetMentionedUsers();
                         msgs = msgs.Where(m => users.Select(u => u.Id).Contains(m.Author.Id)).ToList();
+                        msgs.Add(msg);
                     }
 
                     await msg.Channel.DeleteMessagesAsync(msgs.Where(m => DateTime.Now - m.CreatedAt < TimeSpan.FromDays(14)));
