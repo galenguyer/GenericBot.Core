@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Discord;
 using Discord.Rest;
 using GenericBot.Entities;
@@ -114,6 +116,54 @@ namespace GenericBot.CommandModules
             };
 
             SocialCommands.Add(g);
+
+            Command checkinvite = new Command("checkinvite");
+            checkinvite.Aliases = new List<string>{"invite"};
+            checkinvite.Description = "Check the information of a discord invite";
+            checkinvite.Usage = "checkinvite <code>";
+            checkinvite.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync($"You need to give me a code to look at!");
+                    return;
+                }
+                var inviteCode = parameters.Last().Split("/").Last();
+                try
+                {
+
+                    var invite = client.GetInviteAsync(inviteCode).Result;
+                    if (invite.Equals(null))
+                    {
+                        await msg.Channel.SendMessageAsync("", embed: new EmbedBuilder()
+                            .WithColor(255, 0, 0)
+                            .WithDescription("Invalid invite"));
+                    }
+
+                    var embedBuilder = new EmbedBuilder()
+                        .WithColor(0, 255, 0)
+                        .WithTitle("Valid Invite")
+                        .WithUrl($"https://discord.gg/{invite.Code}")
+                        .AddField(new EmbedFieldBuilder().WithName("Guild Name").WithValue(invite.GuildName).WithIsInline(true))
+                        .AddField(new EmbedFieldBuilder().WithName("_ _").WithValue("_ _").WithIsInline(true))
+                        .AddField(new EmbedFieldBuilder().WithName("Channel Name").WithValue(invite.ChannelName).WithIsInline(true))
+                        .AddField(new EmbedFieldBuilder().WithName("Guild Id").WithValue(invite.GuildId).WithIsInline(true))
+                        .AddField(new EmbedFieldBuilder().WithName("_ _").WithValue("_ _").WithIsInline(true))
+                        .AddField(new EmbedFieldBuilder().WithName("Channel Id").WithValue(invite.ChannelId).WithIsInline(true))
+                        .WithCurrentTimestamp();
+
+                    await msg.Channel.SendMessageAsync("", embed: embedBuilder.Build());
+
+                }
+                catch (Exception e)
+                {
+                    await msg.Channel.SendMessageAsync("", embed: new EmbedBuilder()
+                        .WithColor(255, 0, 0)
+                        .WithDescription("Invalid invite"));
+                }
+            };
+
+            SocialCommands.Add(checkinvite);
 
             return SocialCommands;
         }
