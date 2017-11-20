@@ -195,5 +195,17 @@ namespace GenericBot
                 return BitConverter.ToString(hash).Replace("-", String.Empty).ToLower();
             }
         }
+
+        public static void QueueMessagesForDelete(List<IMessage> messages)
+        {
+            try
+            {
+                GenericBot.MessageDeleteQueue.Add(messages.First().Channel.Id, messages);
+            }
+            catch (Exception ex)
+            {
+                GenericBot.MessageDeleteQueue[messages.First().Channel.Id].AddRange(messages);
+            }
+        }
     }
 }
