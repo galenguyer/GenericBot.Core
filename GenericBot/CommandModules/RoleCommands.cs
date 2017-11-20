@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using GenericBot.Entities;
@@ -23,7 +24,8 @@ namespace GenericBot.CommandModules
             {
                 string message = $"You can use `iam` and `iamnot` with any of these roles:\n";
                 foreach (var role in msg.GetGuild().Roles
-                    .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id)))
+                    .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id))
+                    .OrderByDescending(r => r.Position))
                 {
                     message += $"`{role.Name}`, ";
                 }
@@ -43,9 +45,11 @@ namespace GenericBot.CommandModules
             iam.Aliases = new List<string>{"join"};
             iam.ToExecute += async (client, msg, paramList) =>
             {
+                IMessage rep;
                 if (paramList.Empty())
                 {
-                    await msg.ReplyAsync($"Please select a role to join");
+                    rep = msg.ReplyAsync($"Please select a role to join").Result;
+                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, rep});
                 }
                 string input = paramList.Aggregate((i, j) => i + " " + j);
 
@@ -54,7 +58,8 @@ namespace GenericBot.CommandModules
 
                 if (!roles.Any())
                 {
-                    await msg.ReplyAsync($"Could not find any user roles matching `{input}`");
+                    rep = msg.ReplyAsync($"Could not find any user roles matching `{input}`").Result;
+                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, rep});
                 }
                 else if (roles.Count() == 1)
                 {
@@ -95,9 +100,11 @@ namespace GenericBot.CommandModules
             iamnot.Aliases = new List<string>{"leave"};
             iamnot.ToExecute += async (client, msg, paramList) =>
             {
+                IMessage rep;
                 if (paramList.Empty())
                 {
-                    await msg.ReplyAsync($"Please select a role to leave");
+                    rep =  msg.ReplyAsync($"Please select a role to leave").Result;
+                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, rep});
                 }
                 string input = paramList.Aggregate((i, j) => i + " " + j);
 
@@ -106,7 +113,8 @@ namespace GenericBot.CommandModules
 
                 if (!roles.Any())
                 {
-                    await msg.ReplyAsync($"Could not find any user roles matching `{input}`");
+                    rep = msg.ReplyAsync($"Could not find any user roles matching `{input}`").Result;
+                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, rep});
                 }
                 else if (roles.Count() == 1)
                 {

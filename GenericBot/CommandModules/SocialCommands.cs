@@ -103,14 +103,7 @@ namespace GenericBot.CommandModules
                             resMessge = msg.ReplyAsync($"You're in, {msg.Author.Mention}. Good luck!").Result;
                         }
                     }
-                    try
-                    {
-                        GenericBot.MessageDeleteQueue.Add(msg.Channel.Id, new List<IMessage> {msg, resMessge});
-                    }
-                    catch (Exception ex)
-                    {
-                        GenericBot.MessageDeleteQueue[msg.Channel.Id].AddRange(new List<IMessage>{msg, resMessge});
-                    }
+                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, resMessge});
                 }
                 File.WriteAllText($"files/guildConfigs.json", JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
             };
