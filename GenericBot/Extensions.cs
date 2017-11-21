@@ -23,7 +23,7 @@ namespace GenericBot
 
         public static Task<RestUserMessage> ReplyAsync(this SocketMessage msg, object text)
         {
-            return msg.Channel.SendMessageAsync(text.ToString());
+            return msg.Channel.SendMessageAsync(text.ToString().Replace("@everyone", "@-everyone").Replace("@here", "@-here"));
         }
 
         public static bool Empty(this List<string> list)
