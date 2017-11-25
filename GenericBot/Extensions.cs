@@ -53,6 +53,17 @@ namespace GenericBot
             return users.ToList();
         }
 
+        public static bool HasElement<T>(this IEnumerable<T> inEnum, Func<T, bool> predicate, out T output)
+        {
+            if (inEnum.Any(predicate))
+            {
+                output = inEnum.First(predicate);
+                return true;
+            }
+            output = default(T);
+            return false;
+        }
+
         public static async Task<List<IMessage>> GetManyMessages(this SocketTextChannel channel, int count)
         {
             count++;
@@ -96,6 +107,15 @@ namespace GenericBot
             output.Add(temp);
 
             return output;
+        }
+
+        public static string SafeSubstring(this string input, int length)
+        {
+            if (input.Length < length)
+            {
+                return input;
+            }
+            else return input.Substring(0, length) + "...";
         }
     }
 }

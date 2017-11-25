@@ -42,6 +42,7 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new FunCommands().GetFunCommands());
             GenericBot.Commands.AddRange(new SocialCommands().GetSocialCommands());
             GenericBot.Commands.AddRange(new MuteCommands().GetMuteCommands());
+            GenericBot.Commands.AddRange(new CustomCommandCommands().GetCustomCommands());
         }
 
         public async Task HandleCommand(SocketMessage parameterMessage)
@@ -52,6 +53,17 @@ namespace GenericBot
 //            if (message?.Author.Id != 169918990313848832 && message?.Author.Id != 354739264359104514) return;
 
             var commandInfo = ParseMessage(parameterMessage);
+
+            CustomCommand custom = new CustomCommand();
+            if (GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
+                .HasElement(c => c.Name == commandInfo.Name, out custom))
+            {
+                if (custom.Delete)
+                {
+                    await parameterMessage.DeleteAsync();
+                }
+                await parameterMessage.ReplyAsync(custom.Response);
+            }
 
             commandInfo.Command.ExecuteCommand(_client, message, commandInfo.Parameters).FireAndForget();
         }
