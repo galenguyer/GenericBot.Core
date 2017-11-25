@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Discord;
@@ -12,6 +13,7 @@ using GenericBot.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TweetSharp;
+using Timer = System.Timers.Timer;
 
 namespace GenericBot
 {
@@ -61,6 +63,71 @@ namespace GenericBot
 
             new GenericBot().Start().GetAwaiter().GetResult();
         }
+        public async Task Start()
+        {
+            DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
+            {
+                LogLevel = LogSeverity.Verbose,
+                AlwaysDownloadUsers = true,
+                MessageCacheSize = 100,
+            });
+
+            DiscordClient.Log += Logger.LogClientMessage;
+
+            try
+            {
+                await DiscordClient.LoginAsync(TokenType.Bot, GlobalConfiguration.Token);
+                await DiscordClient.StartAsync();
+            }
+            catch (Exception e)
+            {
+                await Logger.LogErrorMessage($"{e.Message}\n{e.StackTrace.Split('\n').First(s => s.Contains("line"))}");
+            }
+
+            if (GlobalConfiguration.OwnerId == 0)
+            {
+                GlobalConfiguration.OwnerId = DiscordClient.GetApplicationInfoAsync().Result.Owner.Id;
+                GlobalConfiguration.Save();
+            }
+
+            foreach (var shard in DiscordClient.Shards)
+            {
+                shard.Ready += OnReady;
+                shard.SetGameAsync(">help | Everything go boom").FireAndForget();
+            }
+
+            var serviceProvider = ConfigureServices();
+
+            var _handler = new CommandHandler();
+            await _handler.Install(serviceProvider);
+
+            Updater.Start();
+
+            // Block this program until it is closed.
+            await Task.Delay(-1);
+        }
+
+        private async Task OnReady()
+        {
+            foreach (var guild in DiscordClient.Guilds)
+            {
+                GuildConfigs.Add(guild.Id, JsonConvert.DeserializeObject<GuildConfig>(File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
+            }
+            foreach (var guild in DiscordClient.Guilds.Where(g => !GuildConfigs.Keys.Contains(g.Id)))
+            {
+                GuildConfigs.Add(guild.Id, new GuildConfig(guild.Id).Save());
+            }
+            await Logger.LogGenericMessage($"Loaded {GuildConfigs.Count} Configs on Startup");
+        }
+
+        private IServiceProvider ConfigureServices()
+        {
+            var services = new ServiceCollection()
+                .AddSingleton(DiscordClient);
+            var provider = new DefaultServiceProviderFactory().CreateServiceProvider(services);
+            return provider;
+        }
+
 
         private static void MessageDeleteTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
@@ -119,68 +186,6 @@ namespace GenericBot
             TweetQueue.RemoveFirst();
             File.WriteAllText("files/tweetStore.json", JsonConvert.SerializeObject(GenericBot.TweetStore, Formatting.Indented));
 
-        }
-
-        public async Task Start()
-        {
-            DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
-            {
-                LogLevel = LogSeverity.Verbose,
-                AlwaysDownloadUsers = true,
-                MessageCacheSize = 100,
-            });
-
-            DiscordClient.Log += Logger.LogClientMessage;
-
-            try
-            {
-                await DiscordClient.LoginAsync(TokenType.Bot, GlobalConfiguration.Token);
-                await DiscordClient.StartAsync();
-            }
-            catch (Exception e)
-            {
-                await Logger.LogErrorMessage($"{e.Message}\n{e.StackTrace.Split('\n').First(s => s.Contains("line"))}");
-            }
-
-            if (GlobalConfiguration.OwnerId == 0)
-            {
-                GlobalConfiguration.OwnerId = DiscordClient.GetApplicationInfoAsync().Result.Owner.Id;
-                GlobalConfiguration.Save();
-            }
-
-            foreach (var shard in DiscordClient.Shards)
-            {
-                shard.Ready += OnReady;
-                shard.SetGameAsync(">help | Everything go boom").FireAndForget();
-            }
-
-            var serviceProvider = ConfigureServices();
-
-            var _handler = new CommandHandler();
-            await _handler.Install(serviceProvider);
-
-            Updater.Start();
-
-            // Block this program until it is closed.
-            await Task.Delay(-1);
-        }
-
-        private async Task OnReady()
-        {
-            foreach (var guild in DiscordClient.Guilds.Where(g => !GuildConfigs.Keys.Contains(g.Id)))
-            {
-                GuildConfigs.Add(guild.Id, new GuildConfig(guild.Id));
-            }
-            File.WriteAllText("files/guildConfigs.json", JsonConvert.SerializeObject(GuildConfigs, Formatting.Indented));
-            await Logger.LogGenericMessage($"Loaded {GuildConfigs.Count} Configs on Startup");
-        }
-
-        private IServiceProvider ConfigureServices()
-        {
-            var services = new ServiceCollection()
-                .AddSingleton(DiscordClient);
-            var provider = new DefaultServiceProviderFactory().CreateServiceProvider(services);
-            return provider;
         }
 
         internal static string GetStringSha256Hash(string text)
