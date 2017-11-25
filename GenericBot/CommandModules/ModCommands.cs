@@ -39,6 +39,11 @@ namespace GenericBot.CommandModules
                         msgs = msgs.Where(m => users.Select(u => u.Id).Contains(m.Author.Id)).ToList();
                         msgs.Add(msg);
                     }
+                    if (paramList.Count > 1 && !msg.GetMentionedUsers().Any())
+                    {
+                        await msg.ReplyAsync($"It looks like you're trying to mention someone but failed.");
+                        return;
+                    }
 
                     await msg.Channel.DeleteMessagesAsync(msgs.Where(m => DateTime.Now - m.CreatedAt < TimeSpan.FromDays(14)));
 
