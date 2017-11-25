@@ -55,8 +55,11 @@ namespace GenericBot
             var commandInfo = ParseMessage(parameterMessage);
 
             CustomCommand custom = new CustomCommand();
+
             if (GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
-                .HasElement(c => c.Name == commandInfo.Name, out custom))
+                    .HasElement(c => c.Name == commandInfo.Name, out custom) ||
+                GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
+                    .HasElement(c => c.Aliases.Contains(commandInfo.Name), out custom))
             {
                 if (custom.Delete)
                 {
