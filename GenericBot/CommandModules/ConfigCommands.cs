@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using GenericBot.Entities;
 using Newtonsoft.Json;
 
@@ -13,7 +15,7 @@ namespace GenericBot.CommandModules
             List<Command> ConfigCommands = new List<Command>();
 
             Command config = new Command("config");
-            config.Usage = "config <option> <value>";
+            config.Usage = "config <option> <value>`\nOptions are: `adminroles`, `moderatorroles`, `userroles`, `twitter`, `prefix";
             config.Description = "Configure the bot's option";
             config.RequiredPermission = Command.PermissionLevels.Admin;
             config.ToExecute += async (client, msg, paramList) =>
@@ -224,14 +226,30 @@ namespace GenericBot.CommandModules
                         {
                             await msg.ReplyAsync("That's not a valid option");
                         }
-
+                        break;
+                    case "prefix":
+                        try
+                        {
+                            paramList.RemoveAt(0);
+                            GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix = paramList.reJoin();
+                            if (msg.Content.EndsWith('"') && paramList[0].ToCharArray()[0].Equals('"'))
+                            {
+                                GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix = new Regex("\"(.*?)\"").Match(msg.Content).Value.Trim('"');
+                            }
+                            await msg.ReplyAsync($"The prefix has been set to `{GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix}`");
+                        }
+                        catch (Exception Ex)
+                        {
+                            GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix = "";
+                            await msg.ReplyAsync($"The prefix has been reset to the default of `{GenericBot.GlobalConfiguration.DefaultPrefix}`");
+                        }
                         break;
 
                     default:
                         await msg.ReplyAsync($"Unknown property `{paramList[0]}`.");
                         break;
                 }
-                File.WriteAllText($"files/guildConfigs.json", JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
+                GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
             };
 
             ConfigCommands.Add(config);
