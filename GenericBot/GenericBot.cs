@@ -41,8 +41,7 @@ namespace GenericBot
         {
             Logger = new Logger(GetStringSha256Hash(DateTime.UtcNow.ToString()));
             GlobalConfiguration = new GlobalConfiguration().Load();
-            GuildConfigs =
-                JsonConvert.DeserializeObject<Dictionary<ulong, GuildConfig>>(File.ReadAllText("files/guildConfigs.json"));
+            GuildConfigs = new Dictionary<ulong, GuildConfig>();
             TweetStore = JsonConvert.DeserializeObject<List<GenericTweet>>(File.ReadAllText("files/tweetStore.json"));
 
             Twitter.AuthenticateWith("924464831813398529-pi51h6UB3iitJB2UQwGrHukYjD1Pz7F", "3R0vFFQLCGe9vuGvn00Avduq1K8NHjmRBUFJVuo9nRYXJ");

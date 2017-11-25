@@ -1,4 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace GenericBot.Entities
 {
@@ -14,6 +18,7 @@ namespace GenericBot.Entities
         public Giveaway Giveaway;
 
         public List<ChannelMute> ChannelMutes = new List<ChannelMute>();
+        public List<CustomCommand> CustomCommands;
 
         public GuildConfig(ulong id)
         {
@@ -21,7 +26,22 @@ namespace GenericBot.Entities
             AdminRoleIds = new List<ulong>();
             ModRoleIds = new List<ulong>();
             UserRoleIds = new List<ulong>();
-            Prefix = GenericBot.GlobalConfiguration.DefaultPrefix;
+            CustomCommands = new List<CustomCommand>();
+            Prefix = "";
+        }
+
+        public GuildConfig Save()
+        {
+            if (!GenericBot.GuildConfigs.Any(kvp => kvp.Key.Equals(GuildId)))
+            {
+                GenericBot.GuildConfigs.Add(GuildId, this);
+            }
+            else
+            {
+                GenericBot.GuildConfigs[GuildId] = this;
+            }
+            File.WriteAllText($"files/guildConfigs/{this.GuildId}.json", JsonConvert.SerializeObject(this, Formatting.Indented));
+            return this;
         }
     }
 }
