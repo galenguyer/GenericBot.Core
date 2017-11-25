@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using GenericBot.Entities;
@@ -96,6 +97,81 @@ namespace GenericBot.CommandModules
             };
 
             CustomCommandCommands.Add(command);
+
+            Command alias = new Command("alias");
+            alias.Aliases = new List<string>{"aliases"};
+            alias.RequiredPermission = Command.PermissionLevels.Admin;
+            alias.Description = "Add an alias for a command";
+            alias.Usage = "alias <add|remove> command alias";
+            alias.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("You need to have some options");
+                }
+
+                if (string.IsNullOrEmpty(parameters[1]) ||
+                    (!GenericBot.Commands.Any(c => c.Name.Equals(parameters[1]) || c.Aliases.Contains(parameters[1])) &&
+                     !GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands.Any(c =>
+                         c.Name.Equals(parameters[1]) || c.Aliases.Contains(parameters[1]))))
+                {
+                    await msg.ReplyAsync("That's not a command");
+                    return;
+                }
+
+                if (parameters[0].ToLower().Equals("add"))
+                {
+                    if (string.IsNullOrEmpty(parameters[2]) ||
+                        (GenericBot.Commands.Any(c => c.Name.Equals(parameters[2]) || c.Aliases.Contains(parameters[2])) ||
+                         GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands.Any(c =>
+                             c.Name.Equals(parameters[2]) || c.Aliases.Contains(parameters[2]))))
+                    {
+                        await msg.ReplyAsync($"That's already an alias or command");
+                        return;
+                    }
+                    CustomCommand custom = new CustomCommand();
+                    if (GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands.HasElement(c =>
+                        c.Name.Equals(parameters[1]) || c.Aliases.Contains(parameters[1]), out custom))
+                    {
+                        custom.Aliases.Add(parameters[2].ToLower());
+                        await msg.ReplyAsync(
+                            $"The command `{custom.Name}` now has the alias `{parameters[2].ToLower()}`");
+                    }
+                    else
+                    {
+                        if (GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Any(a =>
+                            a.Command.Equals(parameters[1]) && a.Alias.Equals(parameters[2])))
+                        {
+                            await msg.ReplyAsync("That already exists");
+                            return;
+                        }
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Add(new CustomAlias(parameters[1], parameters[2].ToLower()));
+                        await msg.ReplyAsync($"The command `{parameters[1]}` now has the alias `{parameters[2]}`");
+                    }
+                }
+                else if (parameters[0].ToLower().Equals("remove"))
+                {
+                    CustomCommand custom = new CustomCommand();
+                    if (GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands.HasElement(c =>
+                        c.Name.Equals(parameters[1]) || c.Aliases.Contains(parameters[1]), out custom))
+                    {
+                        custom.Aliases.Remove(parameters[2].ToLower());
+                        await msg.ReplyAsync("Done");
+                    }
+                    else
+                    {
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Remove(
+                            GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.First(a => a.Command.Equals(parameters[1]) && a.Alias.Equals(parameters[2])));
+                        await msg.ReplyAsync("Done");
+                    }
+                }
+                else
+                {
+                }
+                GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
+            };
+
+            CustomCommandCommands.Add(alias);
 
             return CustomCommandCommands;
         }

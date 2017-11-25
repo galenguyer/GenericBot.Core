@@ -12,7 +12,6 @@ namespace GenericBot.Entities
         public List<ulong> AdminRoleIds;
         public List<ulong> ModRoleIds;
         public List<ulong> UserRoleIds;
-        public Dictionary<Command, List<string>> LocalAliases;
         public string Prefix;
         public bool AllowTwitter = true;
         public Giveaway Giveaway;

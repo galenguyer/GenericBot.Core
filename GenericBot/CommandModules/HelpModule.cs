@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Discord.Commands;
 using Discord.WebSocket;
 using GenericBot.Entities;
 
@@ -32,9 +33,11 @@ namespace GenericBot.CommandModules
                     foreach (var cmd in GenericBot.Commands.Where(c => GetPermissions(msg.Author) >= c.RequiredPermission).Where(c => c.Name.Contains(paramList[0])))
                     {
                         commands += $"`{cmd.Name}`: {cmd.Description} (`{cmd.Usage}`)\n";
-                        if(cmd.Aliases.Any(a => !string.IsNullOrEmpty(a.Trim())))
+                        if(!cmd.Aliases.Empty() || !GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Where(a => a.Command.Equals(cmd.Name)).Select(a => a.Alias).ToList().Empty())
                         {
-                            commands += $"\tAliases: {cmd.Aliases.Aggregate((i, j) => "`" + i + "`, " + j)}\n";
+                            List<string> aliases = cmd.Aliases;
+                            aliases.AddRange(GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Where(a => a.Command.Equals(cmd.Name)).Select(a => a.Alias));
+                            commands += $"\tAliases: `{aliases.Aggregate((i, j) => i + ", " + j)}`\n";
                         }
                     }
                 }

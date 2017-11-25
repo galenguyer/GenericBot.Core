@@ -2,7 +2,13 @@
 {
     public class CustomAlias
     {
-        public static string Alias;
-        public static string Command;
+        public string Alias;
+        public string Command;
+
+        public CustomAlias(string c, string a)
+        {
+            this.Command = c;
+            this.Alias = a;
+        }
     }
 }

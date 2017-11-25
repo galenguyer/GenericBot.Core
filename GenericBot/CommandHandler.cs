@@ -122,7 +122,9 @@ namespace GenericBot
 
             string commandId = message.Split(' ')[0].ToLower();
 
-            var cmd = GenericBot.Commands.Find(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)));
+            var cmd = GenericBot.Commands.First(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)) ||
+                                                     (GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Any(a => a.Alias == commandId) &&
+                                                      c.Name == GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.First(a => a.Alias == commandId).Command));
 
             parsedCommand.Command = cmd;
 
