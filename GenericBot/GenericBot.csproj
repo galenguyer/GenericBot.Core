@@ -13,4 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="TweetMoaSharp" Version="4.0.3" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MarkVSharp\MarkVSharp.csproj" />
+  </ItemGroup>
 </Project>

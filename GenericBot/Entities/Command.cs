@@ -43,7 +43,15 @@ namespace GenericBot.Entities
         {
             try
             {
-                if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) < RequiredPermission) return;
+                try
+                {
+                    if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) <
+                        RequiredPermission) return;
+                }
+                catch (Exception ex)
+                {
+
+                }
                 if (Delete)
                 {
                     try

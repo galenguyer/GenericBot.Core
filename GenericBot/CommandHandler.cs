@@ -94,8 +94,12 @@ namespace GenericBot
 
             string pref = GenericBot.GlobalConfiguration.DefaultPrefix;
 
+            if (msg.Channel is IDMChannel) goto DMC;
+
             if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix))
                 pref = GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix;
+
+            DMC:
 
             if (!message.StartsWith(pref)) return null;
 
