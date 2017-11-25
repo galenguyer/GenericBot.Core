@@ -77,7 +77,6 @@ namespace GenericBot.CommandModules
             {
                 GenericBot.GlobalConfiguration =
                     JsonConvert.DeserializeObject<GlobalConfiguration>(File.ReadAllText("files/config.json"));
-                GenericBot.GuildConfigs = JsonConvert.DeserializeObject<Dictionary<ulong, GuildConfig>>(File.ReadAllText("files/guildConfigs.json"));
                 await msg.ReplyAsync("Done!");
             };
 
@@ -157,33 +156,7 @@ namespace GenericBot.CommandModules
 
             botCommands.Add(tweet);
 
-            Command cleanConfigs = new Command("cleanConfigs");
-            cleanConfigs.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
-            cleanConfigs.Description = "Remove unused configs from the file";
-            cleanConfigs.ToExecute += async (client, msg, parameters) =>
-            {
-                await GenericBot.Logger.LogGenericMessage($"Config cleanup requested by {msg.Author}");
-                int i = 0;
-                foreach (var configs in GenericBot.GuildConfigs.Where(gc => GenericBot.DiscordClient.Guilds.Select(g => g.Id).Contains(gc.Key)))
-                {
-                    GenericBot.GuildConfigs.Remove(configs.Key);
-                    i++;
-                }
-
-                File.WriteAllText("files/guildConfigs.json", JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
-                await msg.ReplyAsync(
-                   $"Removed `{i}` unused configurations, `{GenericBot.GuildConfigs.Count}` active left");
-            };
-
-            botCommands.Add(cleanConfigs);
-
             return botCommands;
-        }
-
-        public List<Command> AddBotCommands(List<Command> preCommands)
-        {
-            preCommands.AddRange(GetBotCommands());
-            return preCommands;
         }
     }
 }
