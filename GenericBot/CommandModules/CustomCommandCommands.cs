@@ -34,7 +34,8 @@ namespace GenericBot.CommandModules
                     string rawResponse = "";
                     foreach (var cmd in GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands)
                     {
-                        rawResponse += $"`{cmd.Name}`: {cmd.Response.SafeSubstring(100)}\n";
+                        string aliases = cmd.Aliases.Any() ? cmd.Aliases.reJoin(", ") : "None";
+                        rawResponse += $"`{cmd.Name}`: {cmd.Response.SafeSubstring(100)}\nDelete: `{cmd.Delete}`, Aliases: `{aliases}`\n\n";
                     }
                     foreach (var resp in rawResponse.SplitSafe('\n'))
                     {

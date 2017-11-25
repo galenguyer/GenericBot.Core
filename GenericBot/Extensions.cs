@@ -31,9 +31,9 @@ namespace GenericBot
             return list.All(i => string.IsNullOrEmpty(i.Trim()));
         }
 
-        public static string reJoin(this List<string> list)
+        public static string reJoin(this List<string> list, string joinChar = " ")
         {
-            return list.Aggregate((i, j) => i + " " + j);
+            return list.Aggregate((i, j) => i + joinChar + j);
         }
 
         public static List<SocketUser> GetMentionedUsers(this SocketMessage msg)

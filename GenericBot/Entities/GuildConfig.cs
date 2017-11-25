@@ -19,6 +19,7 @@ namespace GenericBot.Entities
 
         public List<ChannelMute> ChannelMutes = new List<ChannelMute>();
         public List<CustomCommand> CustomCommands;
+        public List<CustomAlias> CustomAliases;
 
         public GuildConfig(ulong id)
         {
@@ -27,6 +28,7 @@ namespace GenericBot.Entities
             ModRoleIds = new List<ulong>();
             UserRoleIds = new List<ulong>();
             CustomCommands = new List<CustomCommand>();
+            CustomAliases = new List<CustomAlias>();
             Prefix = "";
         }
 
