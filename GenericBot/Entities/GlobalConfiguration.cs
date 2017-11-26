@@ -18,6 +18,8 @@ namespace GenericBot.Entities
         public ulong OwnerId { get; set; }
         //Global Admins (Have as much power as owner)
         public List<ulong> GlobalAdminIds { get; set; }
+        //Status to use
+        public string PlayingStatus { get; set; }
 
         //Blacklist Options
         //Specific Guilds (for spamming/abuse)

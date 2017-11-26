@@ -92,7 +92,7 @@ namespace GenericBot
             foreach (var shard in DiscordClient.Shards)
             {
                 shard.Ready += OnReady;
-                shard.SetGameAsync(">help | Everything go boom").FireAndForget();
+                shard.SetGameAsync(GlobalConfiguration.PlayingStatus).FireAndForget();
             }
 
             var serviceProvider = ConfigureServices();
