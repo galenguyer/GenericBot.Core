@@ -108,14 +108,16 @@ namespace GenericBot
 
         private async Task OnReady()
         {
+            foreach (var guild in DiscordClient.Guilds.Where(g => !File.Exists($"files/guildConfigs/{g.Id}.json")))
+            {
+                new GuildConfig(guild.Id).Save();
+            }
             foreach (var guild in DiscordClient.Guilds)
             {
-                GuildConfigs.Add(guild.Id, JsonConvert.DeserializeObject<GuildConfig>(File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
+                GuildConfigs.Add(guild.Id, JsonConvert.DeserializeObject<GuildConfig>(
+                    File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
             }
-            foreach (var guild in DiscordClient.Guilds.Where(g => !GuildConfigs.Keys.Contains(g.Id)))
-            {
-                GuildConfigs.Add(guild.Id, new GuildConfig(guild.Id).Save());
-            }
+            await Task.Delay(100);
             await Logger.LogGenericMessage($"Loaded {GuildConfigs.Count} Configs on Startup");
         }
 

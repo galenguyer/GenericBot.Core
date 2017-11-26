@@ -43,6 +43,7 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new SocialCommands().GetSocialCommands());
             GenericBot.Commands.AddRange(new MuteCommands().GetMuteCommands());
             GenericBot.Commands.AddRange(new CustomCommandCommands().GetCustomCommands());
+            Console.WriteLine(GenericBot.Commands.Select(c => c.Name).Aggregate((i, j) => i+ ", " + j));
         }
 
         public async Task HandleCommand(SocketMessage parameterMessage)
@@ -50,32 +51,49 @@ namespace GenericBot
             // Don't handle the command if it is a system message
             var message = parameterMessage as SocketUserMessage;
 
-//            if (message?.Author.Id != 169918990313848832 && message?.Author.Id != 354739264359104514) return;
-
-            var commandInfo = ParseMessage(parameterMessage);
-
-            CustomCommand custom = new CustomCommand();
-
-            if (GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
-                    .HasElement(c => c.Name == commandInfo.Name, out custom) ||
-                GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
-                    .HasElement(c => c.Aliases.Contains(commandInfo.Name), out custom))
+            if (message?.Author.Id != 169918990313848832 && message?.Author.Id != 354739264359104514) return;
+            try
             {
-                if (custom.Delete)
-                {
-                    await parameterMessage.DeleteAsync();
-                }
-                await parameterMessage.ReplyAsync(custom.Response);
-            }
 
-            commandInfo.Command.ExecuteCommand(_client, message, commandInfo.Parameters).FireAndForget();
+                var commandInfo = ParseMessage(parameterMessage);
+
+                CustomCommand custom = new CustomCommand();
+
+                if (GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
+                        .HasElement(c => c.Name == commandInfo.Name, out custom) ||
+                    GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
+                        .HasElement(c => c.Aliases.Any(a => a.Equals(commandInfo.Name)), out custom))
+                {
+                    if (custom.Delete)
+                    {
+                        await parameterMessage.DeleteAsync();
+                    }
+                    await parameterMessage.ReplyAsync(custom.Response);
+                }
+
+                commandInfo.Command.ExecuteCommand(_client, message, commandInfo.Parameters).FireAndForget();
+
+            }
+            catch (Exception ex)
+            {
+                if (parameterMessage.Author.Id == 169918990313848832 && !ex.StackTrace.Contains("line 74"))
+                {
+                    await parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
+                                                      "\n```");
+                }
+                //else Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+            }
         }
 
         public async Task OnJoinedGuild(SocketGuild guild)
         {
-            if (GenericBot.GuildConfigs.ContainsKey(guild.Id))
+            if (File.Exists($"files/guildConfigs/{guild.Id}.json"))
             {
+                GenericBot.GuildConfigs.Add(guild.Id, JsonConvert.DeserializeObject<GuildConfig>(
+                    File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
+
                 await GenericBot.Logger.LogGenericMessage($"Re-Joined Guild {guild.Id}({guild.Name}) Owned By {guild.Owner.Id}({guild.Owner})");
+
                 string pref = !string.IsNullOrEmpty(GenericBot.GuildConfigs[guild.Id].Prefix)
                     ? GenericBot.GuildConfigs[guild.Id].Prefix
                     : GenericBot.GlobalConfiguration.DefaultPrefix;
@@ -91,8 +109,7 @@ namespace GenericBot
                     $"If you wanna see everything I can do out of the box, do `{GenericBot.GlobalConfiguration.DefaultPrefix}help. " +
                     $"To set me up, do `{GenericBot.GlobalConfiguration.DefaultPrefix}config`";
                 await guild.Owner.GetOrCreateDMChannelAsync().Result.SendMessageAsync(joinMsg);
-                GenericBot.GuildConfigs.Add(guild.Id, new GuildConfig(guild.Id));
-                File.WriteAllText("files/guildConfigs.json", JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
+                new GuildConfig(guild.Id);
             }
         }
 
@@ -122,11 +139,19 @@ namespace GenericBot
 
             string commandId = message.Split(' ')[0].ToLower();
 
-            var cmd = GenericBot.Commands.First(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)) ||
-                                                     (GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Any(a => a.Alias == commandId) &&
-                                                      c.Name == GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.First(a => a.Alias == commandId).Command));
+            Command cmd = new Command("tempCommand");
 
-            parsedCommand.Command = cmd;
+            if(GenericBot.Commands.HasElement(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)) ||
+                                                   GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Any(a => a.Alias == commandId) &&
+                                                   c.Name == GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.First(a => a.Alias == commandId).Command, out cmd))
+            {
+                Console.WriteLine(cmd.Name);
+                parsedCommand.Command = cmd;
+            }
+            else
+            {
+                parsedCommand.Command = null;
+            }
 
             parsedCommand.Name = commandId;
 

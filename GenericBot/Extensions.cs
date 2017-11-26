@@ -55,13 +55,23 @@ namespace GenericBot
 
         public static bool HasElement<T>(this IEnumerable<T> inEnum, Func<T, bool> predicate, out T output)
         {
-            if (inEnum.Any(predicate))
+
+            try
             {
-                output = inEnum.First(predicate);
-                return true;
+                inEnum = inEnum.ToList();
+                if (inEnum != null && inEnum.Any() && inEnum.Any(predicate))
+                {
+                    output = inEnum.First(predicate);
+                    return true;
+                }
+                output = default(T);
+                return false;
             }
-            output = default(T);
-            return false;
+            catch (Exception e)
+            {
+                output = default(T);
+                return false;
+            }
         }
 
         public static async Task<List<IMessage>> GetManyMessages(this SocketTextChannel channel, int count)
