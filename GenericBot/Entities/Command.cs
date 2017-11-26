@@ -53,8 +53,7 @@ namespace GenericBot.Entities
                 {
 
                 }
-                IDisposable typing = null;
-                if (SendTyping)  typing =  msg.Channel.EnterTypingState();
+                if (SendTyping)  await msg.Channel.TriggerTypingAsync();
                 if (Delete)
                 {
                     try
@@ -68,7 +67,6 @@ namespace GenericBot.Entities
                     }
                 }
                 await ToExecute(client, msg, parameters);
-                typing?.Dispose();
             }
             catch (Exception ex)
             {
