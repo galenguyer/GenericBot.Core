@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -45,13 +46,15 @@ namespace GenericBot.Entities
             {
                 try
                 {
-                    if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) <
-                        RequiredPermission) return;
+                    if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) < RequiredPermission)
+                        return;
                 }
                 catch (Exception ex)
                 {
 
                 }
+                IDisposable typing = null;
+                if (SendTyping)  typing =  msg.Channel.EnterTypingState();
                 if (Delete)
                 {
                     try
@@ -65,6 +68,7 @@ namespace GenericBot.Entities
                     }
                 }
                 await ToExecute(client, msg, parameters);
+                typing?.Dispose();
             }
             catch (Exception ex)
             {
