@@ -19,12 +19,21 @@ namespace GenericBot.CommandModules
             help.ToExecute += async (client, msg, paramList) =>
             {
                 string commands= "";
+                var guildCustomCommands = GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands;
 
-                if(!paramList.Any())
+                if(paramList.Empty())
                 {
                     foreach (var cmd in GenericBot.Commands.Where(c => c.GetPermissions(msg.Author, msg.GetGuild().Id) >= c.RequiredPermission))
                     {
                         commands += $"`{cmd.Name}`: {cmd.Description}\n";
+                    }
+
+                    if (guildCustomCommands.Any())
+                    {
+                        foreach (var cmd in guildCustomCommands)
+                        {
+                            commands += $"`{cmd.Name}`: Custom Command\n";
+                        }
                     }
                 }
 
@@ -40,6 +49,18 @@ namespace GenericBot.CommandModules
                             commands += $"\tAliases: `{aliases.Aggregate((i, j) => i + ", " + j)}`\n";
                         }
                     }
+                    if (guildCustomCommands.Any())
+                    {
+                        foreach (var cmd in guildCustomCommands.Where(c => c.Name.Contains(paramList[0]) || c.Aliases.Any(a => a.Contains(paramList[0]))))
+                        {
+                            commands += $"`{cmd.Name}`: Custom Command\n";
+                            if (cmd.Aliases.Any())
+                            {
+                                commands += $"\tAliases: `{cmd.Aliases.Aggregate((i, j) => i + ", " + j)}`\n";
+                            }
+                        }
+                    }
+
                 }
                 foreach (var str in commands.SplitSafe())
                 {
