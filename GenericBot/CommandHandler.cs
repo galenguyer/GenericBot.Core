@@ -27,7 +27,7 @@ namespace GenericBot
             _client = map.GetService(typeof(DiscordShardedClient)) as DiscordShardedClient;
 
             _client.MessageReceived += HandleCommand;
-            //_client.MessageUpdated += HandleEditedCommand;
+            _client.MessageUpdated += HandleEditedCommand;
 
             _client.JoinedGuild += OnJoinedGuild;
             _client.LeftGuild += OnLeftGuild;
@@ -46,15 +46,21 @@ namespace GenericBot
             Console.WriteLine(GenericBot.Commands.Select(c => c.Name).Aggregate((i, j) => i+ ", " + j));
         }
 
+        private async Task HandleEditedCommand(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
+        {
+            if (GenericBot.GlobalConfiguration.DefaultExecuteEdits)
+            {
+                await HandleCommand(arg2);
+            }
+        }
+
         public async Task HandleCommand(SocketMessage parameterMessage)
         {
             // Don't handle the command if it is a system message
             var message = parameterMessage as SocketUserMessage;
 
-            if (message?.Author.Id != 169918990313848832 && message?.Author.Id != 354739264359104514) return;
             try
             {
-
                 var commandInfo = ParseMessage(parameterMessage);
 
                 CustomCommand custom = new CustomCommand();
@@ -71,12 +77,14 @@ namespace GenericBot
                     await parameterMessage.ReplyAsync(custom.Response);
                 }
 
-                commandInfo.Command.ExecuteCommand(_client, message, commandInfo.Parameters).FireAndForget();
+                try{commandInfo.Command.ExecuteCommand(_client, message, commandInfo.Parameters).FireAndForget();}
+                catch(Exception e){}
+
 
             }
             catch (Exception ex)
             {
-                if (parameterMessage.Author.Id == 169918990313848832 && !ex.StackTrace.Contains("line 74"))
+                if (parameterMessage.Author.Id == GenericBot.GlobalConfiguration.OwnerId)
                 {
                     await parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
                                                       "\n```");
