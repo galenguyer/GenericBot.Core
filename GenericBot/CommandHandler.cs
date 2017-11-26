@@ -145,7 +145,6 @@ namespace GenericBot
                                                    GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Any(a => a.Alias == commandId) &&
                                                    c.Name == GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.First(a => a.Alias == commandId).Command, out cmd))
             {
-                Console.WriteLine(cmd.Name);
                 parsedCommand.Command = cmd;
             }
             else
