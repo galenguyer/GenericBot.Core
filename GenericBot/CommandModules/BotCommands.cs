@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using Discord.Commands;
 using Discord.Net.Queue;
 using GenericBot.Entities;
 using Hammock.Web;
@@ -155,6 +156,23 @@ namespace GenericBot.CommandModules
             };
 
             botCommands.Add(tweet);
+
+            Command setStatus = new Command("setstatus");
+            setStatus.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            setStatus.Description = "Set the playing status of the bot";
+            setStatus.Usage = "setStatus <text>";
+            setStatus.ToExecute += async (client, msg, parameters) =>
+            {
+                foreach (var shard in GenericBot.DiscordClient.Shards)
+                {
+                    await shard.SetGameAsync(parameters.reJoin());
+                }
+
+                await msg.ReplyAsync(
+                    $"Set the status for `{GenericBot.DiscordClient.Shards.Count}` shards to `{parameters.reJoin()}`");
+            };
+
+            botCommands.Add(setStatus);
 
             return botCommands;
         }
