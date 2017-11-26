@@ -72,6 +72,7 @@ namespace GenericBot
             });
 
             DiscordClient.Log += Logger.LogClientMessage;
+            DiscordClient.GuildAvailable += OnGuildConnected;
 
             try
             {
@@ -105,6 +106,7 @@ namespace GenericBot
             // Block this program until it is closed.
             await Task.Delay(-1);
         }
+
 
         private async Task OnReady()
         {
