@@ -31,7 +31,7 @@ namespace GenericBot.Entities
 
         public Command(string n)
         {
-            this.Name = n;
+            this.Name = n.ToLower();
             this.Usage = this.Name;
         }
 
