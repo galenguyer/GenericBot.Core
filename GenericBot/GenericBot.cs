@@ -121,6 +121,18 @@ namespace GenericBot
             await Logger.LogGenericMessage($"Loaded {GuildConfigs.Count} Configs on Startup");
         }
 
+        private async Task OnGuildConnected(SocketGuild guild)
+        {
+            if (!File.Exists($"files/guildConfigs/{guild.Id}.json"))
+            {
+                new GuildConfig(guild.Id).Save();
+            }
+            else
+            {
+                GuildConfigs.Add(guild.Id, JsonConvert.DeserializeObject<GuildConfig>(
+                    File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
+            }
+        }
         private IServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection()
