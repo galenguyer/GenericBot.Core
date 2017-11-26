@@ -65,6 +65,8 @@ namespace GenericBot
 
                 CustomCommand custom = new CustomCommand();
 
+                if (parameterMessage.Channel is IDMChannel) goto DMChannel;
+
                 if (GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
                         .HasElement(c => c.Name == commandInfo.Name, out custom) ||
                     GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
@@ -77,9 +79,11 @@ namespace GenericBot
                     await parameterMessage.ReplyAsync(custom.Response);
                 }
 
-                try{commandInfo.Command.ExecuteCommand(_client, message, commandInfo.Parameters).FireAndForget();}
-                catch(Exception e){}
-
+                DMChannel:
+                commandInfo.Command.ExecuteCommand(_client, message, commandInfo.Parameters).FireAndForget();
+            }
+            catch (NullReferenceException nullRefEx)
+            {
 
             }
             catch (Exception ex)

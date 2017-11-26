@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using Discord;
 using Discord.Commands;
 using Discord.Net.Queue;
 using GenericBot.Entities;
@@ -178,6 +179,111 @@ namespace GenericBot.CommandModules
             };
 
             botCommands.Add(setStatus);
+
+            Command reportBug = new Command("reportbug");
+            reportBug.Description = "Report a bug or suggest a feature for the bot";
+            reportBug.Usage = "reportbug <bug>";
+            reportBug.SendTyping = true;
+            reportBug.ToExecute += async (client, msg, parameters) =>
+            {
+                UserBugReport report = new UserBugReport();
+                report.BugID = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+                report.ReporterId = msg.Author.Id;
+                report.Report = parameters.reJoin();
+
+                string bugReport = "**Bug Report/Feature Suggestion**\n";
+                bugReport += $"Sent By: `{msg.Author}`(`{msg.Author.Id}`)\n";
+                bugReport += $"ID: `{report.BugID}`\n";
+                bugReport += $"Report: ```\n{report.Report}\n```";
+
+                await client.GetApplicationInfoAsync().Result.Owner.SendMessageAsync(bugReport);
+
+                List<UserBugReport> bugs =
+                    JsonConvert.DeserializeObject<List<UserBugReport>>(File.ReadAllText("files/bugReports.json"));
+
+                bugs.Add(report);
+
+                File.WriteAllText("files/bugReports.json", JsonConvert.SerializeObject(bugs, Formatting.Indented));
+
+                await msg.ReplyAsync("Your bug report has been sucessfully recieved!");
+            };
+
+            botCommands.Add(reportBug);
+
+            Command closeBug = new Command("closebug");
+            closeBug.Description = "Close a bug report or feature request";
+            closeBug.RequiredPermission = Command.PermissionLevels.BotOwner;
+            closeBug.ToExecute += async (client, msg, parameters) =>
+            {
+                List<UserBugReport> bugs =
+                    JsonConvert.DeserializeObject<List<UserBugReport>>(File.ReadAllText("files/bugReports.json"));
+
+                UserBugReport bug;
+                if (bugs.HasElement(b => b.BugID == parameters[0], out bug))
+                {
+                    bug.IsOpen = false;
+                    var user = client.GetUser(bug.ReporterId);
+                    parameters.RemoveAt(0);
+                    bug.Repsonse = parameters.reJoin();
+                    bug.ClosedAt = DateTimeOffset.UtcNow;
+                    await user.SendMessageAsync(
+                        $"Hello! Your bug report/feature suggestion ({bug.Report.SafeSubstring(80)}) has been closed with the following message: {parameters.reJoin()}");
+
+                    File.WriteAllText("files/bugReports.json", JsonConvert.SerializeObject(bugs, Formatting.Indented));
+
+                    await msg.Channel.SendMessageAsync("Done.");
+                }
+                else
+                {
+                    await msg.ReplyAsync("That's not a bug");
+                }
+            };
+
+            botCommands.Add(closeBug);
+
+            Command getBugs = new Command("getBugs");
+            getBugs.Aliases = new List<string>{"getbug"};
+            getBugs.Description = "Get all open bugs";
+            getBugs.RequiredPermission = Command.PermissionLevels.BotOwner;
+            getBugs.ToExecute += async (client, msg, parameters) =>
+            {
+                List<UserBugReport> bugs =
+                    JsonConvert.DeserializeObject<List<UserBugReport>>(File.ReadAllText("files/bugReports.json"));
+
+                if (parameters.Empty())
+                {
+                    string openBugs = $"**There are `{bugs.Count(b => b.IsOpen)}` open bugs**\n\n";
+                    foreach (var bug in bugs.Where(b => b.IsOpen))
+                    {
+                        openBugs += $"Sent By: `{client.GetUser(bug.ReporterId)}`(`{bug.ReporterId}`)\n";
+                        openBugs += $"ID: `{bug.BugID}`\n";
+                        openBugs +=
+                            $"Time: `{DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(bug.BugID)).ToLocalTime()}GMT`\n";
+                        openBugs += $"Report: ```\n{bug.Report}\n```\n\n";
+                    }
+
+                    foreach (var str in openBugs.SplitSafe('\n'))
+                    {
+                        await msg.ReplyAsync(str);
+                    }
+                }
+                else
+                {
+                    var bug = bugs.First(b => b.BugID == parameters[0]);
+                    string openBugs = "";
+                    openBugs += $"Sent By: `{client.GetUser(bug.ReporterId)}`(`{bug.ReporterId}`)\n";
+                    openBugs += $"ID: `{bug.BugID}`\n";
+                    openBugs +=
+                        $"Opened At: `{DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(bug.BugID)).ToLocalTime()}GMT`\n";
+                    openBugs += $"Closed At: `{bug.ClosedAt.ToLocalTime()}GMT`\n";
+                    openBugs += $"Report: ```\n{bug.Report}\n```";
+                    openBugs += $"Response: ```\n{bug.Repsonse}\n```";
+
+                    await msg.ReplyAsync(openBugs);
+                }
+            };
+
+            botCommands.Add(getBugs);
 
             return botCommands;
         }
