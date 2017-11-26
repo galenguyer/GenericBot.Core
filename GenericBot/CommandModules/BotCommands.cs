@@ -52,8 +52,13 @@ namespace GenericBot.CommandModules
                                $"Memory: `{Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB`\n" +
                                $"Threads: `{Process.GetCurrentProcess().Threads.OfType<ProcessThread>().Count()}` " +
                                $"(`{Process.GetCurrentProcess().Threads.OfType<ProcessThread>().Count(t => t.ThreadState == ThreadState.Running)} Active`)\n" +
-                               $"Uptime: `{(DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss")}\n`";
-                await msg.Channel.SendMessageAsync(stats);
+                               $"Uptime: `{(DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss")}`\n\n";
+
+                foreach (var shard in GenericBot.DiscordClient.Shards)
+                {
+                    stats += $"Shard `{shard.ShardId}`: `{shard.Guilds.Count}` Guilds (`{shard.Guilds.Sum(g => g.Users.Count)}` Users)\n";
+                }
+                               await msg.Channel.SendMessageAsync(stats);
             };
             botCommands.Add(global);
 
