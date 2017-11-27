@@ -93,6 +93,7 @@ namespace GenericBot
                     await parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
                                                       "\n```");
                 }
+                await GenericBot.Logger.LogErrorMessage(ex.Message);
                 //else Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
             }
         }
@@ -117,11 +118,11 @@ namespace GenericBot
                 await GenericBot.Logger.LogGenericMessage($"Joined Guild {guild.Id}({guild.Name}) Owned By {guild.Owner.Id}({guild.Owner})");
                 await GenericBot.Logger.LogGenericMessage($"Creating GuildConfig for {guild.Id}");
                 string joinMsg =
-                    $"Hey, awesome! Looks like someone (maybe even you) just invited me to your server, {guild.Name}! " +
-                    $"If you wanna see everything I can do out of the box, do `{GenericBot.GlobalConfiguration.DefaultPrefix}help. " +
+                    $"Hey, awesome! Looks like someone (maybe even you) just invited me to your server, `{guild.Name}`! " +
+                    $"If you wanna see everything I can do out of the box, do `{GenericBot.GlobalConfiguration.DefaultPrefix}help`. " +
                     $"To set me up, do `{GenericBot.GlobalConfiguration.DefaultPrefix}config`";
                 await guild.Owner.GetOrCreateDMChannelAsync().Result.SendMessageAsync(joinMsg);
-                new GuildConfig(guild.Id);
+                new GuildConfig(guild.Id).Save();
             }
         }
 

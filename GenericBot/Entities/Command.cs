@@ -42,36 +42,43 @@ namespace GenericBot.Entities
 
         public async Task ExecuteCommand(DiscordShardedClient client, SocketMessage msg, List<string> parameters = null)
         {
+
             try
+            {
+                if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) < RequiredPermission)
+                    return;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            if (SendTyping)  await msg.Channel.TriggerTypingAsync();
+            if (Delete)
             {
                 try
                 {
-                    if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) < RequiredPermission)
-                        return;
+                    await msg.DeleteAsync();
                 }
-                catch (Exception ex)
+                catch (Discord.Net.HttpException httpException)
                 {
+                    await GenericBot.Logger.LogErrorMessage(
+                        $"Could Not Delete Message {msg.Id} CHANNELID {msg.Channel.Id}");
+                }
+            }
 
-                }
-                if (SendTyping)  await msg.Channel.TriggerTypingAsync();
-                if (Delete)
-                {
-                    try
-                    {
-                        await msg.DeleteAsync();
-                    }
-                    catch (Discord.Net.HttpException httpException)
-                    {
-                        await GenericBot.Logger.LogErrorMessage(
-                            $"Could Not Delete Message {msg.Id} CHANNELID {msg.Channel.Id}");
-                    }
-                }
+            try
+            {
                 await ToExecute(client, msg, parameters);
             }
             catch (Exception ex)
             {
+                if (msg.Author.Id == GenericBot.GlobalConfiguration.OwnerId)
+                {
+                    await msg.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
+                                                      "\n```");
+                }
                 await GenericBot.Logger.LogErrorMessage(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                //else Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
             }
         }
 
