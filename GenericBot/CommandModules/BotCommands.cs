@@ -176,6 +176,9 @@ namespace GenericBot.CommandModules
 
                 await msg.ReplyAsync(
                     $"Set the status for `{GenericBot.DiscordClient.Shards.Count}` shards to `{parameters.reJoin()}`");
+
+                GenericBot.GlobalConfiguration.PlayingStatus = parameters.reJoin();
+                File.WriteAllText("files/config.json", JsonConvert.SerializeObject(GenericBot.GlobalConfiguration, Formatting.Indented));
             };
 
             botCommands.Add(setStatus);
