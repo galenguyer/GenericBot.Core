@@ -19,7 +19,7 @@ namespace GenericBot.CommandModules
             Command giveaway = new Command("giveaway");
             giveaway.Usage = "giveaway <start|close|roll>";
             giveaway.Description = "Start or end a giveaway";
-            giveaway.RequiredPermission = Command.PermissionLevels.Admin;
+            giveaway.RequiredPermission = Command.PermissionLevels.Moderator;
             giveaway.ToExecute += async (client, msg, parameters) =>
             {
                 if (parameters.Empty())
@@ -74,7 +74,7 @@ namespace GenericBot.CommandModules
                 {
                     await msg.ReplyAsync($"That's not a valid option");
                 }
-                File.WriteAllText($"files/guildConfigs.json", JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
+                guildConfig.Save();
             };
 
             SocialCommands.Add(giveaway);
@@ -103,9 +103,9 @@ namespace GenericBot.CommandModules
                             resMessge = msg.ReplyAsync($"You're in, {msg.Author.Mention}. Good luck!").Result;
                         }
                     }
-                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, resMessge});
+                    GenericBot.QueueMessagesForDelete(new List<IMessage> {msg, resMessge});
                 }
-                File.WriteAllText($"files/guildConfigs.json", JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
+                guildConfig.Save();
             };
 
             SocialCommands.Add(g);
