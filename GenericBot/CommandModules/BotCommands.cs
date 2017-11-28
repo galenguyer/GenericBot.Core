@@ -189,6 +189,11 @@ namespace GenericBot.CommandModules
             reportBug.SendTyping = true;
             reportBug.ToExecute += async (client, msg, parameters) =>
             {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("You have to include a bug report to send.");
+                    return;
+                }
                 UserBugReport report = new UserBugReport();
                 report.BugID = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
                 report.ReporterId = msg.Author.Id;
