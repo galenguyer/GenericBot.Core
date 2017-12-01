@@ -72,7 +72,17 @@ namespace GenericBot.CommandModules
             say.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             say.ToExecute += async (client, msg, paramList) =>
             {
-                await msg.Channel.SendMessageAsync(paramList.Aggregate((i, j) => i + " " + j));
+                ulong channelid = msg.Channel.Id;
+                if (ulong.TryParse(paramList[0], out channelid))
+                {
+                    paramList.RemoveAt(0);
+                    await ((ITextChannel) client.GetChannel(channelid)).SendMessageAsync(paramList.reJoin());
+                    return;
+                }
+                else
+                {
+                    await msg.ReplyAsync(paramList.reJoin());
+                }
             };
 
             botCommands.Add(say);
