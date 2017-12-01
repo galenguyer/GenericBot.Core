@@ -57,6 +57,7 @@ namespace GenericBot.CommandModules
                     parameters.RemoveRange(0, 2);
                     GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands.Add(new CustomCommand(cName.ToLower(), parameters.reJoin()));
                     await msg.ReplyAsync($"New command created! \n```\n{JsonConvert.SerializeObject(new CustomCommand(cName.ToLower(), parameters.reJoin()),Formatting.Indented)}\n```");
+                    return;
                 }
                 else if (parameters[0].Equals("remove") || parameters[0].Equals("delete"))
                 {
