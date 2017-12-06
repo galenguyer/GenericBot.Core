@@ -20,4 +20,16 @@
 |            | remove <command> <alias> | Remove a previously set alias                                                  |
 | leaveguild |                          | Make the bot leave the server                                                  |
 | archive    |                          | Output the current text channel into a file (Will probably blow everything up) |
- 
+
+ ### Moderator Commands
+  
+| Command    | Options        | Description                                                              |
+|-----------|----------------|-------------------------------------------------------------------------------------------------|
+| membersOf | roleName       | Get all members of a role. If you do `.*` I'll personally be very annoyed at you                |
+| getRole   | roleName       | Get the ID of a role.                                                                           |
+| giveaway  |                |                                                                                                 |
+|           | start          | Start a new giveaway and delete the old one                                                     |
+|           | close          | Close a giveaway. This action is irreversible.                                                  |
+|           | roll           | Roll for a winner of a giveaway. This can be done as many times as you want                     |
+| clear     | <count> [user] | Clear <count> messages from a channel. If you mention a user it will only delete their messages |
+| ping      | ["verbose"]    | Get the ping time for the bot                                                                   |
