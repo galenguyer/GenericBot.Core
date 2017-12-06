@@ -88,8 +88,28 @@ namespace GenericBot.CommandModules
                 }
                 else if (roles.Count() > 1)
                 {
-                    await msg.ReplyAsync($"I found too many roles matching `{input}`");
-                }
+                    try
+                    {
+                        RestUserMessage message;
+                        if (msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                        {
+                            message = await msg.ReplyAsync("You already have that role!");
+                        }
+                        else
+                        {
+                            await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(roles.First());
+                            message = await msg.ReplyAsync($"I've assigned you `{roles.First().Name}`");
+                        }
+
+                        await Task.Delay(2000);
+                        await msg.DeleteAsync();
+                        await message.DeleteAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        await GenericBot.Logger.LogErrorMessage(e.Message);
+                        await msg.ReplyAsync($"I may not have permissions to do that!");
+                    }                }
             };
 
             RoleCommands.Add(iam);
@@ -143,7 +163,28 @@ namespace GenericBot.CommandModules
                 }
                 else if (roles.Count() > 1)
                 {
-                    await msg.ReplyAsync($"I found too many roles matching `{input}`");
+                    try
+                    {
+                        RestUserMessage message;
+                        if (!msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                        {
+                            message = await msg.ReplyAsync("You don't have that role!");
+                        }
+                        else
+                        {
+                            await msg.GetGuild().GetUser(msg.Author.Id).RemoveRoleAsync(roles.First());
+                            message = await msg.ReplyAsync($"Removed `{roles.First()}`");
+                        }
+
+                        await Task.Delay(2000);
+                        await msg.DeleteAsync();
+                        await message.DeleteAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        await GenericBot.Logger.LogErrorMessage(e.Message);
+                        await msg.ReplyAsync($"I may not have permissions to do that!");
+                    }
                 }
             };
 
@@ -200,6 +241,20 @@ namespace GenericBot.CommandModules
             };
 
             RoleCommands.Add(membersOf);
+
+            Command createRole = new Command("createRole");
+            createRole.Description = "Create a new role with default permissions";
+            createRole.Usage = "createRole <name>";
+            createRole.RequiredPermission = Command.PermissionLevels.Admin;
+            createRole.ToExecute += async (client, msg, parameters) =>
+            {
+
+                var role = msg.GetGuild().CreateRoleAsync(parameters.reJoin(), GuildPermissions.None).Result;
+
+                await msg.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}`");
+            };
+
+            RoleCommands.Add(createRole);
 
             return RoleCommands;
         }
