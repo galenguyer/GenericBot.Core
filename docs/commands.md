@@ -33,3 +33,17 @@
 |           | roll           | Roll for a winner of a giveaway. This can be done as many times as you want                     |
 | clear     | <count> [user] | Clear <count> messages from a channel. If you mention a user it will only delete their messages |
 | ping      | ["verbose"]    | Get the ping time for the bot                                                                   |
+
+### User Commands
+
+| Command    | Options        | Description                                                              |
+|-----------|----------------|-------------------------------------------------------------------------------------------------|
+| userroles |           | Display a list of available roles                                                     |
+| iam       | roleName  | Join a userRole                                                                       |
+| iamnot    | roleName  | Leave a userRole                                                                      |
+| wat       |           | The best command                                                                      |
+| reportBug | <bug>     | DM the bot creator with a bug report                                                  |
+| markov    |           | Create a markov chain from the last messages in the channel                           |
+| g         |           | Join the active giveaway, if any                                                      |
+| tweet     | <tweet>   | Send a tweet from the [@GenericBoTweets](https://twitter.com/GenericBoTweets) account |
+| help      | [command] | Get the help for the entire bot or just a specific command                            |
