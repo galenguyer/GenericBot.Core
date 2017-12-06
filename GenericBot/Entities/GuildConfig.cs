@@ -13,7 +13,7 @@ namespace GenericBot.Entities
         public List<ulong> ModRoleIds;
         public List<ulong> UserRoleIds;
         public string Prefix;
-        public bool AllowTwitter = true;
+        public bool AllowTwitter = false;
         public Giveaway Giveaway;
 
         public List<ChannelMute> ChannelMutes = new List<ChannelMute>();
