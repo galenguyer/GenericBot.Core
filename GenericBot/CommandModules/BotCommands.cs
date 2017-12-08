@@ -87,18 +87,6 @@ namespace GenericBot.CommandModules
 
             botCommands.Add(say);
 
-            Command reload = new Command("reload");
-            reload.RequiredPermission = Command.PermissionLevels.BotOwner;
-            reload.Description = "Reload all configurations";
-            reload.ToExecute += async (client, msg, parameters) =>
-            {
-                GenericBot.GlobalConfiguration =
-                    JsonConvert.DeserializeObject<GlobalConfiguration>(File.ReadAllText("files/config.json"));
-                await msg.ReplyAsync("Done!");
-            };
-
-            botCommands.Add(reload);
-
             Command leaveGuild = new Command("leaveGuild");
             leaveGuild.Description = "Instruct the bot to leave the guild";
             leaveGuild.RequiredPermission = Command.PermissionLevels.Admin;
