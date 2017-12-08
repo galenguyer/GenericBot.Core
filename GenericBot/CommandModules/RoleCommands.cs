@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Rest;
@@ -222,7 +223,7 @@ namespace GenericBot.CommandModules
                     return;
                 }
                 string result = "";
-                foreach (var role in msg.GetGuild().Roles.OrderByDescending(r => r.Position).Where(r => r.Name.ToLower().Contains(parameters.reJoin())))
+                foreach (var role in msg.GetGuild().Roles.OrderByDescending(r => r.Position).Where(r => new Regex(parameters.reJoin()).IsMatch(r.Name) && r.Name != "@everyone"))
                 {
                     result += $"\n**`{role.Name}` ({role.Members.Count()} Members)**\n";
                     foreach (var user in role.Members.OrderBy(u => u.Username))
