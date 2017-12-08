@@ -232,9 +232,15 @@ namespace GenericBot.CommandModules
                     parameters.RemoveAt(0);
                     bug.Repsonse = parameters.reJoin();
                     bug.ClosedAt = DateTimeOffset.UtcNow;
-                    await user.SendMessageAsync(
-                        $"Hello! Your bug report/feature suggestion ({bug.Report.SafeSubstring(80)}) has been closed with the following message: {parameters.reJoin()}");
-
+                    try
+                    {
+                        await user.SendMessageAsync(
+                            $"Hello! Your bug report/feature suggestion ({bug.Report.SafeSubstring(80)}) has been closed with the following message: {parameters.reJoin()}");
+                    }
+                    catch (Exception ex)
+                    {
+                        await msg.ReplyAsync($"Could not message to `{user}`(`{user.Id}`)");
+                    }
                     File.WriteAllText("files/bugReports.json", JsonConvert.SerializeObject(bugs, Formatting.Indented));
 
                     await msg.Channel.SendMessageAsync("Done.");
