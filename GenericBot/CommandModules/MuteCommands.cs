@@ -72,8 +72,7 @@ namespace GenericBot.CommandModules
                         UserId = users.First().Id,
                         RemovealTime = time.Equals(0) ? DateTime.MaxValue : DateTime.UtcNow + TimeSpan.FromDays(time)
                     });
-                    File.WriteAllText("files/guildConfigs.json",
-                        JsonConvert.SerializeObject(GenericBot.GuildConfigs, Formatting.Indented));
+                    GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
                     string t = time.Equals(0) ? "forever" : $"for {time} days";
                     await msg.ReplyAsync(
                         $"Stopped {users.First().Mention} from sending messages{react} in <#{channel.Id}> {t}");
