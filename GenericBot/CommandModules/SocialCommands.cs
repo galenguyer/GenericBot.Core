@@ -163,8 +163,9 @@ namespace GenericBot.CommandModules
             SocialCommands.Add(checkinvite);
 
             Command poll = new Command("poll");
-            poll.Description = "Creates, adds an option to, or closes a poll. -multi flag enables multiple-choice poll.";
-            poll.Usage = "poll <start [-multi] <text>|add <option>|close>";
+            poll.Description =
+                "Creates, adds an option to, or closes a poll. -multi flag enables multiple-choice poll.";
+            poll.Usage = "poll <start [-multi] <text>|add <option>|remove <option>|merge <to> <from>|close>";
             poll.Delete = true;
             poll.ToExecute += async (client, msg, parameters) =>
             {
@@ -233,6 +234,111 @@ namespace GenericBot.CommandModules
                         return;
                     }
                 }
+                else if (parameters[0] == "remove" || parameters[0] == "delete")
+                {
+                    if (parameters.Count < 2)
+                    {
+                        await msg.ReplyAsync("You must pass an option number to remove.");
+                        return;
+                    }
+
+                    Poll activePoll = GenericBot.GuildConfigs[msg.GetGuild().Id].Polls
+                        .GetValueOrDefault(msg.Channel.Id, null);
+                    if (activePoll == null)
+                    {
+                        await msg.ReplyAsync("There is no active poll in this channel.");
+                        return;
+                    }
+
+                    if (msg.Author.Id == activePoll.Creator || poll.GetPermissions(msg.Author, msg.GetGuild().Id) >
+                        Command.PermissionLevels.Moderator)
+                    {
+                        int optNum;
+                        if (!int.TryParse(parameters[1], out optNum))
+                        {
+                            await msg.ReplyAsync("That's not a number!");
+                            return;
+                        }
+                        optNum--;
+
+                        if (optNum < 0 || optNum >= activePoll.Options.Count)
+                        {
+                            await msg.ReplyAsync("That's not a poll option!");
+                            return;
+                        }
+
+                        activePoll.Options.RemoveAt(optNum);
+                        UpdatePollMessage(msg.Channel, activePoll);
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("Only the poll creator or a moderator can remove an option.");
+                        return;
+                    }
+                }
+                else if (parameters[0] == "merge")
+                {
+                    if (parameters.Count < 3)
+                    {
+                        await msg.ReplyAsync("You must pass two option numbers to merge.");
+                        return;
+                    }
+
+                    Poll activePoll = GenericBot.GuildConfigs[msg.GetGuild().Id].Polls
+                        .GetValueOrDefault(msg.Channel.Id, null);
+                    if (activePoll == null)
+                    {
+                        await msg.ReplyAsync("There is no active poll in this channel.");
+                        return;
+                    }
+
+                    if (msg.Author.Id == activePoll.Creator || poll.GetPermissions(msg.Author, msg.GetGuild().Id) >
+                        Command.PermissionLevels.Moderator)
+                    {
+                        if (!int.TryParse(parameters[1], out int optNum1))
+                        {
+                            await msg.ReplyAsync("That's not a number!");
+                            return;
+                        }
+                        optNum1--;
+
+                        if (optNum1 < 0 || optNum1 >= activePoll.Options.Count)
+                        {
+                            await msg.ReplyAsync("That's not a poll option!");
+                            return;
+                        }
+
+                        if (!int.TryParse(parameters[2], out var optNum2))
+                        {
+                            await msg.ReplyAsync("That's not a number!");
+                            return;
+                        }
+                        optNum2--;
+
+                        if (optNum2 < 0 || optNum2 >= activePoll.Options.Count)
+                        {
+                            await msg.ReplyAsync("That's not a poll option!");
+                            return;
+                        }
+
+                        if (optNum1 == optNum2)
+                        {
+                            await msg.ReplyAsync("Cannot merge the same option!");
+                            return;
+                        }
+
+                        activePoll.Options[optNum1].Voters.UnionWith(activePoll.Options[optNum2].Voters);
+                        activePoll.Options.RemoveAt(optNum2);
+                        UpdatePollMessage(msg.Channel, activePoll);
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("Only the poll creator or a moderator can merge options.");
+                        return;
+                    }
+                }
                 else if (parameters[0] == "close")
                 {
                     Poll activePoll = GenericBot.GuildConfigs[msg.GetGuild().Id].Polls
@@ -284,7 +390,8 @@ namespace GenericBot.CommandModules
 
                 if (parameters.Empty())
                 {
-                    await msg.Channel.SendMessageAsync("", embed: CreatePollEmbed(activePoll));
+                    var m = await msg.Channel.SendMessageAsync("", embed: CreatePollEmbed(activePoll));
+                    GenericBot.QueueMessagesForDelete(new List<IMessage> {m});
                     return;
                 }
 
