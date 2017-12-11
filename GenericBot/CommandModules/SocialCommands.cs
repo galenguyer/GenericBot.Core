@@ -163,7 +163,7 @@ namespace GenericBot.CommandModules
             SocialCommands.Add(checkinvite);
 
             Command poll = new Command("poll");
-            poll.Description = "Creates a poll";
+            poll.Description = "Creates, adds an option to, or closes a poll. -multi flag enables multiple-choice poll.";
             poll.Usage = "poll <start [-multi] <text>|add <option>|close>";
             poll.Delete = true;
             poll.ToExecute += async (client, msg, parameters) =>
@@ -214,7 +214,8 @@ namespace GenericBot.CommandModules
                         return;
                     }
 
-                    if (msg.Author.Id == activePoll.Creator)
+                    if (msg.Author.Id == activePoll.Creator || poll.GetPermissions(msg.Author, msg.GetGuild().Id) >
+                        Command.PermissionLevels.Moderator)
                     {
                         string optText = String.Join(" ", parameters.GetRange(1, parameters.Count - 1));
                         PollOption opt = new PollOption();
@@ -228,7 +229,7 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
-                        await msg.ReplyAsync("Only the poll creator can add an option to a poll.");
+                        await msg.ReplyAsync("Only the poll creator or a moderator can add an option to a poll.");
                         return;
                     }
                 }
@@ -273,16 +274,17 @@ namespace GenericBot.CommandModules
             vote.Usage = "vote <number>";
             vote.ToExecute = async (client, msg, parameters) =>
             {
-                if (parameters.Empty())
-                {
-                    await msg.ReplyAsync("You must pass an option number");
-                }
-
                 Poll activePoll = GenericBot.GuildConfigs[msg.GetGuild().Id].Polls
                     .GetValueOrDefault(msg.Channel.Id, null);
                 if (activePoll == null)
                 {
                     await msg.ReplyAsync("There is no active poll in this channel.");
+                    return;
+                }
+
+                if (parameters.Empty())
+                {
+                    await msg.Channel.SendMessageAsync("", embed: CreatePollEmbed(activePoll));
                     return;
                 }
 
@@ -316,25 +318,29 @@ namespace GenericBot.CommandModules
             return SocialCommands;
         }
 
+        public Embed CreatePollEmbed(Poll poll)
+        {
+            var eb = new EmbedBuilder()
+                .WithTitle(poll.Text)
+                .WithDescription(
+                    $"Vote using `{GenericBot.GlobalConfiguration.DefaultPrefix}vote <#>`.{(poll.MultipleChoice ? " You may vote for multiple options." : "")}");
+
+            var ordered = poll.Options.OrderBy(p => -p.Voters.Count).ToList();
+            for (var i = 0; i < ordered.Count; i++)
+            {
+                var opt = ordered[i];
+                var idx = poll.Options.IndexOf(opt);
+                eb.AddField($"{idx + 1}. {opt.Text}", $"({opt.Voters.Count} votes)");
+            }
+            return eb.Build();
+        }
+
         public async void UpdatePollMessage(IMessageChannel chan, Poll poll)
         {
             IUserMessage msg = (IUserMessage) await chan.GetMessageAsync(poll.MessageId);
             await msg.ModifyAsync(x =>
             {
-                var eb = new EmbedBuilder()
-                    .WithTitle(poll.Text)
-                    .WithDescription(
-                        $"Vote using `{GenericBot.GlobalConfiguration.DefaultPrefix}vote <#>`.{(poll.MultipleChoice ? " You may vote for multiple options." : "")}");
-
-                var ordered = poll.Options.OrderBy(p => -p.Voters.Count).ToList();
-                for (var i = 0; i < ordered.Count; i++)
-                {
-                    var opt = ordered[i];
-                    var idx = poll.Options.IndexOf(opt);
-                    eb.AddField($"{idx + 1}. {opt.Text}", $"({opt.Voters.Count} votes)");
-                }
-
-                x.Embed = eb.Build();
+                x.Embed = CreatePollEmbed(poll);
                 x.Content = "";
             });
         }
