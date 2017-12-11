@@ -16,4 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MarkVSharp\MarkVSharp.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="files\guildConfigs" />
+  </ItemGroup>
 </Project>
