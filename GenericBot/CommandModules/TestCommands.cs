@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Discord;
+using Discord.WebSocket;
 using GenericBot.Entities;
 
 namespace GenericBot.CommandModules
@@ -12,12 +13,12 @@ namespace GenericBot.CommandModules
         {
             List<Command> TestCommands = new List<Command>();
 
-            Command test = new Command("getperms");
-            test.Delete = true;
-            //test.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            Command test = new Command("test");
+            test.Delete = false;
+            test.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             test.ToExecute += async (client, msg, paramList) =>
             {
-                await msg.Channel.SendMessageAsync($"{test.GetPermissions(msg.Author, msg.GetGuild().Id)}");
+
             };
 
             TestCommands.Add(test);

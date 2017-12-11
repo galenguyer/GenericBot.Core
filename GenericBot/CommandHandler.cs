@@ -42,6 +42,7 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new FunCommands().GetFunCommands());
             GenericBot.Commands.AddRange(new SocialCommands().GetSocialCommands());
             GenericBot.Commands.AddRange(new MuteCommands().GetMuteCommands());
+            //GenericBot.Commands.AddRange(new BanCommands().GetBanCommands());
             GenericBot.Commands.AddRange(new CustomCommandCommands().GetCustomCommands());
             GenericBot.Commands.AddRange(new CardCommands().GetCardCommands());
 
