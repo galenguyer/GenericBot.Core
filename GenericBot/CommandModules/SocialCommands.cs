@@ -113,7 +113,6 @@ namespace GenericBot.CommandModules
             SocialCommands.Add(g);
 
             Command checkinvite = new Command("checkinvite");
-            checkinvite.Aliases = new List<string> {"invite"};
             checkinvite.Description = "Check the information of a discord invite";
             checkinvite.Usage = "checkinvite <code>";
             checkinvite.ToExecute += async (client, msg, parameters) =>
