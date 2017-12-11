@@ -20,6 +20,8 @@ namespace GenericBot.Entities
         public List<CustomCommand> CustomCommands;
         public List<CustomAlias> CustomAliases;
 
+        public Dictionary<ulong, Poll> Polls = new Dictionary<ulong, Poll>();
+
         public GuildConfig(ulong id)
         {
             GuildId = id;

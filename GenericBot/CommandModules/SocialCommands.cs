@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Discord;
 using Discord.Rest;
+using Discord.WebSocket;
 using GenericBot.Entities;
 using Newtonsoft.Json;
 
@@ -67,7 +68,8 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
-                        await msg.ReplyAsync($"<@{guildConfig.Giveaway.Hopefuls.GetRandomItem()}> has won... something!");
+                        await msg.ReplyAsync(
+                            $"<@{guildConfig.Giveaway.Hopefuls.GetRandomItem()}> has won... something!");
                     }
                 }
                 else
@@ -111,7 +113,7 @@ namespace GenericBot.CommandModules
             SocialCommands.Add(g);
 
             Command checkinvite = new Command("checkinvite");
-            checkinvite.Aliases = new List<string>{"invite"};
+            checkinvite.Aliases = new List<string> {"invite"};
             checkinvite.Description = "Check the information of a discord invite";
             checkinvite.Usage = "checkinvite <code>";
             checkinvite.ToExecute += async (client, msg, parameters) =>
@@ -124,7 +126,6 @@ namespace GenericBot.CommandModules
                 var inviteCode = parameters.Last().Split("/").Last();
                 try
                 {
-
                     var invite = client.GetInviteAsync(inviteCode).Result;
                     if (invite.Equals(null))
                     {
@@ -137,16 +138,19 @@ namespace GenericBot.CommandModules
                         .WithColor(0, 255, 0)
                         .WithTitle("Valid Invite")
                         .WithUrl($"https://discord.gg/{invite.Code}")
-                        .AddField(new EmbedFieldBuilder().WithName("Guild Name").WithValue(invite.GuildName).WithIsInline(true))
+                        .AddField(new EmbedFieldBuilder().WithName("Guild Name").WithValue(invite.GuildName)
+                            .WithIsInline(true))
                         .AddField(new EmbedFieldBuilder().WithName("_ _").WithValue("_ _").WithIsInline(true))
-                        .AddField(new EmbedFieldBuilder().WithName("Channel Name").WithValue(invite.ChannelName).WithIsInline(true))
-                        .AddField(new EmbedFieldBuilder().WithName("Guild Id").WithValue(invite.GuildId).WithIsInline(true))
+                        .AddField(new EmbedFieldBuilder().WithName("Channel Name").WithValue(invite.ChannelName)
+                            .WithIsInline(true))
+                        .AddField(new EmbedFieldBuilder().WithName("Guild Id").WithValue(invite.GuildId)
+                            .WithIsInline(true))
                         .AddField(new EmbedFieldBuilder().WithName("_ _").WithValue("_ _").WithIsInline(true))
-                        .AddField(new EmbedFieldBuilder().WithName("Channel Id").WithValue(invite.ChannelId).WithIsInline(true))
+                        .AddField(new EmbedFieldBuilder().WithName("Channel Id").WithValue(invite.ChannelId)
+                            .WithIsInline(true))
                         .WithCurrentTimestamp();
 
                     await msg.Channel.SendMessageAsync("", embed: embedBuilder.Build());
-
                 }
                 catch (Exception e)
                 {
@@ -158,7 +162,181 @@ namespace GenericBot.CommandModules
 
             SocialCommands.Add(checkinvite);
 
+            Command poll = new Command("poll");
+            poll.Description = "Creates a poll";
+            poll.Usage = "poll <start [-multi] <text>|add <option>|close>";
+            poll.Delete = true;
+            poll.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("You need to give me a command!");
+                    return;
+                }
+
+                if (parameters[0] == "start" || parameters[0] == "new" || parameters[0] == "create")
+                {
+                    bool multi = false;
+                    if (parameters[1] == "-multi")
+                    {
+                        multi = true;
+                        parameters.Remove("-multi");
+                    }
+
+                    Poll activePoll = GenericBot.GuildConfigs[msg.GetGuild().Id].Polls
+                        .GetValueOrDefault(msg.Channel.Id, null);
+                    if (activePoll != null)
+                    {
+                        await msg.ReplyAsync(
+                            "There is already a poll active in this channel. If you are the creator of that poll, or a moderator, you can close it.");
+                        return;
+                    }
+
+                    Poll newPoll = new Poll();
+                    newPoll.Creator = msg.Author.Id;
+                    newPoll.MultipleChoice = multi;
+                    newPoll.Text = String.Join(" ", parameters.GetRange(1, parameters.Count - 1));
+
+                    var m = await msg.ReplyAsync($"...");
+                    newPoll.MessageId = m.Id;
+                    GenericBot.GuildConfigs[msg.GetGuild().Id].Polls[msg.Channel.Id] = newPoll;
+                    GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
+
+                    UpdatePollMessage(msg.Channel, newPoll);
+                }
+                else if (parameters[0] == "add")
+                {
+                    Poll activePoll = GenericBot.GuildConfigs[msg.GetGuild().Id].Polls
+                        .GetValueOrDefault(msg.Channel.Id, null);
+                    if (activePoll == null)
+                    {
+                        await msg.ReplyAsync("There is no active poll in this channel.");
+                        return;
+                    }
+
+                    if (msg.Author.Id == activePoll.Creator)
+                    {
+                        string optText = String.Join(" ", parameters.GetRange(1, parameters.Count - 1));
+                        PollOption opt = new PollOption();
+                        opt.Text = optText;
+                        activePoll.Options.Add(opt);
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
+
+                        await msg.ReplyAsync($"Added option **{optText}** to poll!");
+                        UpdatePollMessage(msg.Channel, activePoll);
+                        return;
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("Only the poll creator can add an option to a poll.");
+                        return;
+                    }
+                }
+                else if (parameters[0] == "close")
+                {
+                    Poll activePoll = GenericBot.GuildConfigs[msg.GetGuild().Id].Polls
+                        .GetValueOrDefault(msg.Channel.Id, null);
+                    if (activePoll == null)
+                    {
+                        await msg.ReplyAsync("There is no active poll in this channel.");
+                        return;
+                    }
+
+                    if (msg.Author.Id == activePoll.Creator || poll.GetPermissions(msg.Author, msg.GetGuild().Id) >
+                        Command.PermissionLevels.Moderator)
+                    {
+                        var eb = new EmbedBuilder().WithDescription("Poll has been closed.").WithTitle(activePoll.Text);
+
+                        var ordered = activePoll.Options.OrderBy(p => -p.Voters.Count).ToList();
+                        for (var i = 0; i < ordered.Count; i++)
+                        {
+                            var opt = ordered[i];
+                            eb.AddField($"{i + 1}. {opt.Text}", $"({opt.Voters.Count} votes)");
+                        }
+
+                        await msg.Channel.SendMessageAsync("", embed: eb.Build());
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].Polls[msg.Channel.Id] = null;
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("Only the poll creator or a moderator can close a poll.");
+                        return;
+                    }
+                }
+            };
+
+            SocialCommands.Add(poll);
+
+            Command vote = new Command("vote");
+            vote.Description = "Vote on an active poll";
+            vote.Usage = "vote <number>";
+            vote.ToExecute = async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("You must pass an option number");
+                }
+
+                Poll activePoll = GenericBot.GuildConfigs[msg.GetGuild().Id].Polls
+                    .GetValueOrDefault(msg.Channel.Id, null);
+                if (activePoll == null)
+                {
+                    await msg.ReplyAsync("There is no active poll in this channel.");
+                    return;
+                }
+
+                int optNum;
+                if (!int.TryParse(parameters[0], out optNum))
+                {
+                    await msg.ReplyAsync("That's not a number!");
+                    return;
+                }
+                optNum--;
+
+                if (optNum < 0 || optNum > activePoll.Options.Count)
+                {
+                    await msg.ReplyAsync("That's not a poll option!");
+                    return;
+                }
+
+                var voted = activePoll.GetVoted(msg.Author.Id);
+                var option = activePoll.Options[optNum];
+                activePoll.Vote(msg.Author.Id, optNum);
+
+                IMessage resp = await msg.ReplyAsync($"**{msg.Author}** votes for **{option.Text}**");
+                GenericBot.QueueMessagesForDelete(new List<IMessage> {resp});
+                GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
+
+                UpdatePollMessage(msg.Channel, activePoll);
+                await msg.DeleteAsync();
+            };
+            SocialCommands.Add(vote);
+
             return SocialCommands;
+        }
+
+        public async void UpdatePollMessage(IMessageChannel chan, Poll poll)
+        {
+            IUserMessage msg = (IUserMessage) await chan.GetMessageAsync(poll.MessageId);
+            await msg.ModifyAsync(x =>
+            {
+                var eb = new EmbedBuilder()
+                    .WithTitle(poll.Text)
+                    .WithDescription(
+                        $"Vote using `{GenericBot.GlobalConfiguration.DefaultPrefix}vote <#>`.{(poll.MultipleChoice ? " You may vote for multiple options." : "")}");
+
+                var ordered = poll.Options.OrderBy(p => -p.Voters.Count).ToList();
+                for (var i = 0; i < ordered.Count; i++)
+                {
+                    var opt = ordered[i];
+                    var idx = poll.Options.IndexOf(opt);
+                    eb.AddField($"{idx + 1}. {opt.Text}", $"({opt.Voters.Count} votes)");
+                }
+
+                x.Embed = eb.Build();
+                x.Content = "";
+            });
         }
     }
 }
