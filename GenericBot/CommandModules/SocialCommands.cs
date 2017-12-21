@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Discord;
 using Discord.Rest;
-using Discord.WebSocket;
 using GenericBot.Entities;
-using Newtonsoft.Json;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
+using Color = System.Drawing.Color;
+using Image = System.Drawing.Image;
+using ImageFormat = Discord.ImageFormat;
 
 namespace GenericBot.CommandModules
 {
@@ -16,6 +21,63 @@ namespace GenericBot.CommandModules
         public List<Command> GetSocialCommands()
         {
             List<Command> SocialCommands = new List<Command>();
+
+            Command star = new Command("star");
+            star.ToExecute += async (client, msg, parameters) =>
+            {
+                var user = msg.GetMentionedUsers().First();
+                using (WebClient webClient = new WebClient())
+                {
+                    await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl().Replace("size=128", "size=512")), $"files/img/{user.AvatarId}.png");
+                }
+
+                {
+                    int targetWidth = 1242;
+                    int targetHeight = 764; //height and width of the finished image
+                    Image baseImage = Image.FromFile("files/img/staroranangel.png");
+                    Image avatar = Image.FromFile($"files/img/{user.AvatarId}.png");
+
+                    //be sure to use a pixelformat that supports transparency
+                    using (var bitmap = new Bitmap(targetWidth, targetHeight, PixelFormat.Format32bppArgb))
+                    {
+                        using (var canvas = Graphics.FromImage(bitmap))
+                        {
+                            //this ensures that the backgroundcolor is transparent
+                            canvas.Clear(Color.Transparent);
+
+                            //this paints the frontimage with a offset at the given coordinates
+                            canvas.DrawImage(avatar, 283, 228, 118, 118);
+                            canvas.DrawImage(avatar, 746, 250, 364, 346);
+
+                            //this selects the entire backimage and and paints
+                            //it on the new image in the same size, so its not distorted.
+                            canvas.DrawImage(baseImage, 0, 0, targetWidth, targetHeight);
+                            canvas.Save();
+                        }
+
+                        bitmap.Save($"files/img/star_{user.Id}.png", System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                    await Task.Delay(100);
+                    await msg.Channel.SendFileAsync($"files/img/star_{user.Id}.png");
+                    while (true)
+                    {
+                        try
+                        {
+                            baseImage.Dispose();
+                            avatar.Dispose();
+                            File.Delete($"files/img/{user.AvatarId}.png");
+                            File.Delete($"files/img/star_{user.Id}.png");
+                            break;
+                        }
+                        catch(Exception ex)
+                        {
+
+                        }
+                    }
+                }
+            };
+
+            SocialCommands.Add(star);
 
             Command giveaway = new Command("giveaway");
             giveaway.Usage = "giveaway <start|close|roll>";
