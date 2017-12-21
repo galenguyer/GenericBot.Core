@@ -15,6 +15,7 @@ namespace GenericBot.CommandModules
 
             Command userInfo = new Command("userInfo");
             userInfo.Description = "Get information about a mentioned user";
+			userInfo.RequiredPermission = Command.PermissionLevels.Moderator;
             userInfo.SendTyping = false;
             userInfo.ToExecute += async (client, msg, parameters) =>
             {
@@ -83,7 +84,7 @@ namespace GenericBot.CommandModules
                 info += $"Voice Channels: `{guild.VoiceChannels.Count}`\n";
                 info += $"Voice Region: `{guild.VoiceRegionId}`\n";
                 info += $"Roles: `{guild.Roles.Count}`\n";
-                info += $"Verification Level: `{guild.VerificationLevel}`";
+                info += $"Verification Level: `{guild.VerificationLevel}`\n";
                 info += $"Partnered: `{guild.Features.Any()}`";
                 info += $"";
                 info += $"";
