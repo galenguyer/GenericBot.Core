@@ -93,15 +93,18 @@ namespace GenericBot.CommandModules
                 {
                     try
                     {
-                        RestUserMessage message;
+                        var role = roles.Any(r => r.Name.ToLower() == input.ToLower())
+                            ? roles.First(r => r.Name.ToLower() == input.ToLower())
+                            : roles.First();
+                            RestUserMessage message;
                         if (msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
                         {
                             message = await msg.ReplyAsync("You already have that role!");
                         }
                         else
                         {
-                            await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(roles.First());
-                            message = await msg.ReplyAsync($"I've assigned you `{roles.First().Name}`");
+                            await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(role);
+                            message = await msg.ReplyAsync($"I've assigned you `{role.Name}`");
                         }
 
                         await Task.Delay(2000);
