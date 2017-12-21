@@ -23,7 +23,9 @@ namespace GenericBot.CommandModules
             UserRoles.Usage = "userroles";
             UserRoles.ToExecute += async (client, msg, paramList) =>
             {
-                string message = $"You can use `iam` and `iamnot` with any of these roles:\n";
+                string prefix = (!String.IsNullOrEmpty(GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix))
+                ? GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix : GenericBot.GlobalConfiguration.DefaultPrefix;
+                string message = $"You can use `{prefix}iam` and `{prefix}iamnot` with any of these roles:\n";
                 foreach (var role in msg.GetGuild().Roles
                     .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id))
                     .OrderByDescending(r => r.Position))
