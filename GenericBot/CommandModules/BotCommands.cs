@@ -133,7 +133,7 @@ namespace GenericBot.CommandModules
                 if (tweet.GetPermissions(msg.Author, msg.GetGuild().Id) < Command.PermissionLevels.GlobalAdmin)
                 {
                     GenericBot.TweetQueue.AddLast(new QueuedTweet(msg, message));
-                    await msg.ReplyAsync($"Your tweet has been aded to the queue! It'll be sent in around `{GenericBot.TweetQueue.Count}` minutes");
+                    await msg.ReplyAsync($"Your tweet has been added to the queue! It'll be sent in around `{GenericBot.TweetQueue.Count}` minutes");
                 }
                 else
                 {
