@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Discord;
@@ -26,6 +24,7 @@ namespace GenericBot
         public static List<Command> Commands = new List<Command>();
         public static string SessionId;
         public static bool DebugMode = false;
+        public static string DBConnectionString = "filename=files/GuildDatabase.db; password="+DBPassword;
 
         public static TwitterService Twitter = new TwitterService("AfaD74ulbQQmjb1yDuGKWtVY9", "WAuRJS6Z4RUDgignHmsDzudbIx2YP4PgnAcz3tp7G7nd1ZHs2z");
         public static List<GenericTweet> TweetStore;
