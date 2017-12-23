@@ -11,6 +11,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using GenericBot.CommandModules;
 using GenericBot.Entities;
+using LiteDB;
 using Newtonsoft.Json;
 
 namespace GenericBot
@@ -32,6 +33,8 @@ namespace GenericBot
             _client.JoinedGuild += OnJoinedGuild;
             _client.LeftGuild += OnLeftGuild;
 
+            _client.GuildMemberUpdated += UserEventHandler.UserUpdated;
+            _client.UserJoined += UserEventHandler.UserJoined;
 
             GenericBot.Commands.AddRange(new BotCommands().GetBotCommands());
             GenericBot.Commands.AddRange(new HelpModule().GetHelpCommands());
