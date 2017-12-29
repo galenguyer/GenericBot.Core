@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using Discord;
 using Discord.Net.Queue;
 using Discord.Rest;
@@ -66,7 +67,7 @@ namespace GenericBot.CommandModules
             };
 
             Command whois = new Command("whois");
-            whois.Description = "Get information about a user";
+            whois.Description = "Get information about a user currently on the server from a ID or Mention";
             whois.Usage = "whois @user";
             whois.RequiredPermission = Command.PermissionLevels.Moderator;
             whois.ToExecute += async (client, msg, parameters) =>
@@ -132,12 +133,24 @@ namespace GenericBot.CommandModules
                     }
                 }
 
+                string nicks = "", usernames = "";
+                foreach (var str in dbUser.Usernames.Distinct().ToList())
+                {
+                    usernames += $"`{str.Replace('`', '\'')}`, ";
+                }
+                if(!dbUser.Nicknames.Empty()){ foreach (var str in dbUser.Nicknames.Distinct().ToList())
+                {
+                    nicks += $"`{str.Replace('`', '\'')}`, ";
+                }}
+                nicks = nicks.Trim(',', ' ');
+                usernames = usernames.Trim(',', ' ');
+
                 string info =  $"User Id:  `{user.Id}`\n";
                 info += $"Username: `{user.ToString()}`\n";
-                info += $"Past Usernames: `{dbUser.Usernames.Distinct().ToList().reJoin(", ")}`\n";
+                info += $"Past Usernames: {usernames}\n";
                 info += $"Nickname: `{nickname}`\n";
                 if(!dbUser.Nicknames.Empty())
-                    info += $"Past Nicknames: `{dbUser.Nicknames.Distinct().ToList().reJoin(", ")}`\n";
+                    info += $"Past Nicknames: {nicks}\n";
                 info += $"Created At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.CreatedAt.LocalDateTime)}GMT` " +
                         $"(about {(DateTime.UtcNow - user.CreatedAt).Days} days ago)\n";
                 if (user.JoinedAt.HasValue)
