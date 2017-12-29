@@ -218,6 +218,68 @@ namespace GenericBot.CommandModules
 
             ModCommands.Add(addwarning);
 
+            Command issuewarning = new Command("issuewarning");
+            issuewarning.Description += "Add a warning to the database and send it to the user";
+            issuewarning.Usage = "issuewarning <user> <warning>";
+            issuewarning.RequiredPermission = Command.PermissionLevels.Moderator;
+            issuewarning.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("You must specify a user");
+                    return;
+                }
+                if (msg.GetMentionedUsers().Any())
+                {
+                    var user = msg.GetMentionedUsers().First();
+                    if (!msg.GetGuild().Users.Any(u => u.Id.Equals(user.Id)))
+                    {
+                        await msg.ReplyAsync("Could not find that user");
+                        return;
+                    }
+                    parameters.RemoveAt(0);
+                    string warning = parameters.reJoin();
+                    warning += $" (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
+                    using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                    {
+                        var col = db.GetCollection<DBGuild>("userDatabase");
+                        col.EnsureIndex(c => c.ID, true);
+                        DBGuild guildDb;
+                        if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
+                            guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
+                        else guildDb = new DBGuild (msg.GetGuild().Id);
+                        if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
+                        {
+                            guildDb.Users.Find(u => u.ID.Equals(user.Id)).AddWarning(warning);
+                        }
+                        else
+                        {
+                            guildDb.Users.Add(new DBUser{ID = user.Id, Warnings = new List<string>{warning}});
+                        }
+                        col.Upsert(guildDb);
+                        db.Dispose();
+                        try
+                        {
+                            await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(
+                                $"The Moderator team of **{msg.GetGuild().Name}** has issued you the following warning:\n{parameters.reJoin()}");
+                            await msg.ReplyAsync(
+                                $"Sent the warning `{warning.Replace('`', '\'')}` to {user.Mention} (`{user.Id}`)");
+                        }
+                        catch (Exception ex)
+                        {
+                            await msg.ReplyAsync($"Could not message {user.Mention}. The warning has been added");
+                        }
+                    }
+                }
+                else
+                {
+                    await msg.ReplyAsync("Could not find that user");
+                }
+
+            };
+
+            ModCommands.Add(issuewarning);
+
             Command archive = new Command("archive");
             archive.RequiredPermission = Command.PermissionLevels.Admin;
             archive.Description = "Save all the messages from a text channel";
