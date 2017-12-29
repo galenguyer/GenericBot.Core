@@ -171,6 +171,53 @@ namespace GenericBot.CommandModules
 
             ModCommands.Add(whois);
 
+            Command addwarning = new Command("addwarning");
+            addwarning.Description += "Add a warning to the database";
+            addwarning.Usage = "addwarning <user> <warning>";
+            addwarning.RequiredPermission = Command.PermissionLevels.Moderator;
+            addwarning.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("You must specify a user");
+                    return;
+                }
+                ulong uid;
+                if (ulong.TryParse(parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out uid))
+                {
+                    parameters.RemoveAt(0);
+                    string warning = parameters.reJoin();
+                    warning += $" (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
+                    using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                    {
+                        var col = db.GetCollection<DBGuild>("userDatabase");
+                        col.EnsureIndex(c => c.ID, true);
+                        DBGuild guildDb;
+                        if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
+                            guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
+                        else guildDb = new DBGuild (msg.GetGuild().Id);
+                        if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
+                        {
+                            guildDb.Users.Find(u => u.ID.Equals(uid)).AddWarning(warning);
+                        }
+                        else
+                        {
+                            guildDb.Users.Add(new DBUser{ID = uid, Warnings = new List<string>{warning}});
+                        }
+                        col.Upsert(guildDb);
+                        db.Dispose();
+                        await msg.ReplyAsync($"Added `{warning.Replace('`', '\'')}` to <@{uid}> (`{uid}`)");
+                    }
+                }
+                else
+                {
+                    await msg.ReplyAsync("Could not find that user");
+                }
+
+            };
+
+            ModCommands.Add(addwarning);
+
             Command archive = new Command("archive");
             archive.RequiredPermission = Command.PermissionLevels.Admin;
             archive.Description = "Save all the messages from a text channel";
