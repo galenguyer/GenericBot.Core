@@ -228,7 +228,7 @@ namespace GenericBot.CommandModules
                     return;
                 }
                 string result = "";
-                foreach (var role in msg.GetGuild().Roles.OrderByDescending(r => r.Position).Where(r => new Regex(parameters.reJoin()).IsMatch(r.Name) && r.Name != "@everyone"))
+                foreach (var role in msg.GetGuild().Roles.OrderByDescending(r => r.Position).Where(r => new Regex(parameters.reJoin(), RegexOptions.IgnoreCase).IsMatch(r.Name) && r.Name != "@everyone"))
                 {
                     result += $"\n**`{role.Name}` ({role.Members.Count()} Members)**\n";
                     foreach (var user in role.Members.OrderBy(u => u.Username))
