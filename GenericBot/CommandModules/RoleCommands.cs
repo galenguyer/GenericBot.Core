@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
@@ -254,9 +255,16 @@ namespace GenericBot.CommandModules
             createRole.RequiredPermission = Command.PermissionLevels.Admin;
             createRole.ToExecute += async (client, msg, parameters) =>
             {
+                RestRole role;
+                bool makeMentionable = false;
+                if (parameters[0].ToLower().Equals("+m"))
+                {
+                    parameters.RemoveAt(0);
+                    makeMentionable = true;
+                }
 
-                var role = msg.GetGuild().CreateRoleAsync(parameters.reJoin(), GuildPermissions.None).Result;
-
+                role = msg.GetGuild().CreateRoleAsync(parameters.reJoin(), GuildPermissions.None).Result;
+                await role.ModifyAsync(r => r.Mentionable = true);
                 await msg.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}`");
             };
 
