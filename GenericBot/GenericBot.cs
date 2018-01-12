@@ -36,6 +36,9 @@ namespace GenericBot
         public static Timer MessageDeleteTimer = new Timer();
         public static bool Test = true;
 
+
+        public static int Disconnects = 0;
+
         static void Main(string[] args)
         {
             Logger = new Logger(GetStringSha256Hash(DateTime.UtcNow.ToString()));
