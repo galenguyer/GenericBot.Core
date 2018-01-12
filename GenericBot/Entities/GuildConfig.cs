@@ -12,6 +12,12 @@ namespace GenericBot.Entities
         public List<ulong> AdminRoleIds;
         public List<ulong> ModRoleIds;
         public List<ulong> UserRoleIds;
+        public bool LogUserEvents;
+        public ulong UserLogChannelId;
+        public bool UserLogTimestamp;
+        public string UserJoinedMessage;
+        public string UserLeftMessage;
+        public bool UserJoinedShowModNotes;
         public string Prefix;
         public bool AllowTwitter = false;
         public Giveaway Giveaway;
@@ -30,6 +36,13 @@ namespace GenericBot.Entities
             UserRoleIds = new List<ulong>();
             CustomCommands = new List<CustomCommand>();
             CustomAliases = new List<CustomAlias>();
+
+            LogUserEvents = false;
+            UserLogTimestamp = true;
+            UserJoinedMessage = "{mention} (`{id}` | `{username}`) **joined** the server.";
+            UserLeftMessage = "**{username}** (`{id}`) **left** the server.";
+            UserJoinedShowModNotes = false;
+
             Prefix = "";
         }
 
