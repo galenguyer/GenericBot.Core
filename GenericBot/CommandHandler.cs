@@ -63,46 +63,6 @@ namespace GenericBot
 
         public async Task HandleCommand(SocketMessage parameterMessage)
         {
-            // Don't handle the command if it is a system message
-            var message = parameterMessage as SocketUserMessage;
-
-            try
-            {
-                var commandInfo = ParseMessage(parameterMessage);
-
-                CustomCommand custom = new CustomCommand();
-
-                if (parameterMessage.Channel is IDMChannel) goto DMChannel;
-
-                if (GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
-                        .HasElement(c => c.Name == commandInfo.Name, out custom) ||
-                    GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
-                        .HasElement(c => c.Aliases.Any(a => a.Equals(commandInfo.Name)), out custom))
-                {
-                    if (custom.Delete)
-                    {
-                        await parameterMessage.DeleteAsync();
-                    }
-                    await parameterMessage.ReplyAsync(custom.Response);
-                }
-
-                DMChannel:
-                commandInfo.Command.ExecuteCommand(_client, message, commandInfo.Parameters).FireAndForget();
-            }
-            catch (NullReferenceException nullRefEx)
-            {
-
-            }
-            catch (Exception ex)
-            {
-                if (parameterMessage.Author.Id == GenericBot.GlobalConfiguration.OwnerId)
-                {
-                    await parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
-                                                      "\n```");
-                }
-                await GenericBot.Logger.LogErrorMessage(ex.Message);
-                //else Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
-            }
         }
 
         public async Task OnJoinedGuild(SocketGuild guild)
@@ -138,7 +98,7 @@ namespace GenericBot
             await GenericBot.Logger.LogGenericMessage($"Left {guild.Id}({guild.Name})");
         }
 
-        public ParsedCommand ParseMessage(SocketMessage msg)
+        public static ParsedCommand ParseMessage(SocketMessage msg)
         {
             ParsedCommand parsedCommand = new ParsedCommand();
 
