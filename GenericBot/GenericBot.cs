@@ -96,7 +96,11 @@ namespace GenericBot
             {
                 shard.Ready += OnReady;
                 shard.SetGameAsync(GlobalConfiguration.PlayingStatus).FireAndForget();
+
+                shard.Disconnected += async (exception) => { Disconnects++; };
             }
+
+            DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
 
             var serviceProvider = ConfigureServices();
 
