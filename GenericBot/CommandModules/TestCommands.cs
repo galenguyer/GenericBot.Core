@@ -97,6 +97,55 @@ namespace GenericBot.CommandModules
 
             TestCommands.Add(DBStats);
 
+            Command cmdp = new Command("cmd");
+            cmdp.RequiredPermission = Command.PermissionLevels.BotOwner;
+            cmdp.ToExecute += async (client, msg, parameters) =>
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Process cmd = new Process();
+                    cmd.StartInfo.FileName = "cmd.exe";
+                    cmd.StartInfo.RedirectStandardInput = true;
+                    cmd.StartInfo.RedirectStandardOutput = true;
+                    cmd.StartInfo.CreateNoWindow = true;
+                    cmd.StartInfo.UseShellExecute = false;
+                    cmd.Start();
+
+                    cmd.StandardInput.WriteLine(parameters.reJoin());
+                    cmd.StandardInput.Flush();
+                    cmd.StandardInput.Close();
+                    cmd.WaitForExit();
+                    foreach (var str in cmd.StandardOutput.ReadToEnd().SplitSafe('\n'))
+                    {
+                        await msg.ReplyAsync($"```\n{str}\n```");
+                    }
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process proc = new System.Diagnostics.Process ();
+                    proc.StartInfo.FileName = "/bin/bash";
+                    proc.StartInfo.Arguments = "-c \"" + parameters.reJoin() + " > results\"";
+                    proc.StartInfo.RedirectStandardOutput = true;
+                    proc.StartInfo.CreateNoWindow = true;
+                    proc.StartInfo.UseShellExecute = false;
+
+                    proc.Start();
+                    proc.WaitForExit();
+
+                    Console.WriteLine(proc.StandardOutput.ReadToEnd());
+                    foreach (string str in File.ReadAllText("results").SplitSafe('\n'))
+                    {
+                        await msg.ReplyAsync($"```\n{str}\n```");
+                    }
+                }
+                else
+                {
+                    await msg.ReplyAsync("Unrecognized platform");
+                }
+            };
+            TestCommands.Add(cmdp);
+
+
             return TestCommands;
         }
     }
