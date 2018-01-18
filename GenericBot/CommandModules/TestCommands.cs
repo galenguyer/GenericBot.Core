@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
+using System.Text;
 using Discord;
-using Discord.Commands;
-using Discord.Net.Queue;
-using Discord.WebSocket;
 using GenericBot.Entities;
 using LiteDB;
 using Newtonsoft.Json;
@@ -19,6 +18,36 @@ namespace GenericBot.CommandModules
         public List<Command> GetTestCommands()
         {
             List<Command> TestCommands = new List<Command>();
+
+            Command listEmotes = new Command("listemotes");
+            listEmotes.RequiredPermission = Command.PermissionLevels.Admin;
+            listEmotes.Delete = true;
+            listEmotes.ToExecute += async (client, msg, parameters) =>
+            {
+                if (!msg.GetGuild().Emotes.Any())
+                {
+                    await msg.ReplyAsync($"`{msg.GetGuild().Name}` has no emotes");
+                    return;
+                }
+                string emotes = $"`{msg.GetGuild().Name}` has `{msg.GetGuild().Emotes.Count}` emotes:";
+                int i = 0;
+                foreach (var emote in msg.GetGuild().Emotes)
+                {
+                    if (i % 3 == 0)
+                    {
+                        emotes += "\n";
+                    }
+                    emotes += $"<:{emote.Name}:{emote.Id}> `:{emote.Name}:`";
+                    for (int c = emote.Name.Length + 2; c < 16; c++)
+                    {
+                        emotes += " ";
+                    }
+                    i++;
+                }
+                await msg.ReplyAsync(emotes);
+            };
+
+            TestCommands.Add(listEmotes);
 
             Command updateDB = new Command("updateDB");
             updateDB.Delete = false;
