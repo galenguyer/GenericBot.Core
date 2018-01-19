@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Discord.WebSocket;
 
 namespace GenericBot.Entities
@@ -9,6 +10,8 @@ namespace GenericBot.Entities
         public List<string> Nicknames { get; set; }
         public List<string> Usernames { get; set; }
         public List<string> Warnings { get; set; }
+        public List<ulong> SavedRoles { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
 
         public DBUser()
         {
@@ -23,6 +26,7 @@ namespace GenericBot.Entities
 
             if(!string.IsNullOrEmpty(user.Nickname))
                 Nicknames.Add(user.Nickname);
+            CreatedAt = user.CreatedAt;
         }
 
         public void AddUsername(string username)

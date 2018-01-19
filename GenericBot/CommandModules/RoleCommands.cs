@@ -10,6 +10,7 @@ using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using GenericBot.Entities;
+using LiteDB;
 
 namespace GenericBot.CommandModules
 {
@@ -269,6 +270,128 @@ namespace GenericBot.CommandModules
             };
 
             RoleCommands.Add(createRole);
+
+            Command roleeveryone = new Command("roleeveryone");
+            roleeveryone.Aliases = new List<string>{"roleveryone"};
+            roleeveryone.Description = "Give or remove a role from everyone";
+            roleeveryone.Usage = "roleveryone [+-] <roleID>";
+            roleeveryone.RequiredPermission = Command.PermissionLevels.Admin;
+            roleeveryone.ToExecute += async (client, msg, parameters) =>
+            {
+                if (!(parameters[0].Contains("+") || parameters[0].Contains("-")))
+                {
+                    await msg.ReplyAsync($"Invalid option `{parameters[0]}`");
+                }
+                ulong id;
+                if (ulong.TryParse(parameters[1], out id) && msg.GetGuild().Roles.Any(r => r.Id == id))
+                {
+                    int i = 0;
+                    await msg.GetGuild().DownloadUsersAsync();
+                    var role = msg.GetGuild().GetRole(id);
+                    foreach (var u in msg.GetGuild().Users)
+                    {
+                        if ( parameters[0].Contains("-") && u.Roles.Any(r => r.Id == id))
+                        {
+                            await u.RemoveRoleAsync(role);
+                            i++;
+                        }
+                        if (parameters[0].Contains("+") && !u.Roles.Any(r => r.Id == id))
+                        {
+                            await u.AddRoleAsync(role);
+                            i++;
+                        }
+                    }
+                    string addrem = parameters[0].Contains("+") ? "Added" : "Removed";
+                    string tofrom = parameters[0].Contains("+") ? "to" : "from";
+                    await msg.ReplyAsync($"{addrem} `{role.Name}` {tofrom} `{i}` users.");
+                }
+                else await msg.ReplyAsync("Invalid Role Id");
+            };
+
+            RoleCommands.Add(roleeveryone);
+
+            Command roleStore = new Command("roleStore");
+            roleStore.Description = "Store your roles so you can restore them later";
+            roleStore.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters[0].ToLower().Equals("save"))
+                {
+                    using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                    {
+                        DBUser dbUser;
+                        var col = db.GetCollection<DBGuild>("userDatabase");
+                        col.EnsureIndex(c => c.ID, true);
+                        DBGuild guildDb;
+                        if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
+                            guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
+                        else guildDb = new DBGuild (msg.GetGuild().Id);
+                        dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
+                        List<ulong> roles = new List<ulong>();
+                        foreach(var role in (msg.Author as SocketGuildUser).Roles)
+                        {
+                            roles.Add(role.Id);
+                        }
+
+                        dbUser.SavedRoles = roles;
+
+                        await msg.ReplyAsync($"I've saved `{dbUser.SavedRoles.Count}` roles for you!");
+                        col.Upsert(guildDb);
+                        db.Dispose();
+                    }
+
+                }
+                else if (parameters[0].ToLower().Equals("restore"))
+                {
+                    using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                    {
+                        DBUser dbUser;
+                        var col = db.GetCollection<DBGuild>("userDatabase");
+                        col.EnsureIndex(c => c.ID, true);
+                        DBGuild guildDb;
+                        if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
+                            guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
+                        else guildDb = new DBGuild (msg.GetGuild().Id);
+                        if (guildDb.Users.Any(u => u.ID.Equals(msg.Author.Id))) // if already exists
+                        {
+                            dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
+                            if (dbUser.SavedRoles == null || !dbUser.SavedRoles.Any())
+                            {
+                                await msg.ReplyAsync("No roles saved. Try using `rolestore save` first!");
+                                return;
+                            }
+                            int success = 0;
+                            int fails = 0;
+                            foreach (var id in dbUser.SavedRoles.Where(id => !(msg.Author as IGuildUser).RoleIds.Contains(id)))
+                            {
+                                try
+                                {
+                                    await (msg.Author as SocketGuildUser).AddRoleAsync(
+                                        msg.GetGuild().Roles.First(r => r.Id.Equals(id)));
+                                    success++;
+                                }
+                                catch (Exception e)
+                                {
+                                    fails++;
+                                }
+                            }
+                            await msg.ReplyAsync($"`{success}` roles restored, `{fails}` failed");
+                        }
+                        else
+                        {
+                            dbUser = new DBUser(msg.Author as SocketGuildUser);
+                            await msg.ReplyAsync("I don't have any saved roles for you");
+                            return;
+                        }
+                        db.Dispose();
+                    }
+                }
+                else
+                {
+                    await msg.ReplyAsync("Invalid option");
+                }
+            };
+
+            RoleCommands.Add(roleStore);
 
             return RoleCommands;
         }
