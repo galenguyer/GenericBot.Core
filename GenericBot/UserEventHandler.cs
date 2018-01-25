@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using GenericBot.Entities;
@@ -19,7 +21,7 @@ namespace GenericBot
                     DBGuild guildDb;
                     if(col.Exists(g => g.ID.Equals(afterUser.Guild.Id)))
                         guildDb = col.FindOne(g => g.ID.Equals(afterUser.Guild.Id));
-                    else guildDb = new DBGuild (afterUser.Guild.Id);
+                    else guildDb = new DBGuild (afterUser.Guild);
                     if (guildDb.Users.Any(u => u.ID.Equals(afterUser.Id))) // if already exists
                     {
                         guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(afterUser.Username);
@@ -41,7 +43,7 @@ namespace GenericBot
                     DBGuild guildDb;
                     if(col.Exists(g => g.ID.Equals(afterUser.Guild.Id)))
                         guildDb = col.FindOne(g => g.ID.Equals(afterUser.Guild.Id));
-                    else guildDb = new DBGuild (afterUser.Guild.Id);
+                    else guildDb = new DBGuild (afterUser.Guild);
                     if (guildDb.Users.Any(u => u.ID.Equals(afterUser.Id))) // if already exists
                     {
                         guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddNickname(afterUser);
@@ -58,6 +60,10 @@ namespace GenericBot
 
         public static async Task UserJoined(SocketGuildUser user)
         {
+            List<string> Warnings = new List<string>();
+
+            #region Database
+
             using (var db = new LiteDatabase(GenericBot.DBConnectionString))
             {
                 var col = db.GetCollection<DBGuild>("userDatabase");
@@ -65,7 +71,7 @@ namespace GenericBot
                 DBGuild guildDb;
                 if(col.Exists(g => g.ID.Equals(user.Guild.Id)))
                     guildDb = col.FindOne(g => g.ID.Equals(user.Guild.Id));
-                else guildDb = new DBGuild (user.Guild.Id);
+                else guildDb = new DBGuild (user.Guild);
                 if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
                 {
                     guildDb.Users.Find(u => u.ID.Equals(user.Id)).AddUsername(user.Username);
@@ -75,8 +81,11 @@ namespace GenericBot
                     guildDb.Users.Add(new DBUser(user));
                 }
                 col.Upsert(guildDb);
+                Warnings.AddRange(guildDb.Users.Find(u => u.ID.Equals(user.Id)).Warnings);
                 db.Dispose();
             }
+
+            #endregion Databasae
         }
     }
 }

@@ -324,7 +324,7 @@ namespace GenericBot.CommandModules
                         DBGuild guildDb;
                         if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
                             guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
-                        else guildDb = new DBGuild (msg.GetGuild().Id);
+                        else guildDb = new DBGuild (msg.GetGuild());
                         dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
                         List<ulong> roles = new List<ulong>();
                         foreach(var role in (msg.Author as SocketGuildUser).Roles)
@@ -350,7 +350,7 @@ namespace GenericBot.CommandModules
                         DBGuild guildDb;
                         if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
                             guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
-                        else guildDb = new DBGuild (msg.GetGuild().Id);
+                        else guildDb = new DBGuild (msg.GetGuild());
                         if (guildDb.Users.Any(u => u.ID.Equals(msg.Author.Id))) // if already exists
                         {
                             dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
