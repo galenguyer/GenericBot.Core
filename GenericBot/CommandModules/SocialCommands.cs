@@ -196,7 +196,7 @@ namespace GenericBot.CommandModules
                     {
                         await msg.Channel.SendMessageAsync("", embed: new EmbedBuilder()
                             .WithColor(255, 0, 0)
-                            .WithDescription("Invalid invite"));
+                            .WithDescription("Invalid invite").Build());
                     }
 
                     var embedBuilder = new EmbedBuilder()
@@ -221,7 +221,7 @@ namespace GenericBot.CommandModules
                 {
                     await msg.Channel.SendMessageAsync("", embed: new EmbedBuilder()
                         .WithColor(255, 0, 0)
-                        .WithDescription("Invalid invite"));
+                        .WithDescription("Invalid invite").Build());
                 }
             };
 
