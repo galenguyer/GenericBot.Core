@@ -21,13 +21,8 @@ namespace GenericBot.Entities
         //Status to use
         public string PlayingStatus { get; set; }
 
-        //Blacklist Options
-        //Specific Guilds (for spamming/abuse)
-        public List<ulong> BlacklistedGuildIds { get; set; }
-        //Owners (can't have it on any guild they own)
-        public List<ulong> BlacklistedOwnerIds { get; set; }
-        //Total Blacklist of Death (no ownership OR commands)
-        public List<ulong> BlacklistedUserIds { get; set; }
+        //Blacklist
+        public List<ulong> BlacklistedIds { get; set; }
         //Use debug mode?
         public bool DebugMode { get; set; }
 
@@ -40,9 +35,7 @@ namespace GenericBot.Entities
             GlobalAdminIds = new List<ulong>();
             DebugMode = false;
 
-            BlacklistedGuildIds = new List<ulong>();
-            BlacklistedOwnerIds = new List<ulong>();
-            BlacklistedUserIds = new List<ulong>();
+            BlacklistedIds = new List<ulong>();
         }
 
         public GlobalConfiguration(DiscordSocketClient socketClient, string tok, string pref, bool edit)
@@ -54,9 +47,7 @@ namespace GenericBot.Entities
             GlobalAdminIds.Add(OwnerId);
             DebugMode = false;
 
-            BlacklistedGuildIds = new List<ulong>();
-            BlacklistedOwnerIds = new List<ulong>();
-            BlacklistedUserIds = new List<ulong>();
+            BlacklistedIds = new List<ulong>();
         }
 
         public void Save()
@@ -69,75 +60,6 @@ namespace GenericBot.Entities
         public GlobalConfiguration Load()
         {
             return JsonConvert.DeserializeObject<GlobalConfiguration>(File.ReadAllText("files/config.json"));
-        }
-
-        //Add Blacklist
-        //0 SUCCESS, 1 FORBIDDEN, 2 ALREADY CONTAINED
-        public int AddGuildBlacklist(DiscordSocketClient socketClient, ulong guildId)
-        {
-            try
-            {
-                var guild = socketClient.GetGuild(guildId);
-                if (OwnerId.Equals(guild.OwnerId) || GlobalAdminIds.Contains(guild.OwnerId))
-                    return 1;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            if (BlacklistedGuildIds.Contains(guildId))
-                return 2;
-
-            BlacklistedGuildIds.Add(guildId);
-            return 0;
-        }
-        public int AddOwnerBlacklist(ulong userId)
-        {
-            if (OwnerId.Equals(userId) || (GlobalAdminIds.Contains(userId)))
-                return 1;
-            if (BlacklistedOwnerIds.Contains(userId))
-                return 2;
-
-            BlacklistedOwnerIds.Add(userId);
-            return 0;
-        }
-        public int AddUserBlacklist(ulong userId)
-        {
-            if (OwnerId.Equals(userId) || GlobalAdminIds.Contains(userId))
-                return 1;
-            if (BlacklistedOwnerIds.Contains(userId))
-                return 2;
-
-            BlacklistedOwnerIds.Add(userId);
-            return 0;
-        }
-
-        //Remove Blacklist
-        //0 SUCCESS, 1 NOT IN LIST
-        public int RemoveGuildBlacklist(ulong guildId)
-        {
-            if (!BlacklistedGuildIds.Contains(guildId))
-                return 1;
-
-            BlacklistedGuildIds.Remove(guildId);
-            return 0;
-        }
-        public int RemoveOwnerBlacklist(ulong ownerId)
-        {
-            if (!BlacklistedOwnerIds.Contains(ownerId))
-                return 1;
-
-            BlacklistedOwnerIds.Remove(ownerId);
-            return 0;
-        }
-        public int RemoveUserBlacklist(ulong userId)
-        {
-            if (!BlacklistedUserIds.Contains(userId))
-                return 1;
-
-            BlacklistedUserIds.Remove(userId);
-            return 0;
         }
     }
 }
