@@ -47,7 +47,25 @@ namespace GenericBot.Entities
 
         public void AddWarning(string warning)
         {
+            if(Warnings == null) Warnings = new List<string>();
             Warnings.Add(warning);
+        }
+
+        public bool RemoveWarning(bool allWarnings = false)
+        {
+            if (Warnings.Empty())
+            {
+                return false;
+            }
+            if (!allWarnings)
+            {
+                Warnings.RemoveAt(Warnings.Count - 1);
+            }
+            else
+            {
+                Warnings.RemoveRange(0, Warnings.Count);
+            }
+            return true;
         }
     }
 }
