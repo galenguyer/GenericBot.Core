@@ -30,12 +30,13 @@ namespace GenericBot.CommandModules
             {
                 var stop = new Stopwatch();
                 stop.Start();
+                GenericBot.QuickWatch.Stop();
                 var rep = await msg.Channel.SendMessageAsync("Pong!");
 
                 if (paramList.FirstOrDefault() != null && paramList.FirstOrDefault().Equals("verbose"))
                 {
                     stop.Stop();
-                    await rep.ModifyAsync(m => m.Content = $"Pong! `{stop.ElapsedMilliseconds}ms`");
+                    await rep.ModifyAsync(m => m.Content = $"Pong!\nProcess: `{GenericBot.QuickWatch.ElapsedMilliseconds}ms` \nAck + Resp: `{stop.ElapsedMilliseconds}ms`");
                 }
             };
             botCommands.Add(ping);
