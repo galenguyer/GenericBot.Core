@@ -16,6 +16,21 @@ namespace GenericBot
             // Don't handle the command if it is a system message
             var message = parameterMessage as SocketUserMessage;
 
+            if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(message.Author.Id))
+            {
+                return;
+            }
+
+            if (parameterMessage.Author.Id != GenericBot.DiscordClient.CurrentUser.Id &&
+                GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].FourChannelId == parameterMessage.Channel.Id)
+            {
+
+                await parameterMessage.DeleteAsync();
+                await parameterMessage.ReplyAsync(
+                    $"**[Anonymous]** {string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss}", DateTimeOffset.UtcNow)}\n{parameterMessage.Content}");
+            }
+
+            GenericBot.QuickWatch.Restart();
             try
             {
                 var commandInfo = CommandHandler.ParseMessage(parameterMessage);
@@ -37,6 +52,7 @@ namespace GenericBot
                 }
 
                 DMChannel:
+                GenericBot.LastCommand = commandInfo;
                 commandInfo.Command.ExecuteCommand(GenericBot.DiscordClient, message, commandInfo.Parameters).FireAndForget();
             }
             catch (NullReferenceException nullRefEx)
