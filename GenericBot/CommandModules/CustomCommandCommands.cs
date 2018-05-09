@@ -54,10 +54,15 @@ namespace GenericBot.CommandModules
                         return;
                     }
                     string cName = parameters[1];
-                    parameters.RemoveRange(0, 2);
-                    GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands.Add(new CustomCommand(cName.ToLower(), parameters.reJoin()));
-                    await msg.ReplyAsync($"New command created! \n```\n{JsonConvert.SerializeObject(new CustomCommand(cName.ToLower(), parameters.reJoin()),Formatting.Indented)}\n```");
-                    return;
+                    string pref = GenericBot.GlobalConfiguration.DefaultPrefix;
+                    if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix))
+                        pref = GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix;
+
+                    string message = msg.Content;
+                    message = message.Remove(0, pref.Length).TrimStart(' ').Remove(0, "command".Length).TrimStart('s').TrimStart(' ').Remove(0, "add".Length).TrimStart(' ').Remove(0, cName.Length).Trim(' ');
+
+                    GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands.Add(new CustomCommand(cName.ToLower(), message));
+                    await msg.ReplyAsync($"New command created! \n```\n{JsonConvert.SerializeObject(new CustomCommand(cName.ToLower(), message),Formatting.Indented)}\n```");
                 }
                 else if (parameters[0].Equals("remove") || parameters[0].Equals("delete"))
                 {
