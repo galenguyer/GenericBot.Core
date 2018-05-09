@@ -47,7 +47,7 @@ namespace GenericBot.CommandModules
                         return;
                     }
 
-                    await msg.Channel.DeleteMessagesAsync(msgs.Where(m => DateTime.Now - m.CreatedAt < TimeSpan.FromDays(14)));
+                    await (msg.Channel as ITextChannel).DeleteMessagesAsync(msgs.Where(m => DateTime.Now - m.CreatedAt < TimeSpan.FromDays(14)));
 
                     var messagesSent = new List<IMessage>();
 
@@ -58,13 +58,15 @@ namespace GenericBot.CommandModules
                     }
 
                     await Task.Delay(2500);
-                    await msg.Channel.DeleteMessagesAsync(messagesSent);
+                    await (msg.Channel as ITextChannel).DeleteMessagesAsync(messagesSent);
                 }
                 else
                 {
                     await msg.ReplyAsync("That's not a valid number");
                 }
             };
+
+            ModCommands.Add(clear);
 
             Command whois = new Command("whois");
             whois.Description = "Get information about a user currently on the server from a ID or Mention";
@@ -98,46 +100,22 @@ namespace GenericBot.CommandModules
                     roles += $"`{role.Name}`, ";
                 }
                 DBUser dbUser;
-                using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                DBGuild guildDb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
                 {
-                    var col = db.GetCollection<DBGuild>("userDatabase");
-                    col.EnsureIndex(c => c.ID, true);
-                    DBGuild guildDb;
-                    if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
-                        guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
-                    else guildDb = new DBGuild (msg.GetGuild());
-                    if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
-                    {
-                        dbUser = guildDb.Users.First(u => u.ID.Equals(user.Id));
-                    }
-                    else
-                    {
-                        dbUser = new DBUser(user);
-                        col.Upsert(guildDb);
-                    }
-                    db.Dispose();
+                    dbUser = guildDb.Users.First(u => u.ID.Equals(user.Id));
                 }
-
-                string uns = "";
-                string nns = "";
-                foreach (var s in dbUser.Usernames.Distinct())
+                else
                 {
-                    uns += $"`{s}`, ";
-                }
-                uns = uns.Trim(',');
-                if (!dbUser.Nicknames.Empty())
-                {
-                    foreach (var s in dbUser.Nicknames.Distinct())
-                    {
-
-                    }
+                    dbUser = new DBUser(user);
+                    guildDb.Save();
                 }
 
                 string nicks = "", usernames = "";
-                foreach (var str in dbUser.Usernames.Distinct().ToList())
+                if(!dbUser.Usernames.Empty()){foreach (var str in dbUser.Usernames.Distinct().ToList())
                 {
                     usernames += $"`{str.Replace('`', '\'')}`, ";
-                }
+                }}
                 if(!dbUser.Nicknames.Empty()){ foreach (var str in dbUser.Nicknames.Distinct().ToList())
                 {
                     nicks += $"`{str.Replace('`', '\'')}`, ";
@@ -171,6 +149,73 @@ namespace GenericBot.CommandModules
 
             ModCommands.Add(whois);
 
+            Command find = new Command("find");
+            find.Description = "Get information about a user currently on the server from a ID or Mention";
+            find.Usage = "whois @user";
+            find.RequiredPermission = Command.PermissionLevels.Moderator;
+            find.ToExecute += async (client, msg, parameters) =>
+            {
+                ulong uid = ulong.Parse(parameters[0].TrimStart('<', '@', '!').TrimEnd('>'));
+                DBUser dbUser;
+                SocketGuildUser user;
+                DBGuild guildDb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
+                {
+                    dbUser = guildDb.Users.First(u => u.ID.Equals(uid));
+                }
+                else
+                {
+                    await msg.ReplyAsync("No user found");
+                    return;
+                }
+                try
+                {
+                    user = msg.GetGuild().GetUser(uid);
+                }
+                catch (Exception ex)
+                {
+                    user = msg.Author as SocketGuildUser;
+                }
+
+
+                string nicks = "", usernames = "";
+                if(dbUser.Usernames!= null && !dbUser.Usernames.Empty()) {foreach (var str in dbUser.Usernames.Distinct().ToList())
+                {
+                    usernames += $"`{str.Replace('`', '\'')}`, ";
+                }}
+                if(dbUser.Nicknames != null && !dbUser.Nicknames.Empty()){ foreach (var str in dbUser.Nicknames.Distinct().ToList())
+                {
+                    nicks += $"`{str.Replace('`', '\'')}`, ";
+                }}
+                nicks = nicks.Trim(',', ' ');
+                usernames = usernames.Trim(',', ' ');
+
+                string info =  $"User Id:  `{dbUser.ID}`\n";
+                info += $"Past Usernames: {usernames}\n";
+                info += $"Past Nicknames: {nicks}\n";
+                if (user != null && user.Id != msg.Author.Id)
+                {
+                    info +=
+                        $"Created At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.CreatedAt.LocalDateTime)}GMT` " +
+                        $"(about {(DateTime.UtcNow - user.CreatedAt).Days} days ago)\n";
+                }
+                if (user != null && user.Id != msg.Author.Id && user.JoinedAt.HasValue)
+                    info +=
+                        $"Joined At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.JoinedAt.Value.LocalDateTime)}GMT`" +
+                        $"(about {(DateTime.UtcNow - user.JoinedAt.Value).Days} days ago)\n";
+                if(dbUser.Warnings != null && !dbUser.Warnings.Empty())
+                    info += $"`{dbUser.Warnings.Count}` Warnings: {dbUser.Warnings.reJoin(" | ")}";
+
+
+                foreach (var str in info.SplitSafe(','))
+                {
+                    await msg.ReplyAsync(str.TrimStart(','));
+                }
+
+            };
+
+            ModCommands.Add(find);
+
             Command addwarning = new Command("addwarning");
             addwarning.Description += "Add a warning to the database";
             addwarning.Usage = "addwarning <user> <warning>";
@@ -188,26 +233,17 @@ namespace GenericBot.CommandModules
                     parameters.RemoveAt(0);
                     string warning = parameters.reJoin();
                     warning += $" (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
-                    using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                    DBGuild guildDb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                    if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
                     {
-                        var col = db.GetCollection<DBGuild>("userDatabase");
-                        col.EnsureIndex(c => c.ID, true);
-                        DBGuild guildDb;
-                        if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
-                            guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
-                        else guildDb = new DBGuild (msg.GetGuild().Id);
-                        if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
-                        {
-                            guildDb.Users.Find(u => u.ID.Equals(uid)).AddWarning(warning);
-                        }
-                        else
-                        {
-                            guildDb.Users.Add(new DBUser{ID = uid, Warnings = new List<string>{warning}});
-                        }
-                        col.Upsert(guildDb);
-                        db.Dispose();
-                        await msg.ReplyAsync($"Added `{warning.Replace('`', '\'')}` to <@{uid}> (`{uid}`)");
+                        guildDb.Users.Find(u => u.ID.Equals(uid)).AddWarning(warning);
                     }
+                    else
+                    {
+                        guildDb.Users.Add(new DBUser{ID = uid, Warnings = new List<string>{warning}});
+                    }
+                    guildDb.Save();
+                    await msg.ReplyAsync($"Added `{warning.Replace('`', '\'')}` to <@{uid}> (`{uid}`)");
                 }
                 else
                 {
@@ -240,35 +276,26 @@ namespace GenericBot.CommandModules
                     parameters.RemoveAt(0);
                     string warning = parameters.reJoin();
                     warning += $" (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
-                    using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                    DBGuild guildDb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                    if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
                     {
-                        var col = db.GetCollection<DBGuild>("userDatabase");
-                        col.EnsureIndex(c => c.ID, true);
-                        DBGuild guildDb;
-                        if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
-                            guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
-                        else guildDb = new DBGuild (msg.GetGuild().Id);
-                        if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
-                        {
-                            guildDb.Users.Find(u => u.ID.Equals(user.Id)).AddWarning(warning);
-                        }
-                        else
-                        {
-                            guildDb.Users.Add(new DBUser{ID = user.Id, Warnings = new List<string>{warning}});
-                        }
-                        col.Upsert(guildDb);
-                        db.Dispose();
-                        try
-                        {
-                            await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(
-                                $"The Moderator team of **{msg.GetGuild().Name}** has issued you the following warning:\n{parameters.reJoin()}");
-                            await msg.ReplyAsync(
-                                $"Sent the warning `{warning.Replace('`', '\'')}` to {user.Mention} (`{user.Id}`)");
-                        }
-                        catch (Exception ex)
-                        {
-                            await msg.ReplyAsync($"Could not message {user.Mention}. The warning has been added");
-                        }
+                        guildDb.Users.Find(u => u.ID.Equals(user.Id)).AddWarning(warning);
+                    }
+                    else
+                    {
+                        guildDb.Users.Add(new DBUser{ID = user.Id, Warnings = new List<string>{warning}});
+                    }
+                    guildDb.Save();
+                    try
+                    {
+                        await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(
+                            $"The Moderator team of **{msg.GetGuild().Name}** has issued you the following warning:\n{parameters.reJoin()}");
+                        await msg.ReplyAsync(
+                            $"Sent the warning `{warning.Replace('`', '\'')}` to {user.Mention} (`{user.Id}`)");
+                    }
+                    catch (Exception ex)
+                    {
+                        await msg.ReplyAsync($"Could not message {user.Mention}. The warning has been added");
                     }
                 }
                 else
@@ -279,6 +306,143 @@ namespace GenericBot.CommandModules
             };
 
             ModCommands.Add(issuewarning);
+
+            Command removeWarning = new Command("removeWarning");
+            removeWarning.RequiredPermission = Command.PermissionLevels.Moderator;
+            removeWarning.Usage = "removewarning <user>";
+            removeWarning.Description = "Remove the last warning from a user";
+            removeWarning.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync($"You need to add some arguments. A user, perhaps?");
+                    return;
+                }
+
+                bool removeAll = false;
+                if (parameters[0].ToLower().Equals("all"))
+                {
+                    removeAll = true;
+                    parameters.RemoveAt(0);
+                }
+
+                ulong uid;
+                if (ulong.TryParse(parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out uid))
+                {
+                    var guilddb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                    if (guilddb.GetUser(uid).RemoveWarning(allWarnings: removeAll))
+                    {
+                        await msg.ReplyAsync($"Done!");
+                    }
+                    else await msg.ReplyAsync("User had no warnings");
+                    guilddb.Save();
+                }
+                else await msg.ReplyAsync($"No user found");
+            };
+
+            ModCommands.Add(removeWarning);
+
+            Command mute = new Command("mute");
+            mute.RequiredPermission = Command.PermissionLevels.Moderator;
+            mute.Usage = "mute <user>";
+            mute.Description = "Mute a user";
+            mute.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync($"You need to specify a user!");
+                    return;
+                }
+                var gc = GenericBot.GuildConfigs[msg.GetGuild().Id];
+                if (!msg.GetGuild().Roles.Any(r => r.Id == gc.MutedRoleId))
+                {
+                    await msg.ReplyAsync("The Muted Role Id is configured incorrectly. Please talk to your server admin");
+                    return;
+                }
+                var mutedRole = msg.GetGuild().Roles.First(r => r.Id == gc.MutedRoleId);
+                List<IUser> mutedUsers= new List<IUser>();
+                foreach (var user in msg.GetMentionedUsers().Select(u => u.Id))
+                {
+                    try
+                    {
+                        (msg.GetGuild().GetUser(user)).AddRolesAsync(new List<IRole> {mutedRole});
+                        gc.ProbablyMutedUsers.Add(user);
+                        mutedUsers.Add(msg.GetGuild().GetUser(user));
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                string res = "Succesfully muted ";
+                for (int i = 0; i < mutedUsers.Count; i++)
+                {
+                    if (i == mutedUsers.Count - 1 && mutedUsers.Count > 1)
+                    {
+                        res += $"and {mutedUsers.ElementAt(i).Mention}";
+                    }
+                    else
+                    {
+                        res += $"{mutedUsers.ElementAt(i).Mention}, ";
+                    }
+                }
+
+                await msg.ReplyAsync(res.TrimEnd(',', ' '));
+
+
+            };
+
+            ModCommands.Add(mute);
+
+            Command unmute = new Command("unmute");
+            unmute.RequiredPermission = Command.PermissionLevels.Moderator;
+            unmute.Usage = "unmute <user>";
+            unmute.Description = "Unmute a user";
+            unmute.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync($"You need to specify a user!");
+                    return;
+                }
+                var gc = GenericBot.GuildConfigs[msg.GetGuild().Id];
+                if (!msg.GetGuild().Roles.Any(r => r.Id == gc.MutedRoleId))
+                {
+                    await msg.ReplyAsync("The Muted Role Id is configured incorrectly. Please talk to your server admin");
+                    return;
+                }
+                var mutedRole = msg.GetGuild().Roles.First(r => r.Id == gc.MutedRoleId);
+                List<IUser> mutedUsers= new List<IUser>();
+                foreach (var user in msg.GetMentionedUsers().Select(u => u.Id))
+                {
+                    try
+                    {
+                        (msg.GetGuild().GetUser(user)).RemoveRoleAsync(mutedRole);
+                        gc.ProbablyMutedUsers.Remove(user);
+                        mutedUsers.Add(msg.GetGuild().GetUser(user));
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                string res = "Succesfully unmuted ";
+                for (int i = 0; i < mutedUsers.Count; i++)
+                {
+                    if (i == mutedUsers.Count - 1 && mutedUsers.Count > 1)
+                    {
+                        res += $"and {mutedUsers.ElementAt(i).Mention}";
+                    }
+                    else
+                    {
+                        res += $"{mutedUsers.ElementAt(i).Mention}, ";
+                    }
+                }
+
+                await msg.ReplyAsync(res.TrimEnd(',', ' '));
+            };
+
+            ModCommands.Add(unmute);
 
             Command archive = new Command("archive");
             archive.RequiredPermission = Command.PermissionLevels.Admin;
@@ -316,8 +480,6 @@ namespace GenericBot.CommandModules
             };
 
             ModCommands.Add(archive);
-
-            ModCommands.Add(clear);
 
             return ModCommands;
         }
