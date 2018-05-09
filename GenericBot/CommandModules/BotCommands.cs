@@ -318,6 +318,67 @@ namespace GenericBot.CommandModules
 
             botCommands.Add(getBugs);
 
+            Command blacklist = new Command("blacklist");
+            blacklist.Description = "Add or remove someone from the blacklist";
+            blacklist.Usage = "blacklist [add|remove] [id]";
+            blacklist.RequiredPermission = Command.PermissionLevels.BotOwner;
+            blacklist.ToExecute += async (client, msg, parameters) =>
+            {
+                ulong id;
+                if (parameters[0].ToLower().Equals("add"))
+                {
+                    if (ulong.TryParse(parameters[1], out id))
+                    {
+                        if (!GenericBot.GlobalConfiguration.BlacklistedIds.Contains(id))
+                        {
+                            GenericBot.GlobalConfiguration.BlacklistedIds.Add(id);
+                            await msg.ReplyAsync($"Blacklisted `{id}`");
+                            GenericBot.GlobalConfiguration.Save();
+                            return;
+                        }
+                        else
+                        {
+                            await msg.ReplyAsync($"`{id}` is already blacklisted");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("Invalid ID");
+                        return;
+                    }
+                }
+                else if (parameters[0].ToLower().Equals("remove"))
+                {
+                    if (ulong.TryParse(parameters[1], out id))
+                    {
+                        if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(id))
+                        {
+                            GenericBot.GlobalConfiguration.BlacklistedIds.Remove(id);
+                            await msg.ReplyAsync($"Un-Blacklisted `{id}`");
+                            GenericBot.GlobalConfiguration.Save();
+                            return;
+                        }
+                        else
+                        {
+                            await msg.ReplyAsync($"`{id}` is not blacklisted");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("Invalid ID");
+                        return;
+                    }
+                }
+                else
+                {
+                    await msg.ReplyAsync("Invalid Option");
+                }
+            };
+
+            botCommands.Add(blacklist);
+
             return botCommands;
         }
     }
