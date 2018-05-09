@@ -265,7 +265,7 @@ namespace GenericBot.CommandModules
                 }
 
                 role = msg.GetGuild().CreateRoleAsync(parameters.reJoin(), GuildPermissions.None).Result;
-                await role.ModifyAsync(r => r.Mentionable = true);
+                if(makeMentionable) await role.ModifyAsync(r => r.Mentionable = true);
                 await msg.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}`");
             };
 
@@ -312,6 +312,7 @@ namespace GenericBot.CommandModules
 
             Command roleStore = new Command("roleStore");
             roleStore.Description = "Store your roles so you can restore them later";
+            roleStore.Usage = "rolestore [save|restore]";
             roleStore.ToExecute += async (client, msg, parameters) =>
             {
                 if (parameters[0].ToLower().Equals("save"))
