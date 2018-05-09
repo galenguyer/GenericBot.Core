@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Discord;
 using Discord.Net.Queue;
 using GenericBot.Entities;
@@ -28,7 +30,7 @@ namespace GenericBot.CommandModules
             markov.Usage = "markov";
             markov.ToExecute += async (client, msg, parameters) =>
             {
-                var messages = msg.Channel.GetMessagesAsync().Flatten().Result.Reverse().Select(m =>m.Content).ToList();
+                var messages = msg.Channel.GetMessagesAsync().FlattenAsync().Result.Reverse().Select(m =>m.Content).ToList();
                 messages.ToList().AddRange(messages.TakeLast(50));
                 messages.ToList().AddRange(messages.TakeLast(25));
                 messages.ToList().AddRange(messages.TakeLast(10));
