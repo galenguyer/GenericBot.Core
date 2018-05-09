@@ -23,11 +23,13 @@ namespace GenericBot
 
         public static Task<RestUserMessage> ReplyAsync(this SocketMessage msg, object text)
         {
-            return msg.Channel.SendMessageAsync(text.ToString().Replace("@everyone", "@-everyone").Replace("@here", "@-here"));
+            return msg.Channel.SendMessageAsync(text.ToString().Replace("@everyone", "@-everyone")
+                .Replace("@here", "@-here"));
         }
 
         public static bool Empty(this List<string> list)
         {
+            if (list == null) return true;
             return list.All(i => string.IsNullOrEmpty(i.Trim()));
         }
 
@@ -38,24 +40,18 @@ namespace GenericBot
 
         public static List<SocketUser> GetMentionedUsers(this SocketMessage msg)
         {
-            var users = msg.MentionedUsers.ToList();
+            var users = msg.MentionedUsers.ToHashSet();
 
-            var allUsers = GenericBot.DiscordClient.Guilds.SelectMany(g => g.Users);
-
-            foreach (Match match in Regex.Matches(msg.Content, "[0-9]{17,18}"))
+            foreach (Match match in Regex.Matches(msg.Content, "[0-9]{16,19}"))
             {
-                if (allUsers.Any(u => u.Id.ToString() == match.Value) &&
-                    users.All(u => u.Id.ToString() != match.Value))
-                {
-                    users.Add(GenericBot.DiscordClient.GetUser(Convert.ToUInt64(match.Value)));
-                }
+                users.Add(GenericBot.DiscordClient.GetUser(Convert.ToUInt64(match.Value)));
             }
-            return users.ToList();
+
+            return users.GroupBy(u => u.Id).Select(g => g.First()).ToList();
         }
 
         public static bool HasElement<T>(this IEnumerable<T> inEnum, Func<T, bool> predicate, out T output)
         {
-
             try
             {
                 inEnum = inEnum.ToList();
@@ -64,6 +60,7 @@ namespace GenericBot
                     output = inEnum.First(predicate);
                     return true;
                 }
+
                 output = default(T);
                 return false;
             }
@@ -74,15 +71,30 @@ namespace GenericBot
             }
         }
 
+        public static bool Override<T, O>(this Dictionary<T, O> dict, T key, O value)
+        {
+            if (dict.ContainsKey(key))
+            {
+                dict[key] = value;
+                return true;
+            }
+            else
+            {
+                dict.Add(key, value);
+                return false;
+            }
+        }
+
         public static async Task<List<IMessage>> GetManyMessages(this SocketTextChannel channel, int count)
         {
             count++;
-            var msgs = (channel as IMessageChannel).GetMessagesAsync().Flatten().Result;
+            var msgs = (channel as IMessageChannel).GetMessagesAsync().FlattenAsync().Result;
             await Task.Yield();
 
             while (true)
             {
-                var newmsgs = (channel as IMessageChannel).GetMessagesAsync(msgs.Last(), Direction.Before).Flatten().Result;
+                var newmsgs = (channel as IMessageChannel).GetMessagesAsync(msgs.Last(), Direction.Before)
+                    .FlattenAsync().Result;
                 msgs = msgs.Concat(newmsgs);
                 await Task.Yield();
                 if (newmsgs.Count() < 100 || msgs.Count() > count) break;
@@ -104,7 +116,7 @@ namespace GenericBot
             string temp = "";
             foreach (var s in strings)
             {
-                if (temp.Length + s.Length < 2000)
+                if (temp.Length + s.Length < 1800)
                 {
                     temp += spl + s;
                 }
@@ -114,6 +126,7 @@ namespace GenericBot
                     temp = s;
                 }
             }
+
             output.Add(temp);
 
             return output;
