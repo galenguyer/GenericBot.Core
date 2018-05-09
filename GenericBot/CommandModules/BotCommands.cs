@@ -162,6 +162,26 @@ namespace GenericBot.CommandModules
 
             botCommands.Add(tweet);
 
+            Command fourchannel = new Command("4channel");
+            fourchannel.RequiredPermission = Command.PermissionLevels.Admin;
+            fourchannel.ToExecute += async (client, msg, parameters) =>
+            {
+                var conf = GenericBot.GuildConfigs[msg.GetGuild().Id];
+                if (conf.FourChannelId != msg.Channel.Id)
+                {
+                    conf.FourChannelId = msg.Channel.Id;
+                    await msg.ReplyAsync("This channel has been set for 4chan-ification");
+                }
+                else
+                {
+                    conf.FourChannelId = 0;
+                    await msg.ReplyAsync("4chan channel has been cleared");
+                }
+                conf.Save();
+            };
+            botCommands.Add(fourchannel);
+
+
             Command setStatus = new Command("setstatus");
             setStatus.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             setStatus.Description = "Set the playing status of the bot";
