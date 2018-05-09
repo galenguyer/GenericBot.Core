@@ -72,7 +72,7 @@ namespace GenericBot.CommandModules
             {
                 var guild = msg.GetGuild();
                 await guild.DownloadUsersAsync();
-
+                var bans = guild.GetBansAsync().Result;
                 string info = "";
                 info += $"Guild Name: `{guild.Name}`\n";
                 info += $"Guild Id: `{guild.Id}`\n";
@@ -85,8 +85,8 @@ namespace GenericBot.CommandModules
                 info += $"Voice Region: `{guild.VoiceRegionId}`\n";
                 info += $"Roles: `{guild.Roles.Count}`\n";
                 info += $"Verification Level: `{guild.VerificationLevel}`\n";
-                info += $"Partnered: `{guild.Features.Any()}`";
-                info += $"";
+                info += $"Partnered: `{guild.Features.Any()}`\n";
+                info += $"Bans: `{bans.Count}` (`{bans.Count(b => b.User.AvatarId == null && b.User.Username.StartsWith("Deleted User "))}` Accounts Deleted)";
                 info += $"";
                 info += $"";
 
