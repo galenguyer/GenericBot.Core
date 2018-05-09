@@ -88,20 +88,36 @@ namespace GenericBot.CommandModules
                 Stopwatch stw = new Stopwatch();
                 stw.Start();
                 string info = "";
-                using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+
+                var guildDb  = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+
+                info += $"Access time: `{stw.ElapsedMilliseconds}`ms\n";
+                info += $"Registered Users: `{guildDb.Users.Count}`\n";
+
+                int unc = 0, nnc = 0, wnc = 0, nuc = 0;
+                foreach (var user in guildDb.Users)
                 {
-                    var col = db.GetCollection<DBGuild>("userDatabase");
-                    col.EnsureIndex(c => c.ID, true);
-                    DBGuild guildDb;
-                    if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
-                        guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
-                    else guildDb = new DBGuild (msg.GetGuild().Id);
+                    if(user.Usernames != null && user.Usernames.Any())
+                        unc += user.Usernames.Count;
+                    if(user.Nicknames != null && user.Nicknames.Any())
+                        nnc += user.Nicknames.Count;
+                    if (user.Warnings != null && user.Warnings.Any())
+                    {
+                        wnc += user.Warnings.Count;
+                        nuc++;
+                    }
+                }
 
-                    info += $"Access time: `{stw.ElapsedMilliseconds}`ms\n";
-                    info += $"Registered Users: `{guildDb.Users.Count}`\n";
+                info += $"Stored Usernames: `{unc}`\n";
+                info += $"Stored Nicknames: `{nnc}`\n";
+                info += $"Stored Warnings:  `{wnc}`\n";
+                info += $"Users with Warnings:  `{nuc}`\n";
 
-                    int unc = 0, nnc = 0, wnc = 0, nuc = 0;
-                    foreach (var user in guildDb.Users)
+
+                await msg.ReplyAsync(info);
+            };
+
+            TestCommands.Add(DBStats);
                     {
                         if(user.Usernames != null && user.Usernames.Any())
                             unc += user.Usernames.Count;
