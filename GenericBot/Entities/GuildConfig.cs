@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,12 +13,12 @@ namespace GenericBot.Entities
         public List<ulong> AdminRoleIds;
         public List<ulong> ModRoleIds;
         public List<ulong> UserRoleIds;
-        public bool LogUserEvents;
         public ulong UserLogChannelId;
         public bool UserLogTimestamp;
         public string UserJoinedMessage;
         public string UserLeftMessage;
         public bool UserJoinedShowModNotes;
+        public ulong FourChannelId;
         public string Prefix;
         public bool AllowTwitter = false;
         public Giveaway Giveaway;
@@ -27,6 +28,9 @@ namespace GenericBot.Entities
         public List<CustomAlias> CustomAliases;
 
         public Dictionary<ulong, Poll> Polls = new Dictionary<ulong, Poll>();
+        public Dictionary<ulong, ulong> VoiceChannelRoles = new Dictionary<ulong, ulong>();
+        public List<ulong> ProbablyMutedUsers = new List<ulong>();
+        public ulong MutedRoleId = 0;
 
         public GuildConfig(ulong id)
         {
@@ -37,7 +41,6 @@ namespace GenericBot.Entities
             CustomCommands = new List<CustomCommand>();
             CustomAliases = new List<CustomAlias>();
 
-            LogUserEvents = false;
             UserLogTimestamp = true;
             UserJoinedMessage = "{mention} (`{id}` | `{username}`) **joined** the server.";
             UserLeftMessage = "**{username}** (`{id}`) **left** the server.";
@@ -58,6 +61,35 @@ namespace GenericBot.Entities
             }
             File.WriteAllText($"files/guildConfigs/{this.GuildId}.json", JsonConvert.SerializeObject(this, Formatting.Indented));
             return this;
+        }
+
+        public bool AddBan(GenericBan ban)
+        {
+            try
+            {
+                var guild = GenericBot.DiscordClient.GetGuild(GuildId);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+    }
+
+    public class GenericBan
+    {
+        public ulong Id;
+        public DateTimeOffset BannedUntil;
+        public bool IsPermanent;
+        public string Reason;
+
+        public GenericBan(ulong id, string reason, string until = null, bool permanent = false)
+        {
+            this.Id = id;
+            this.BannedUntil = !permanent ? DateTimeOffset.Parse(until) : DateTimeOffset.MaxValue;
+            this.IsPermanent = permanent;
+            this.Reason = reason;
         }
     }
 }
