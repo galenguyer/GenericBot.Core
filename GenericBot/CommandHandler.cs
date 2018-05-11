@@ -27,11 +27,8 @@ namespace GenericBot
             // Create Command Service, inject it into Dependency Map
             _client = map.GetService(typeof(DiscordShardedClient)) as DiscordShardedClient;
 
-            _client.MessageReceived += HandleCommand;
             _client.MessageUpdated += HandleEditedCommand;
 
-            _client.JoinedGuild += OnJoinedGuild;
-            _client.LeftGuild += OnLeftGuild;
 
             _client.GuildMemberUpdated += UserEventHandler.UserUpdated;
             _client.UserJoined += UserEventHandler.UserJoined;
