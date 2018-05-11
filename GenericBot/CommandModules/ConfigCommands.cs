@@ -230,7 +230,7 @@ namespace GenericBot.CommandModules
 
                 #region UserEvents
 
-                else if (paramList[0].ToLower().Equals("user"))
+                else if (paramList[0].ToLower().Equals("logging"))
                 {
                     if (paramList[1].ToLower().Equals("channelid"))
                     {
@@ -294,6 +294,40 @@ namespace GenericBot.CommandModules
                         else
                         {
                             await msg.ReplyAsync("Invalid Option");
+                        }
+                    }
+                    else if (paramList[1].ToLower().Equals("ignorechannel"))
+                    {
+                        if (paramList.Count == 2)
+                        {
+                            string m = "Ignored channels:";
+                            foreach (var id in GenericBot.GuildConfigs[msg.GetGuild().Id].MessageLoggingIgnoreChannels)
+                            {
+                                m += $"\n<#{id}>";
+                            }
+
+                            await msg.ReplyAsync(m);
+                        }
+                        else
+                        {
+                            if (ulong.TryParse(paramList[2], out ulong cId) &&
+                                msg.GetGuild().TextChannels.Any(c => c.Id == cId))
+                            {
+                                if (!GenericBot.GuildConfigs[msg.GetGuild().Id].MessageLoggingIgnoreChannels.Contains(cId))
+                                {
+                                    GenericBot.GuildConfigs[msg.GetGuild().Id].MessageLoggingIgnoreChannels.Add(cId);
+                                    await msg.ReplyAsync($"No longer logging <#{cId}>");
+                                }
+                                else
+                                {
+                                    GenericBot.GuildConfigs[msg.GetGuild().Id].MessageLoggingIgnoreChannels.Remove(cId);
+                                    await msg.ReplyAsync($"Resuming logging <#{cId}>");
+                                }
+                            }
+                            else
+                            {
+                                await msg.ReplyAsync("Invalid Channel Id");
+                            }
                         }
                     }
                 }
