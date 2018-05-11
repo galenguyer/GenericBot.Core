@@ -18,6 +18,9 @@ namespace GenericBot.Entities
         public string UserJoinedMessage;
         public string UserLeftMessage;
         public bool UserJoinedShowModNotes;
+        public List<ulong> MessageLoggingIgnoreChannels = new List<ulong>();
+        public ulong VerifiedRole = 0;
+        public string VerifiedMessage;
         public ulong FourChannelId;
         public string Prefix;
         public bool AllowTwitter = false;

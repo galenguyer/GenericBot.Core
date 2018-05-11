@@ -12,6 +12,7 @@ namespace GenericBot.Entities
         public List<string> Warnings { get; set; }
         public List<ulong> SavedRoles { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
+        public string VerifiedInfo { get; set; }
 
         public DBUser()
         {
