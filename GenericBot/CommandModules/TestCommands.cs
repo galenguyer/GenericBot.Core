@@ -81,6 +81,29 @@ namespace GenericBot.CommandModules
 
             TestCommands.Add(updateDB);
 
+            Command IdInfo = new Command("idInfo");
+            IdInfo.Aliases = new List<string>{"id"};
+            IdInfo.Description = "Get information from a given ID";
+            IdInfo.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("No ID given");
+                    return;
+                }
+                ulong id;
+                if (ulong.TryParse(parameters[0], out id))
+                {
+                    ulong rawtime = id >> 22;
+                    long epochtime = (long) rawtime + 1420070400000;
+                    DateTimeOffset time = DateTimeOffset.FromUnixTimeMilliseconds(epochtime);
+                    await msg.ReplyAsync($"ID: `{id}`\nDateTime: `{time.ToString(@"yyyy-MM-dd HH:mm:ss.fff tt")} GMT`");
+                }
+                else await msg.ReplyAsync("That's not a valid ID");
+            };
+
+            TestCommands.Add(IdInfo);
+
             Command DBStats = new Command("dbstats");
             DBStats.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             DBStats.ToExecute += async (client, msg, parameters) =>
