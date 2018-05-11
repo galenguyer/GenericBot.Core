@@ -399,6 +399,75 @@ namespace GenericBot.CommandModules
 
                 #endregion MutedRoleId
 
+                #region Verification
+
+                else if (paramList[0].ToLower().Equals("verification"))
+                {
+                    if (paramList[1].ToLower().Equals("roleid"))
+                    {
+                        if (paramList.Count == 2)
+                        {
+                            var roleId = GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedRole;
+                            if (roleId == 0)
+                            {
+                                await msg.ReplyAsync("Verification is disabled on this server");
+                            }
+                            else
+                            {
+                                await msg.ReplyAsync(
+                                    $"Verification role is  `{msg.GetGuild().Roles.First(g => g.Id == roleId).Name}`");
+                            }
+                        }
+                        else if(ulong.TryParse(paramList[2], out ulong roleId) && msg.GetGuild().Roles.Any(g => g.Id == roleId))
+                        {
+                            GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedRole = roleId;
+                            if (roleId != 0)
+                            {
+                                await msg.ReplyAsync(
+                                    $"Verification role set to `{msg.GetGuild().Roles.First(g => g.Id == roleId).Name}`");
+                            }
+                            else
+                            {
+                                await msg.ReplyAsync("Verification role cleared. Verification is off for this server.");
+                            }
+                        }
+                        else
+                        {
+                            await msg.ReplyAsync("Invalid RoleId");
+                        }
+                    }
+                    else if (paramList[1].ToLower().Equals("message"))
+                    {
+                        string pref = GenericBot.GlobalConfiguration.DefaultPrefix;
+                        if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix))
+                            pref = GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix;
+
+                        string message = msg.Content;
+                        message = message.Remove(0, pref.Length).TrimStart(' ').Remove(0, "config".Length).TrimStart(' ').Remove(0, "verification".Length).TrimStart(' ').Remove(0, "message".Length).Trim(' ');
+
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedMessage = message;
+
+                        await msg.ReplyAsync("Example verification message:");
+
+                        int wc = message.Length;
+
+                        int sPos = new Random().Next((wc/2), wc);
+                        for (int i = sPos; i < wc; i++)
+                        {
+                            if (message[i].Equals(' '))
+                                break;
+                            sPos++;
+                        }
+
+                        message = message.Substring(0, sPos) + $"*(the secret is: 3af8b)*" + message.Substring(sPos);
+
+                        await msg.ReplyAsync(message);
+                    }
+                    else await msg.ReplyAsync("Invalid Option");
+                }
+
+                #endregion Verification
+
                 else await msg.ReplyAsync($"Unknown property `{paramList[0]}`.");
 
                 GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
