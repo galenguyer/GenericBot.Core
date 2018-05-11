@@ -70,5 +70,32 @@ namespace GenericBot
                 //else Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
             }
         }
+
+        public static async Task MessageDeleted(Cacheable<IMessage, ulong> arg,ISocketMessageChannel channel)
+        {
+            if (!arg.HasValue) return;
+
+            var guildConfig = GenericBot.GuildConfigs[(arg.Value as SocketMessage).GetGuild().Id];
+
+            if (guildConfig.UserLogChannelId == 0 || guildConfig.MessageLoggingIgnoreChannels.Contains(channel.Id)) return;
+
+
+            string logMessage = $"```diff\n- Message DELETED by {arg.Value.Author} ({arg.Value.Author.Id})\nat {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm.ss")} GMT" +
+                                $" (Sent at {arg.Value.Timestamp.ToString(@"yyyy-MM-dd HH:mm.ss")} GMT)\nin #{arg.Value.Channel.Name.TrimStart('#')}\n";
+
+            logMessage += $"Content: {arg.Value.Content.Replace('`', '\'').SafeSubstring(1650)}";
+
+            if(arg.Value.Attachments.Any()){
+                foreach (var a in arg.Value.Attachments)
+                {
+                    logMessage += $"\nFile: {a.Filename}";
+                }
+            }
+
+            logMessage += "\n```";
+
+            (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync(logMessage);
+        }
+
     }
 }
