@@ -42,9 +42,10 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new FunCommands().GetFunCommands());
             GenericBot.Commands.AddRange(new SocialCommands().GetSocialCommands());
             GenericBot.Commands.AddRange(new MuteCommands().GetMuteCommands());
-            //GenericBot.Commands.AddRange(new BanCommands().GetBanCommands());
+            GenericBot.Commands.AddRange(new BanCommands().GetBanCommands());
             GenericBot.Commands.AddRange(new CustomCommandCommands().GetCustomCommands());
             GenericBot.Commands.AddRange(new CardCommands().GetCardCommands());
+            GenericBot.Commands.AddRange(new QuickCommands().GetQuickCommands());
 
             GenericBot.Commands.AddRange(new HackingCommands().GetHackedCommands());
             Console.WriteLine(GenericBot.Commands.Select(c => c.Name).Aggregate((i, j) => i+ ", " + j));
@@ -52,52 +53,34 @@ namespace GenericBot
 
         private async Task HandleEditedCommand(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
         {
+            if (arg1.Value.Content == arg2.Content) return;
+
             if (GenericBot.GlobalConfiguration.DefaultExecuteEdits)
             {
-                await HandleCommand(arg2);
+                await MessageEventHandler.MessageRecieved(arg2);
             }
+
+            var guildConfig = GenericBot.GuildConfigs[arg2.GetGuild().Id];
+
+            if (guildConfig.UserLogChannelId == 0 || guildConfig.MessageLoggingIgnoreChannels.Contains(arg2.Channel.Id)
+                                                  ||!arg1.HasValue) return;
+
+            string logMessage = $"```diff\n+ Message EDITED by {arg2.Author} ({arg2.Author.Id})\nat {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm.ss")} GMT" +
+                                $" (Sent at {arg1.Value.Timestamp.ToString(@"yyyy-MM-dd HH:mm.ss")} GMT) \nin #{arg2.Channel.Name.TrimStart('#')}\n";
+
+            logMessage += $"+ Before: {arg1.Value.Content.Replace('`', '\'').SafeSubstring(900)}\n\n";
+            logMessage += $"+ After: {arg2.Content.Replace('`', '\'').SafeSubstring(900)}\n```";
+
+            arg2.GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync(logMessage);
         }
 
-        public async Task HandleCommand(SocketMessage parameterMessage)
-        {
-        }
 
-        public async Task OnJoinedGuild(SocketGuild guild)
-        {
-            if (File.Exists($"files/guildConfigs/{guild.Id}.json"))
-            {
-                GenericBot.GuildConfigs.Add(guild.Id, JsonConvert.DeserializeObject<GuildConfig>(
-                    File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
-
-                await GenericBot.Logger.LogGenericMessage($"Re-Joined Guild {guild.Id}({guild.Name}) Owned By {guild.Owner.Id}({guild.Owner})");
-
-                string pref = !string.IsNullOrEmpty(GenericBot.GuildConfigs[guild.Id].Prefix)
-                    ? GenericBot.GuildConfigs[guild.Id].Prefix
-                    : GenericBot.GlobalConfiguration.DefaultPrefix;
-                await guild.Owner.GetOrCreateDMChannelAsync().Result.SendMessageAsync($"I'm back on `{guild.Name}`! " +
-                                                                                      $"If you don't remember me, go ahead and do `{pref}config` or `{pref}help`.");
-            }
-            else
-            {
-                await GenericBot.Logger.LogGenericMessage($"Joined Guild {guild.Id}({guild.Name}) Owned By {guild.Owner.Id}({guild.Owner})");
-                await GenericBot.Logger.LogGenericMessage($"Creating GuildConfig for {guild.Id}");
-                string joinMsg =
-                    $"Hey, awesome! Looks like someone (maybe even you) just invited me to your server, `{guild.Name}`! " +
-                    $"If you wanna see everything I can do out of the box, do `{GenericBot.GlobalConfiguration.DefaultPrefix}help`. " +
-                    $"To set me up, do `{GenericBot.GlobalConfiguration.DefaultPrefix}config`";
-                await guild.Owner.GetOrCreateDMChannelAsync().Result.SendMessageAsync(joinMsg);
-                new GuildConfig(guild.Id).Save();
-            }
-        }
-
-        public async Task OnLeftGuild(SocketGuild guild)
-        {
-            await GenericBot.Logger.LogGenericMessage($"Left {guild.Id}({guild.Name})");
-        }
 
         public static ParsedCommand ParseMessage(SocketMessage msg)
         {
             ParsedCommand parsedCommand = new ParsedCommand();
+
+            parsedCommand.Message = msg;
 
             string message = msg.Content;
 
