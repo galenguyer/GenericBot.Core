@@ -164,6 +164,57 @@ namespace GenericBot.CommandModules
             };
 
             TestCommands.Add(DBStats);
+            Command verify = new Command("verify");
+            verify.RequiredPermission = Command.PermissionLevels.User;
+            verify.ToExecute += async (client, msg, parameter) =>
+            {
+                List<SocketUser> users = new List<SocketUser>();
+
+                if (parameter.Empty())
+                {
+                    users.Add(msg.Author);
+                }
+                else
+                {
+                    foreach (var user in msg.GetMentionedUsers())
+                    {
+                        users.Add(user);
+                    }
+                }
+
+                var guildConfig = GenericBot.GuildConfigs[msg.GetGuild().Id];
+
+                if (guildConfig.VerifiedRole == 0)
+                {
+                    await msg.ReplyAsync($"Verification is disabled on this server");
+                    return;
+                }
+
+                if ((string.IsNullOrEmpty(guildConfig.VerifiedMessage) || guildConfig.VerifiedMessage.Split().Length < 64 || msg.GetGuild().Roles.Any(r => r.Id == guildConfig.VerifiedRole)))
+                {
+                    await msg.ReplyAsync(
+                        $"It looks like verifiction is configured improperly (either the message is too short or the role does not exist.) Please contact your server administrator to resolve it.");
+                    return;
+                }
+
+                string message = $"To get verified on **{msg.GetGuild().Name}** reply to this message with the hidden code in the message below\n\n"
+                                 + GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedMessage;
+
+                int wc = message.Length;
+
+                int sPos = new Random().Next((wc/2), wc);
+                for (int i = sPos; i < wc; i++)
+                {
+                    if (message[i].Equals(' '))
+                        break;
+                    sPos++;
+                }
+
+                message = message.Substring(0, sPos) + $" *(the secret is: {GetVerificationCode(msg.Author.Id, msg.GetGuild().Id)})* " + message.Substring(sPos);
+
+                await msg.ReplyAsync(message);
+            };
+            TestCommands.Add(verify);
 
             Command cmdp = new Command("cmd");
             cmdp.RequiredPermission = Command.PermissionLevels.BotOwner;
@@ -215,6 +266,26 @@ namespace GenericBot.CommandModules
 
 
             return TestCommands;
+        }
+
+        private string GetVerificationCode(ulong userId, ulong guildId)
+        {
+            var pid = int.Parse(userId.ToString().Substring(7, 6));
+            var gid = int.Parse(guildId.ToString().Substring(7, 6));
+
+            return (gid + pid).ToString("X").ToLower();
+        }
+
+        private SocketGuild GetGuildFromCode(string code, ulong userId)
+        {
+            var pid = int.Parse(userId.ToString().Substring(7, 6));
+            var sum = Convert.ToInt32(code, 16);
+            var gid = sum - pid;
+
+            if (GenericBot.DiscordClient.Guilds.HasElement(g => g.Id.ToString().Contains(gid.ToString()),
+                out SocketGuild guild))
+                return guild;
+            return null;
         }
     }
 }
