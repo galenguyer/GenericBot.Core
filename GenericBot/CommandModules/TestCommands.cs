@@ -190,7 +190,7 @@ namespace GenericBot.CommandModules
                     return;
                 }
 
-                if ((string.IsNullOrEmpty(guildConfig.VerifiedMessage) || guildConfig.VerifiedMessage.Split().Length < 64 || msg.GetGuild().Roles.Any(r => r.Id == guildConfig.VerifiedRole)))
+                if ((string.IsNullOrEmpty(guildConfig.VerifiedMessage) || guildConfig.VerifiedMessage.Split().Length < 32 || !msg.GetGuild().Roles.Any(r => r.Id == guildConfig.VerifiedRole)))
                 {
                     await msg.ReplyAsync(
                         $"It looks like verifiction is configured improperly (either the message is too short or the role does not exist.) Please contact your server administrator to resolve it.");

@@ -449,19 +449,13 @@ namespace GenericBot.CommandModules
 
                         await msg.ReplyAsync("Example verification message:");
 
-                        int wc = message.Length;
+                        string vm = $"Hey {msg.Author.Username}! To get verified on **{msg.GetGuild().Name}** reply to this message with the hidden code in the message below\n\n"
+                                         + GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedMessage;
 
-                        int sPos = new Random().Next((wc/2), wc);
-                        for (int i = sPos; i < wc; i++)
-                        {
-                            if (message[i].Equals(' '))
-                                break;
-                            sPos++;
-                        }
+                        string verificationMessage =
+                            VerificationEngine.InsertCodeInMessage(vm, VerificationEngine.GetVerificationCode(msg.Author.Id, msg.GetGuild().Id));
 
-                        message = message.Substring(0, sPos) + $"*(the secret is: 3af8b)*" + message.Substring(sPos);
-
-                        await msg.ReplyAsync(message);
+                        await msg.ReplyAsync(verificationMessage);
                     }
                     else await msg.ReplyAsync("Invalid Option");
                 }
