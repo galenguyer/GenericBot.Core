@@ -169,20 +169,31 @@ namespace GenericBot.CommandModules
             verify.ToExecute += async (client, msg, parameter) =>
             {
                 List<SocketUser> users = new List<SocketUser>();
+                var guildConfig = GenericBot.GuildConfigs[msg.GetGuild().Id];
 
                 if (parameter.Empty())
                 {
+                    if ((msg.Author as SocketGuildUser).Roles.Any(r => r.Id == guildConfig.VerifiedRole))
+                    {
+                        await msg.ReplyAsync("You're already verified");
+                    }
                     users.Add(msg.Author);
                 }
                 else
                 {
                     foreach (var user in msg.GetMentionedUsers())
                     {
-                        users.Add(user);
+                        if ((user as SocketGuildUser).Roles.Any(r => r.Id == guildConfig.VerifiedRole))
+                        {
+                            await msg.ReplyAsync($"{user.Username} is already verified");
+                        }
+                        else
+                        {
+                            users.Add(user);
+                        }
                     }
                 }
 
-                var guildConfig = GenericBot.GuildConfigs[msg.GetGuild().Id];
 
                 if (guildConfig.VerifiedRole == 0)
                 {
