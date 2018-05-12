@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -14,11 +15,39 @@ namespace GenericBot
         public static async Task MessageRecieved(SocketMessage parameterMessage)
         {
             // Don't handle the command if it is a system message
-            var message = parameterMessage as SocketUserMessage;
+            var message = parameterMessage;
 
             if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(message.Author.Id))
             {
                 return;
+            }
+
+            if (parameterMessage.Channel.GetType().FullName.ToLower().Contains("dmchannel"))
+            {
+                if (message.Author.Id == GenericBot.DiscordClient.CurrentUser.Id) return;
+                var msg =  GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.GetOrCreateDMChannelAsync().Result
+                    .SendMessageAsync($"```\nDM from: {message.Author}({message.Author.Id})\nContent: {message.Content.SafeSubstring(1900)}\n```").Result;
+                if (parameterMessage.Content.Split().Length == 1)
+                {
+                    var guild = VerificationEngine.GetGuildFromCode(parameterMessage.Content, message.Author.Id);
+                    if (guild == null)
+                    {
+                        await message.ReplyAsync("Invalid verification code");
+                    }
+                    else
+                    {
+                        await guild.GetUser(message.Author.Id)
+                            .AddRoleAsync(guild.GetRole(GenericBot.GuildConfigs[guild.Id].VerifiedRole));
+                        if (GenericBot.GuildConfigs[guild.Id].UserJoinedShowModNotes && guild.TextChannels.HasElement(c =>c.Id == (GenericBot.GuildConfigs[guild.Id].UserLogChannelId), out SocketTextChannel logChannel))
+                        {
+                            logChannel.SendMessageAsync($"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}`:  `{message.Author}` (`{message.Author.Id}`) just verified");
+                        }
+                        await message.ReplyAsync($"You've been verified on **{guild.Name}**!");
+
+                        await msg.ModifyAsync(m =>
+                            m.Content = $"```\nDM from: {message.Author}({message.Author.Id})\nContent: {message.Content.SafeSubstring(1900)}\nVerified on {guild.Name}\n```");
+                    }
+                }
             }
 
             if (parameterMessage.Author.Id != GenericBot.DiscordClient.CurrentUser.Id &&
