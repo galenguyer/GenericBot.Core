@@ -16,7 +16,7 @@ namespace GenericBot
         public static SocketGuild GetGuildFromCode(string code, ulong userId)
         {
             var pid = int.Parse(userId.ToString().Substring(7, 6));
-            var sum = Convert.ToInt32(StringToHex(code), 16);
+            var sum = Convert.ToInt32(StringToHex(code.ToLower()), 16);
             var gid = sum - pid;
 
             if (GenericBot.DiscordClient.Guilds.HasElement(g => g.Id.ToString().Contains(gid.ToString()),
