@@ -10,13 +10,13 @@ namespace GenericBot
             var pid = int.Parse(userId.ToString().Substring(7, 6));
             var gid = int.Parse(guildId.ToString().Substring(7, 6));
 
-            return (gid + pid).ToString("X").ToLower();
+            return HexToString((gid + pid).ToString("X").ToLower());
         }
 
         public static SocketGuild GetGuildFromCode(string code, ulong userId)
         {
             var pid = int.Parse(userId.ToString().Substring(7, 6));
-            var sum = Convert.ToInt32(code, 16);
+            var sum = Convert.ToInt32(StringToHex(code), 16);
             var gid = sum - pid;
 
             if (GenericBot.DiscordClient.Guilds.HasElement(g => g.Id.ToString().Contains(gid.ToString()),
@@ -40,6 +40,36 @@ namespace GenericBot
             message = message.Substring(0, sPos) + $" *(the secret is: {code})* " + message.Substring(sPos);
 
             return message;
+        }
+
+        private static string HexToString(string str)
+        {
+            str = str.Replace('0', 'h');
+            str = str.Replace('1', 'j');
+            str = str.Replace('2', 'k');
+            str = str.Replace('3', 'p');
+            str = str.Replace('4', 'r');
+            str = str.Replace('5', 's');
+            str = str.Replace('6', 'g');
+            str = str.Replace('7', 'x');
+            str = str.Replace('8', 'z');
+            str = str.Replace('9', 'v');
+            return str;
+        }
+
+        private static string StringToHex(string str)
+        {
+            str = str.Replace('h', '0');
+            str = str.Replace('j', '1');
+            str = str.Replace('k', '2');
+            str = str.Replace('p', '3');
+            str = str.Replace('r', '4');
+            str = str.Replace('s', '5');
+            str = str.Replace('g', '6');
+            str = str.Replace('x', '7');
+            str = str.Replace('z', '8');
+            str = str.Replace('v', '0');
+            return str;
         }
     }
 }
