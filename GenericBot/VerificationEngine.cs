@@ -68,7 +68,7 @@ namespace GenericBot
             str = str.Replace('g', '6');
             str = str.Replace('x', '7');
             str = str.Replace('z', '8');
-            str = str.Replace('v', '0');
+            str = str.Replace('v', '9');
             return str;
         }
     }
