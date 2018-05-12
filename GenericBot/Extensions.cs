@@ -140,5 +140,58 @@ namespace GenericBot
             }
             else return input.Substring(0, length) + "...";
         }
+
+        public static string SumAnd<T>(this List<T> input)
+         {
+             if (!input.Any())
+             {
+                 return "";
+             }
+             else if (input.Count == 1)
+             {
+                 return input.First().ToString();
+             }
+             else if (input.Count == 2)
+             {
+                 return $"{input.First()} and {input.Last()}";
+             }
+             else
+             {
+                 var newIN = new List<T>();
+                  newIN.AddRange(input);
+
+                 return SumAndPriv(newIN, "");
+             }
+         }
+
+        private static string SumAndPriv<T>(List<T> input, string previous)
+        {
+            if (!input.Any())
+            {
+                return "";
+            }
+            else if (input.Count == 1)
+            {
+                return input.First().ToString();
+            }
+            else if (input.Count == 2)
+            {
+                return $"{previous}, {input.First()}, and {input.Last()}";
+            }
+            else
+            {
+                string first = input.First().ToString();
+                if (!string.IsNullOrEmpty(previous))
+                {
+                    previous = $"{previous}, {first}";
+                }
+                else
+                {
+                    previous = first;
+                }
+                input.RemoveAt(0);
+                return SumAndPriv<T>(input, previous);
+            }
+        }
     }
 }

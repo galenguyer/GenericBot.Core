@@ -197,6 +197,7 @@ namespace GenericBot.CommandModules
                     return;
                 }
 
+                List<SocketUser> failed = new List<SocketUser>();
                 foreach (var user in users)
                 {
                     string message = $"Hey {user.Username}! To get verified on **{msg.GetGuild().Name}** reply to this message with the hidden code in the message below\n\n"
@@ -205,8 +206,23 @@ namespace GenericBot.CommandModules
                     string verificationMessage =
                         VerificationEngine.InsertCodeInMessage(message, VerificationEngine.GetVerificationCode(user.Id, msg.GetGuild().Id));
 
-                    await msg.ReplyAsync(verificationMessage);
+                    try
+                    {
+                        await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        users.Remove(user);
+                        failed.Add(user);
+                    }
                 }
+
+                string reply = $"I've sent {users.SumAnd()} instructions!";
+                if (failed.Any())
+                {
+                    reply += $" {failed.Select(u => u.Username).ToList().SumAnd()} could not be messaged.";
+                }
+                await msg.ReplyAsync();
             };
             TestCommands.Add(verify);
 

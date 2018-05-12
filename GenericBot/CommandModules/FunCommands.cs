@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using Discord;
 using Discord.Net.Queue;
 using GenericBot.Entities;
+using GenericBot;
 using MarkVSharp;
 
 namespace GenericBot.CommandModules
@@ -102,19 +103,8 @@ namespace GenericBot.CommandModules
 
                 string res = $"{msg.Author.Mention}, you rolled ";
                 results.Sort();
-                for (int i = 0; i < results.Count; i++)
-                {
-                    if (i == results.Count - 1 && results.Count > 1)
-                    {
-                        res += $"and `{results.ElementAt(i)}`";
-                    }
-                    else
-                    {
-                        res += $"`{results.ElementAt(i)}`, ";
-                    }
-                }
-
-                await msg.ReplyAsync(res.TrimEnd(',', ' '));
+                res += results.SumAnd();
+                await msg.ReplyAsync(res);
             };
 
             FunCommands.Add(roll);
