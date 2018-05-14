@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
 using System.Timers;
 using Discord.WebSocket;
 using LiteDB;
+using Newtonsoft.Json;
 
 namespace GenericBot.Entities
 {
@@ -13,6 +15,7 @@ namespace GenericBot.Entities
     {
         public ulong ID { get; set; }
         public List<DBUser> Users { get; set; }
+
 
         public DBGuild()
         {
@@ -25,49 +28,53 @@ namespace GenericBot.Entities
             this.Users = new List<DBUser>();
         }
 
-        public async void Save()
+        public DBGuild(ulong guildId)
         {
-            using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+            this.ID = guildId;
+            if (GenericBot.LoadedGuilds.ContainsKey(this.ID))
             {
-                var col = db.GetCollection<DBGuild>("userDatabase");
-                col.EnsureIndex(c => c.ID, true);
-                col.Upsert(this);
-                db.Dispose();
+                this.Users = GenericBot.LoadedGuilds[this.ID].Users;
             }
-        }
-        public DBGuild GetDBGuildFromId(ulong guildId)
-        {
-            if (GenericBot.LoadedGuilds.Values.Any(v => v.ID.Equals(guildId)))
+            else if (File.Exists($"files/guildDbs/{ID}.json"))
             {
-                GenericBot.GuildDBTimers[guildId] = DateTimeOffset.Now.AddMinutes(1);
-                return GenericBot.LoadedGuilds[guildId];
+                this.Users = JsonConvert.DeserializeObject<List<DBUser>>(AES.DecryptText(
+                    File.ReadAllText($"files/guildDbs/{ID}.json"), GenericBot.DBPassword));
+                GenericBot.LoadedGuilds.TryAdd(ID, this);
             }
             else
             {
-                using (var db = new LiteDatabase(GenericBot.DBConnectionString))
-                {
-                    DBGuild tempdb;
-                    var col = db.GetCollection<DBGuild>("userDatabase");
-                    col.EnsureIndex(c => c.ID, true);
-                    if (col.Exists(c => c.ID.Equals(guildId)))
-                    {
-                        tempdb = col.FindOne(c => c.ID.Equals(guildId));
-                    }
-                    else
-                    {
-                        tempdb = new DBGuild(){ID = guildId, Users = new List<DBUser>()};
-                    }
-                    db.Dispose();
-                    GenericBot.GuildDBTimers.TryAdd(guildId, DateTimeOffset.Now.AddMinutes(1));
-                    return tempdb;
-                }
+                this.Users = new List<DBUser>();
             }
+        }
+
+        public async void Save()
+        {
+            GenericBot.LoadedGuilds[this.ID] = this;
+            Directory.CreateDirectory("files");
+            Directory.CreateDirectory("files/guildDbs");
+            File.WriteAllText($"files/guildDbs/{ID}.json", AES.EncryptText(JsonConvert.SerializeObject(this.Users), GenericBot.DBPassword));
+        }
+
+        public DBGuild GetDBGuildFromId(ulong guildId)
+        {
+            var col = GenericBot.GlobalDatabase.GetCollection<DBGuild>("userDatabase");
+            DBGuild tempdb;
+            col.EnsureIndex(c => c.ID, true);
+            if (col.Exists(c => c.ID.Equals(guildId)))
+            {
+                tempdb = col.FindOne(c => c.ID.Equals(guildId));
+            }
+            else
+            {
+                tempdb = new DBGuild(){ID = guildId, Users = new List<DBUser>()};
+            }
+
+            return tempdb;
         }
 
         public DBUser GetUser(ulong id)
         {
-            DBUser res;
-            if (Users.HasElement(u => u.ID.Equals(id), out res))
+            if (Users.HasElement(u => u.ID.Equals(id), out var res))
             {
                 return res;
             }
