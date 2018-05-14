@@ -100,7 +100,7 @@ namespace GenericBot.CommandModules
                     roles += $"`{role.Name}`, ";
                 }
                 DBUser dbUser;
-                DBGuild guildDb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                DBGuild guildDb = new DBGuild(msg.GetGuild().Id);
                 if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
                 {
                     dbUser = guildDb.Users.First(u => u.ID.Equals(user.Id));
@@ -108,7 +108,6 @@ namespace GenericBot.CommandModules
                 else
                 {
                     dbUser = new DBUser(user);
-                    guildDb.Save();
                 }
 
                 string nicks = "", usernames = "";
@@ -144,7 +143,7 @@ namespace GenericBot.CommandModules
                 {
                     await msg.ReplyAsync(str.TrimStart(','));
                 }
-
+                guildDb.Save();
             };
 
             ModCommands.Add(whois);
@@ -155,63 +154,85 @@ namespace GenericBot.CommandModules
             find.RequiredPermission = Command.PermissionLevels.Moderator;
             find.ToExecute += async (client, msg, parameters) =>
             {
-                ulong uid = ulong.Parse(parameters[0].TrimStart('<', '@', '!').TrimEnd('>'));
-                DBUser dbUser;
-                SocketGuildUser user;
-                DBGuild guildDb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
-                if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
+                string input = parameters.reJoin();
+                List<DBUser> dbUsers = new List<DBUser>();
+                var guildDb = new DBGuild(msg.GetGuild().Id);
+
+                if (msg.MentionedUsers.Any())
                 {
-                    dbUser = guildDb.Users.First(u => u.ID.Equals(uid));
+                    dbUsers.Add(guildDb.GetUser(msg.MentionedUsers.First().Id));
+                }
+                else if ((input.Length > 16 && input.Length < 19) && ulong.TryParse(input, out ulong id))
+                {
+                    dbUsers.Add(guildDb.GetUser(id));
+                }
+                else if (input.Length < 3 && guildDb.Users.Count > 100)
+                {
+                    await msg.ReplyAsync($"I can't search for that, it's dangerously short and risks a crash.");
+                    return;
                 }
                 else
                 {
-                    await msg.ReplyAsync("No user found");
+                    try{dbUsers.AddRange(guildDb.Users.Where(u => u.Nicknames != null && u.Nicknames.Any(n => n.ToLower().Contains(input.ToLower()))));}
+                    catch(Exception ex){}
+                    try{dbUsers.AddRange(guildDb.Users.Where(u => u.Usernames != null && u.Usernames.Any(n => n.ToLower().Contains(input.ToLower()))));}
+                    catch(Exception ex){}
+                    dbUsers = dbUsers.Distinct().ToList();
+                }
+
+                if (dbUsers.Count > 5)
+                {
+                    string info =
+                        $"Found `{dbUsers.Count}` users. Their first stored usernames are:\n{dbUsers.Select(u => $"`{u.Usernames.First()}`").ToList().SumAnd()}" +
+                        $"\nTry using more precise search parameters";
+                    foreach (var str in info.SplitSafe(','))
+                    {
+                        await msg.ReplyAsync(str.TrimStart(','));
+                    }
                     return;
                 }
-                try
+                else if (dbUsers.Count == 0)
                 {
-                    user = msg.GetGuild().GetUser(uid);
-                }
-                catch (Exception ex)
-                {
-                    user = msg.Author as SocketGuildUser;
+                    await msg.ReplyAsync($"No users found");
                 }
 
+                foreach (var dbUser in dbUsers)
+                {
+                    string nicks = "", usernames = "";
+                    if (dbUser.Usernames != null && !dbUser.Usernames.Empty())
+                    {
+                        usernames = dbUser.Usernames.Distinct().Select(n => $"`{n.Replace("`", "'")}`").ToList().SumAnd();
+                    }
 
-                string nicks = "", usernames = "";
-                if(dbUser.Usernames!= null && !dbUser.Usernames.Empty()) {foreach (var str in dbUser.Usernames.Distinct().ToList())
-                {
-                    usernames += $"`{str.Replace('`', '\'')}`, ";
-                }}
-                if(dbUser.Nicknames != null && !dbUser.Nicknames.Empty()){ foreach (var str in dbUser.Nicknames.Distinct().ToList())
-                {
-                    nicks += $"`{str.Replace('`', '\'')}`, ";
-                }}
-                nicks = nicks.Trim(',', ' ');
-                usernames = usernames.Trim(',', ' ');
+                    if (dbUser.Nicknames != null && !dbUser.Nicknames.Empty())
+                    {
+                        nicks = dbUser.Nicknames.Distinct().Select(n => $"`{n.Replace("`", "'")}`").ToList().SumAnd();
+                    }
 
-                string info =  $"User Id:  `{dbUser.ID}`\n";
-                info += $"Past Usernames: {usernames}\n";
-                info += $"Past Nicknames: {nicks}\n";
-                if (user != null && user.Id != msg.Author.Id)
-                {
-                    info +=
-                        $"Created At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.CreatedAt.LocalDateTime)}GMT` " +
-                        $"(about {(DateTime.UtcNow - user.CreatedAt).Days} days ago)\n";
+
+                    string info = $"User: <@!{dbUser.ID}>\nUser Id:  `{dbUser.ID}`\n";
+                    info += $"Past Usernames: {usernames}\n";
+                    info += $"Past Nicknames: {nicks}\n";
+                    SocketGuildUser user = msg.GetGuild().GetUser(dbUser.ID);
+                    if (user != null && user.Id != msg.Author.Id)
+                    {
+                        info +=
+                            $"Created At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.CreatedAt.LocalDateTime)}GMT` " +
+                            $"(about {(DateTime.UtcNow - user.CreatedAt).Days} days ago)\n";
+                    }
+
+                    if (user != null && user.Id != msg.Author.Id && user.JoinedAt.HasValue)
+                        info +=
+                            $"Joined At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.JoinedAt.Value.LocalDateTime)}GMT`" +
+                            $"(about {(DateTime.UtcNow - user.JoinedAt.Value).Days} days ago)\n";
+                    if (dbUser.Warnings != null && !dbUser.Warnings.Empty())
+                        info += $"`{dbUser.Warnings.Count}` Warnings: {dbUser.Warnings.SumAnd()}";
+
+                    foreach (var str in info.SplitSafe(','))
+                    {
+                        await msg.ReplyAsync(str.TrimStart(','));
+                    }
                 }
-                if (user != null && user.Id != msg.Author.Id && user.JoinedAt.HasValue)
-                    info +=
-                        $"Joined At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.JoinedAt.Value.LocalDateTime)}GMT`" +
-                        $"(about {(DateTime.UtcNow - user.JoinedAt.Value).Days} days ago)\n";
-                if(dbUser.Warnings != null && !dbUser.Warnings.Empty())
-                    info += $"`{dbUser.Warnings.Count}` Warnings: {dbUser.Warnings.reJoin(" | ")}";
-
-
-                foreach (var str in info.SplitSafe(','))
-                {
-                    await msg.ReplyAsync(str.TrimStart(','));
-                }
-
             };
 
             ModCommands.Add(find);
@@ -233,7 +254,7 @@ namespace GenericBot.CommandModules
                     parameters.RemoveAt(0);
                     string warning = parameters.reJoin();
                     warning += $" (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
-                    DBGuild guildDb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                    DBGuild guildDb = new DBGuild(GetGuild().Id);
                     if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
                     {
                         guildDb.Users.Find(u => u.ID.Equals(uid)).AddWarning(warning);
@@ -276,7 +297,7 @@ namespace GenericBot.CommandModules
                     parameters.RemoveAt(0);
                     string warning = parameters.reJoin();
                     warning += $" (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
-                    DBGuild guildDb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                    DBGuild guildDb = new DBGuild(msg.GetGuild().Id);
                     if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
                     {
                         guildDb.Users.Find(u => u.ID.Equals(user.Id)).AddWarning(warning);
@@ -329,7 +350,7 @@ namespace GenericBot.CommandModules
                 ulong uid;
                 if (ulong.TryParse(parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out uid))
                 {
-                    var guilddb = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                    var guilddb = new DBGuild(msg.GetGuild().Id);
                     if (guilddb.GetUser(uid).RemoveWarning(allWarnings: removeAll))
                     {
                         await msg.ReplyAsync($"Done!");
