@@ -71,6 +71,15 @@ namespace GenericBot
             logMessage += $"+ Before: {arg1.Value.Content.Replace('`', '\'').SafeSubstring(900)}\n\n";
             logMessage += $"+ After: {arg2.Content.Replace('`', '\'').SafeSubstring(900)}\n```";
 
+            foreach (var uid in arg1.Value.MentionedUserIds)
+            {
+                logMessage = logMessage.Replace($"<@!{uid}>", "@" + GenericBot.DiscordClient.GetUser(uid).Username);
+            }
+            foreach (var user in arg2.MentionedUsers)
+            {
+                logMessage = logMessage.Replace(user.Mention, "@" + user.Username);
+            }
+
             arg2.GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync(logMessage);
         }
 

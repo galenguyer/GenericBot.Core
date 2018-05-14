@@ -120,6 +120,10 @@ namespace GenericBot
                     logMessage += $"\nFile: {a.Filename}";
                 }
             }
+            foreach (var uid in arg.Value.MentionedUserIds)
+            {
+                logMessage = logMessage.Replace($"<@!{uid}>", "@" + GenericBot.DiscordClient.GetUser(uid).Username);
+            }
 
             logMessage += "\n```";
 
