@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml;
 using Discord;
-using Discord.Net.Queue;
-using Discord.Rest;
 using Discord.WebSocket;
 using GenericBot.Entities;
-using LiteDB;
 
 namespace GenericBot.CommandModules
 {
@@ -254,7 +250,7 @@ namespace GenericBot.CommandModules
                     parameters.RemoveAt(0);
                     string warning = parameters.reJoin();
                     warning += $" (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
-                    DBGuild guildDb = new DBGuild(GetGuild().Id);
+                    DBGuild guildDb = new DBGuild(msg.GetGuild().Id);
                     if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
                     {
                         guildDb.Users.Find(u => u.ID.Equals(uid)).AddWarning(warning);

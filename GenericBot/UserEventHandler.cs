@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using GenericBot.Entities;
-using LiteDB;
-using Newtonsoft.Json;
 
 namespace GenericBot
 {
@@ -14,49 +12,21 @@ namespace GenericBot
     {
         public static async Task UserUpdated(SocketGuildUser beforeUser, SocketGuildUser afterUser)
         {
-            if (beforeUser.Username != afterUser.Username)
+            if (beforeUser.Username != afterUser.Username || beforeUser.Nickname != afterUser.Nickname)
             {
-                using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                var guildDb = new DBGuild(afterUser.Guild.Id);
+                if (guildDb.Users.Any(u => u.ID.Equals(afterUser.Id))) // if already exists
                 {
-                    var col = db.GetCollection<DBGuild>("userDatabase");
-                    col.EnsureIndex(c => c.ID, true);
-                    DBGuild guildDb;
-                    if(col.Exists(g => g.ID.Equals(afterUser.Guild.Id)))
-                        guildDb = col.FindOne(g => g.ID.Equals(afterUser.Guild.Id));
-                    else guildDb = new DBGuild (afterUser.Guild);
-                    if (guildDb.Users.Any(u => u.ID.Equals(afterUser.Id))) // if already exists
-                    {
-                        guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(afterUser.Username);
-                    }
-                    else
-                    {
-                        guildDb.Users.Add(new DBUser(afterUser));
-                    }
-                    col.Upsert(guildDb);
-                    db.Dispose();
+                    guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(beforeUser.Username);
+                    guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(beforeUser.Nickname);
+                    guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(afterUser.Username);
+                    guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(afterUser.Nickname);
                 }
-            }
-            if (beforeUser.Nickname != afterUser.Nickname)
-            {
-                using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                else
                 {
-                    var col = db.GetCollection<DBGuild>("userDatabase");
-                    col.EnsureIndex(c => c.ID, true);
-                    DBGuild guildDb;
-                    if(col.Exists(g => g.ID.Equals(afterUser.Guild.Id)))
-                        guildDb = col.FindOne(g => g.ID.Equals(afterUser.Guild.Id));
-                    else guildDb = new DBGuild (afterUser.Guild);
-                    if (guildDb.Users.Any(u => u.ID.Equals(afterUser.Id))) // if already exists
-                    {
-                        guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddNickname(afterUser);
-                    }
-                    else
-                    {
-                        guildDb.Users.Add(new DBUser(afterUser));
-                    }
-                    col.Upsert(guildDb);
-                    db.Dispose();
+                    guildDb.Users.Add(new DBUser(afterUser));
                 }
+                guildDb.Save();
             }
         }
 
@@ -64,25 +34,16 @@ namespace GenericBot
         {
             #region Database
 
-            using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+            var guildDb = new DBGuild(user.Guild.Id);
+            if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
             {
-                var col = db.GetCollection<DBGuild>("userDatabase");
-                col.EnsureIndex(c => c.ID, true);
-                DBGuild guildDb;
-                if(col.Exists(g => g.ID.Equals(user.Guild.Id)))
-                    guildDb = col.FindOne(g => g.ID.Equals(user.Guild.Id));
-                else guildDb = new DBGuild (user.Guild);
-                if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
-                {
-                    guildDb.Users.Find(u => u.ID.Equals(user.Id)).AddUsername(user.Username);
-                }
-                else
-                {
-                    guildDb.Users.Add(new DBUser(user));
-                }
-                col.Upsert(guildDb);
-                db.Dispose();
+                guildDb.Users.Find(u => u.ID.Equals(user.Id)).AddUsername(user.Username);
             }
+            else
+            {
+                guildDb.Users.Add(new DBUser(user));
+            }
+            guildDb.Save();
 
             #endregion Databasae
 
@@ -124,7 +85,6 @@ namespace GenericBot
                 }
                 var logMessage = user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync(message).Result;
 
-                DBGuild guildDb = new DBGuild().GetDBGuildFromId((user).Guild.Id);
                 DBUser usr = guildDb.Users.First(u => u.ID.Equals(user.Id));
 
                 if (guildConfig.UserJoinedShowModNotes && !usr.Warnings.Empty())

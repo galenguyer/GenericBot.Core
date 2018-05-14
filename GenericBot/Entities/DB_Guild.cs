@@ -55,23 +55,6 @@ namespace GenericBot.Entities
             File.WriteAllText($"files/guildDbs/{ID}.json", AES.EncryptText(JsonConvert.SerializeObject(this.Users), GenericBot.DBPassword));
         }
 
-        public DBGuild GetDBGuildFromId(ulong guildId)
-        {
-            var col = GenericBot.GlobalDatabase.GetCollection<DBGuild>("userDatabase");
-            DBGuild tempdb;
-            col.EnsureIndex(c => c.ID, true);
-            if (col.Exists(c => c.ID.Equals(guildId)))
-            {
-                tempdb = col.FindOne(c => c.ID.Equals(guildId));
-            }
-            else
-            {
-                tempdb = new DBGuild(){ID = guildId, Users = new List<DBUser>()};
-            }
-
-            return tempdb;
-        }
-
         public DBUser GetUser(ulong id)
         {
             if (Users.HasElement(u => u.ID.Equals(id), out var res))
