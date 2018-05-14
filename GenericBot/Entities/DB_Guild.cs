@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Runtime.Serialization;
-using System.Timers;
 using Discord.WebSocket;
-using LiteDB;
 using Newtonsoft.Json;
 
 namespace GenericBot.Entities

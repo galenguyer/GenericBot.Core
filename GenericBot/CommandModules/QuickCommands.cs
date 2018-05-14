@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Net.Queue;
-using Discord.WebSocket;
+﻿using System.Collections.Generic;
 using GenericBot.Entities;
 
 namespace GenericBot.CommandModules

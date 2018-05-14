@@ -1,12 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using GenericBot.Entities;
-using Newtonsoft.Json;
 
 namespace GenericBot
 {

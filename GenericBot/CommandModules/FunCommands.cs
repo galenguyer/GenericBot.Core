@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using Discord;
-using Discord.Net.Queue;
 using GenericBot.Entities;
-using GenericBot;
 using MarkVSharp;
 
 namespace GenericBot.CommandModules

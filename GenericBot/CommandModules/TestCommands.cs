@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Text;
 using Discord;
+using Discord.WebSocket;
 using GenericBot.Entities;
-using LiteDB;
-using Newtonsoft.Json;
 
 namespace GenericBot.CommandModules
 {

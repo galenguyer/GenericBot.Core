@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Discord;
 
 namespace GenericBot.Entities
 {
@@ -7,5 +8,6 @@ namespace GenericBot.Entities
         public Command Command;
         public string Name;
         public List<string> Parameters;
+        public IMessage Message;
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Discord;
 using GenericBot.Entities;
-using Newtonsoft.Json;
 
 namespace GenericBot.CommandModules
 {

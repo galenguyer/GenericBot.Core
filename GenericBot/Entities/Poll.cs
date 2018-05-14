@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GenericBot.Entities
 {
@@ -14,7 +13,7 @@ namespace GenericBot.Entities
         public bool Vote(ulong userId, int option)
         {
             if (option < 0 || option >= Options.Count) return false;
-            
+
             var alreadyVotedFor = GetVoted(userId);
             if (!MultipleChoice)
             {
@@ -24,7 +23,7 @@ namespace GenericBot.Entities
             Options[option].Voters.Add(userId);
             return true;
         }
-        
+
         public bool HasVoted(ulong userId)
         {
             return GetVoted(userId) != null;
