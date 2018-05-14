@@ -317,16 +317,8 @@ namespace GenericBot.CommandModules
             {
                 if (parameters[0].ToLower().Equals("save"))
                 {
-                    using (var db = new LiteDatabase(GenericBot.DBConnectionString))
-                    {
-                        DBUser dbUser;
-                        var col = db.GetCollection<DBGuild>("userDatabase");
-                        col.EnsureIndex(c => c.ID, true);
-                        DBGuild guildDb;
-                        if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
-                            guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
-                        else guildDb = new DBGuild (msg.GetGuild());
-                        dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
+                        var guildDb = new DBGuild(msg.GetGuild().Id);
+                        var dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
                         List<ulong> roles = new List<ulong>();
                         foreach(var role in (msg.Author as SocketGuildUser).Roles)
                         {
@@ -336,54 +328,44 @@ namespace GenericBot.CommandModules
                         dbUser.SavedRoles = roles;
 
                         await msg.ReplyAsync($"I've saved `{dbUser.SavedRoles.Count}` roles for you!");
-                        col.Upsert(guildDb);
-                        db.Dispose();
-                    }
+                        guildDb.Save();
 
                 }
                 else if (parameters[0].ToLower().Equals("restore"))
                 {
-                    using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                    var guildDb = new DBGuild(msg.GetGuild().Id);
+                    if (guildDb.Users.Any(u => u.ID.Equals(msg.Author.Id))) // if already exists
                     {
-                        DBUser dbUser;
-                        var col = db.GetCollection<DBGuild>("userDatabase");
-                        col.EnsureIndex(c => c.ID, true);
-                        DBGuild guildDb;
-                        if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
-                            guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
-                        else guildDb = new DBGuild (msg.GetGuild());
-                        if (guildDb.Users.Any(u => u.ID.Equals(msg.Author.Id))) // if already exists
+                        var dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
+                        if (dbUser.SavedRoles == null || !dbUser.SavedRoles.Any())
                         {
-                            dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
-                            if (dbUser.SavedRoles == null || !dbUser.SavedRoles.Any())
-                            {
-                                await msg.ReplyAsync("No roles saved. Try using `rolestore save` first!");
-                                return;
-                            }
-                            int success = 0;
-                            int fails = 0;
-                            foreach (var id in dbUser.SavedRoles.Where(id => !(msg.Author as IGuildUser).RoleIds.Contains(id)))
-                            {
-                                try
-                                {
-                                    await (msg.Author as SocketGuildUser).AddRoleAsync(
-                                        msg.GetGuild().Roles.First(r => r.Id.Equals(id)));
-                                    success++;
-                                }
-                                catch (Exception e)
-                                {
-                                    fails++;
-                                }
-                            }
-                            await msg.ReplyAsync($"`{success}` roles restored, `{fails}` failed");
-                        }
-                        else
-                        {
-                            dbUser = new DBUser(msg.Author as SocketGuildUser);
-                            await msg.ReplyAsync("I don't have any saved roles for you");
+                            await msg.ReplyAsync("No roles saved. Try using `rolestore save` first!");
                             return;
                         }
-                        db.Dispose();
+
+                        int success = 0;
+                        int fails = 0;
+                        foreach (var id in dbUser.SavedRoles.Where(id =>
+                            !(msg.Author as IGuildUser).RoleIds.Contains(id)))
+                        {
+                            try
+                            {
+                                await (msg.Author as SocketGuildUser).AddRoleAsync(
+                                    msg.GetGuild().Roles.First(r => r.Id.Equals(id)));
+                                success++;
+                            }
+                            catch (Exception e)
+                            {
+                                fails++;
+                            }
+                        }
+
+                        await msg.ReplyAsync($"`{success}` roles restored, `{fails}` failed");
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("I don't have any saved roles for you");
+                        return;
                     }
                 }
                 else
