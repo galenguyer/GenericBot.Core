@@ -89,6 +89,25 @@ namespace GenericBot.CommandModules
 
             botCommands.Add(say);
 
+            Command dmuser = new Command("dmuser");
+            dmuser.RequiredPermission = Command.PermissionLevels.BotOwner;
+            dmuser.ToExecute += async (client, msg, paramList) =>
+            {
+                var channel = client.GetUser(ulong.Parse(paramList[0])).GetOrCreateDMChannelAsync().Result;
+
+                string pref = GenericBot.GlobalConfiguration.DefaultPrefix;
+                if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix))
+                    pref = GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix;
+                string message = msg.Content;
+                message = message.Remove(0, pref.Length).TrimStart(' ').Remove(0, "dmUser".Length).TrimStart(' ')
+                    .Remove(0, paramList[0].Length).TrimStart(' ');
+
+                await channel.SendMessageAsync(message);
+                await msg.ReplyAsync($"Sent `{message}` to {client.GetUser(ulong.Parse(paramList[0]))}");
+            };
+
+            botCommands.Add(dmuser);
+
             Command leaveGuild = new Command("leaveGuild");
             leaveGuild.Description = "Instruct the bot to leave the guild";
             leaveGuild.RequiredPermission = Command.PermissionLevels.Admin;
