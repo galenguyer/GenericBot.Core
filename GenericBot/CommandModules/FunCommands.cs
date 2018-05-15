@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
 using Discord;
 using GenericBot.Entities;
@@ -52,6 +53,7 @@ namespace GenericBot.CommandModules
             {
                 int count = 1;
                 int sides = 20;
+                int add = 0;
                 if(!parameters.Empty())
                 {
                     string param = parameters.reJoin("").ToLower();
@@ -65,11 +67,26 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
-                        var list = param.Split('d');
-                        if (!(int.TryParse(list[0], out count) && int.TryParse(list[1], out sides)))
+                        if (!param.Contains("+"))
                         {
-                            await msg.ReplyAsync("Input improperly formatted");
-                            return;
+                            var list = param.Split('d');
+                            if (!(int.TryParse(list[0], out count) && int.TryParse(list[1], out sides)))
+                            {
+                                await msg.ReplyAsync("Input improperly formatted");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            string c = param.Split('d')[0];
+                            string second = param.Split('d')[1];
+                            string s = second.Split('+')[0];
+                            string a = second.Split('+')[1];
+                            if(!(int.TryParse(c, out count) && int.TryParse(s, out sides) && int.TryParse(a, out add)))
+                            {
+                                await msg.ReplyAsync("Input improperly formatted");
+                                return;
+                            }
                         }
                     }
                 }
@@ -96,12 +113,13 @@ namespace GenericBot.CommandModules
                     byte[] bytes = new byte[4];
                     crypto.GetNonZeroBytes(bytes);
                     int rand = Math.Abs(BitConverter.ToInt32(bytes, 0)) % sides;
-                    results.Add(rand + 1);
+                    results.Add(rand + 1 + add);
                 }
 
                 string res = $"{msg.Author.Mention}, you rolled ";
                 results.Sort();
                 res += results.SumAnd();
+                res += $" with a total of {results.Sum()}";
                 await msg.ReplyAsync(res);
             };
 
