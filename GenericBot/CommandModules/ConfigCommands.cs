@@ -418,7 +418,7 @@ namespace GenericBot.CommandModules
                                     $"Verification role is  `{msg.GetGuild().Roles.First(g => g.Id == roleId).Name}`");
                             }
                         }
-                        else if(ulong.TryParse(paramList[2], out ulong roleId) && (msg.GetGuild().Roles.Any(g => g.Id == roleId) || roleId == 0))
+                        else if(ulong.TryParse(paramList[2], out ulong roleId) && (msg.GetGuild().Roles.Any(g => g.Id == roleId) || roleId == 0)    )
                         {
                             GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedRole = roleId;
                             if (roleId != 0)
@@ -461,6 +461,56 @@ namespace GenericBot.CommandModules
                 }
 
                 #endregion Verification
+
+                #region Points
+
+                else if (paramList[0].ToLower().Equals("points"))
+                {
+                    if (paramList[1].ToLower().Equals("enabled"))
+                    {
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].PointsEnabled =
+                            !GenericBot.GuildConfigs[msg.GetGuild().Id].PointsEnabled;
+                        if (GenericBot.GuildConfigs[msg.GetGuild().Id].PointsEnabled)
+                        {
+                            await msg.ReplyAsync($"Enabled points for this server");
+                        }
+                        else
+                        {
+                            await msg.ReplyAsync($"Disabled points for this server");
+                        }
+                    }
+                    else if (paramList[1].ToLower().Equals("noun"))
+                    {
+                        if (paramList.Count != 3)
+                        {
+                            await msg.ReplyAsync("Please use one word as the name for the points name");
+                        }
+                        else
+                        {
+                            GenericBot.GuildConfigs[msg.GetGuild().Id].PointsName = paramList[2];
+                            await msg.ReplyAsync($"Set the name for points to `{paramList[2]}`");
+                        }
+                    }
+                    else if (paramList[1].ToLower().Equals("verb"))
+                    {
+                        if (paramList.Count != 3)
+                        {
+                            await msg.ReplyAsync("Please use one word as the name for the points verb");
+                            return;
+                        }
+                        else
+                        {
+                            GenericBot.GuildConfigs[msg.GetGuild().Id].PointsVerb = paramList[2];
+                            await msg.ReplyAsync($"Set the verb for using points to `{paramList[2]}`");
+                        }
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("Unknown option");
+                    }
+                }
+
+                #endregion Points
 
                 else await msg.ReplyAsync($"Unknown property `{paramList[0]}`.");
 

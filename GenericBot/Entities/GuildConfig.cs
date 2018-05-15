@@ -23,6 +23,7 @@ namespace GenericBot.Entities
 
         public string PointsName;
         public string PointsVerb;
+        public bool PointsEnabled = false;
 
         public ulong FourChannelId;
         public string Prefix;
