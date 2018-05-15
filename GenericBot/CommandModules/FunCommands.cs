@@ -66,7 +66,7 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
-                        if (!param.Contains("+"))
+                        if (!(param.Contains("+") || param.Contains("-")))
                         {
                             var list = param.Split('d');
                             if (!(uint.TryParse(list[0], out count) && uint.TryParse(list[1], out sides)))
@@ -79,8 +79,19 @@ namespace GenericBot.CommandModules
                         {
                             string c = param.Split('d')[0];
                             string second = param.Split('d')[1];
-                            string s = second.Split('+')[0];
-                            string a = second.Split('+')[1];
+                            string s = "";
+                            string a = "";
+                            if (param.Contains("+"))
+                            {
+                                s = second.Split('+')[0];
+                                a = second.Split('+')[1];
+                            }
+                            else if (param.Contains("-"))
+                            {
+                                s = second.Split('-')[0];
+                                a = second.Replace(s, "");
+                            }
+
                             if(!(uint.TryParse(c, out count) && uint.TryParse(s, out sides) && int.TryParse(a, out add)))
                             {
                                 await msg.ReplyAsync("Input improperly formatted");
@@ -111,14 +122,14 @@ namespace GenericBot.CommandModules
                 {
                     byte[] bytes = new byte[4];
                     crypto.GetNonZeroBytes(bytes);
-                    int rand = Math.Abs(BitConverter.ToInt32(bytes, 0)) % sides;
-                    results.Add(rand + 1 + add);
+                    long rand = Math.Abs(BitConverter.ToInt32(bytes, 0)) % sides;
+                    results.Add((int) rand + 1 + add);
                 }
 
                 string res = $"{msg.Author.Mention}, you rolled ";
                 results.Sort();
                 res += results.SumAnd();
-                res += $" with a total of {results.Sum()}";
+                if(count > 1) res += $" with a total of {results.Sum()}";
                 await msg.ReplyAsync(res);
             };
 
