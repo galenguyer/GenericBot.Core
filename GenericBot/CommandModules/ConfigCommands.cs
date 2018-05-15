@@ -445,7 +445,7 @@ namespace GenericBot.CommandModules
                         string message = msg.Content;
                         message = message.Remove(0, pref.Length).TrimStart(' ').Remove(0, "config".Length).TrimStart(' ').Remove(0, "verification".Length).TrimStart(' ').Remove(0, "message".Length).Trim(' ');
 
-                        GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedMessage = message;
+                        if(!string.IsNullOrEmpty(message))GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedMessage = message;
 
                         await msg.ReplyAsync("Example verification message:");
 
