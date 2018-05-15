@@ -12,8 +12,8 @@ namespace GenericBot.Entities
         public List<string> Warnings { get; set; }
         public List<ulong> SavedRoles { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
-        public string VerifiedInfo { get; set; }
-
+        public int PointsCount { get; set; }
+        public DateTimeOffset LastThanks { get; set; }
         public DBUser()
         {
 
@@ -24,6 +24,7 @@ namespace GenericBot.Entities
             Nicknames = new List<string>();
             Usernames = new List<string>{user.Username};
             Warnings = new List<string>();
+            PointsCount = 0;
 
             if(!string.IsNullOrEmpty(user.Nickname))
                 Nicknames.Add(user.Nickname);

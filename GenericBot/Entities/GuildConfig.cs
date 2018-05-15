@@ -20,6 +20,10 @@ namespace GenericBot.Entities
         public List<ulong> MessageLoggingIgnoreChannels = new List<ulong>();
         public ulong VerifiedRole = 0;
         public string VerifiedMessage;
+
+        public string PointsName;
+        public string PointsVerb;
+
         public ulong FourChannelId;
         public string Prefix;
         public bool AllowTwitter = false;
