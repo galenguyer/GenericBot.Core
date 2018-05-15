@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
 using Discord;
 using GenericBot.Entities;
@@ -51,15 +50,15 @@ namespace GenericBot.CommandModules
             roll.Usage = "roll [count]d[sides]";
             roll.ToExecute += async (client, msg, parameters) =>
             {
-                int count = 1;
-                int sides = 20;
+                uint count = 1;
+                uint sides = 20;
                 int add = 0;
                 if(!parameters.Empty())
                 {
                     string param = parameters.reJoin("").ToLower();
                     if (!param.Contains("d"))
                     {
-                        if (!int.TryParse(param, out count))
+                        if (!uint.TryParse(param, out count))
                         {
                             await msg.ReplyAsync("Input improperly formatted");
                             return;
@@ -70,7 +69,7 @@ namespace GenericBot.CommandModules
                         if (!param.Contains("+"))
                         {
                             var list = param.Split('d');
-                            if (!(int.TryParse(list[0], out count) && int.TryParse(list[1], out sides)))
+                            if (!(uint.TryParse(list[0], out count) && uint.TryParse(list[1], out sides)))
                             {
                                 await msg.ReplyAsync("Input improperly formatted");
                                 return;
@@ -82,7 +81,7 @@ namespace GenericBot.CommandModules
                             string second = param.Split('d')[1];
                             string s = second.Split('+')[0];
                             string a = second.Split('+')[1];
-                            if(!(int.TryParse(c, out count) && int.TryParse(s, out sides) && int.TryParse(a, out add)))
+                            if(!(uint.TryParse(c, out count) && uint.TryParse(s, out sides) && int.TryParse(a, out add)))
                             {
                                 await msg.ReplyAsync("Input improperly formatted");
                                 return;
