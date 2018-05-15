@@ -418,7 +418,7 @@ namespace GenericBot.CommandModules
                                     $"Verification role is  `{msg.GetGuild().Roles.First(g => g.Id == roleId).Name}`");
                             }
                         }
-                        else if(ulong.TryParse(paramList[2], out ulong roleId) && msg.GetGuild().Roles.Any(g => g.Id == roleId))
+                        else if(ulong.TryParse(paramList[2], out ulong roleId) && (msg.GetGuild().Roles.Any(g => g.Id == roleId) || roleId == 0))
                         {
                             GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedRole = roleId;
                             if (roleId != 0)
