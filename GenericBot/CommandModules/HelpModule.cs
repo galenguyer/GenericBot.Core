@@ -18,48 +18,93 @@ namespace GenericBot.CommandModules
             {
                 string commands= "";
                 var guildCustomCommands = GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands;
+                string[] levels = {"User Commands", "Moderator Commands", "Admin Commands", "Guild Owner Commands", "Global Admin Commands", "Bot Owner Commands"};
 
-                if(paramList.Empty())
+                if (paramList.Empty())
                 {
-                    foreach (var cmd in GenericBot.Commands.Where(c => c.GetPermissions(msg.Author, msg.GetGuild().Id) >= c.RequiredPermission).OrderBy(c => c.RequiredPermission))
+                    commands += "Bot Commands:\n";
+                    for (int i = 0; i <= GetIntFromPerm(help.GetPermissions(msg.Author, msg.GetGuild().Id)); i++)
                     {
-                        commands += $"`{cmd.Name}`: {cmd.Description}\n";
+                        commands += $"\n{levels[i]}: ";
+                        commands += GenericBot.Commands
+                            .Where(c => c.RequiredPermission == GetPermFromInt(i))
+                            .OrderBy(c => c.RequiredPermission)
+                            .ThenBy(c => c.Name)
+                            .Select(c => $"`{c.Name}`")
+                            .ToList().SumAnd();
                     }
 
-                    if (guildCustomCommands.Any())
+                    if (guildCustomCommands.Count > 0)
                     {
-                        foreach (var cmd in guildCustomCommands)
-                        {
-                            commands += $"`{cmd.Name}`: Custom Command\n";
-                        }
+                        commands += "\nCustom Commands:\n";
+                        commands += guildCustomCommands
+                            .Select(c => $"`{c.Name}`")
+                            .OrderBy(c => c)
+                            .ToList().SumAnd();
                     }
                 }
-
                 else
                 {
-                    foreach (var cmd in GenericBot.Commands.Where(c => c.GetPermissions(msg.Author, msg.GetGuild().Id) >= c.RequiredPermission).Where(c => c.Name.Contains(paramList[0])).OrderBy(c => c.RequiredPermission))
+                    string param = paramList.reJoin().ToLower();
+                    int cmdCount = 0;
+                    cmdCount += GenericBot.Commands
+                        .Where(c => c.RequiredPermission <= help.GetPermissions(msg.Author, msg.GetGuild().Id))
+                        .Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
+                    cmdCount += guildCustomCommands.Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
+
+                    if (cmdCount > 10)
                     {
-                        commands += $"`{cmd.Name}`: {cmd.Description} (`{cmd.Usage}`)\n";
-                        if(!cmd.Aliases.Empty() || !GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Where(a => a.Command.Equals(cmd.Name)).Select(a => a.Alias).ToList().Empty())
+                        commands += "Bot Commands:\n";
+                        for (int i = 0; i <= GetIntFromPerm(help.GetPermissions(msg.Author, msg.GetGuild().Id)); i++)
                         {
-                            List<string> aliases = cmd.Aliases;
-                            aliases.AddRange(GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Where(a => a.Command.Equals(cmd.Name)).Select(a => a.Alias));
-                            commands += $"\tAliases: `{aliases.Aggregate((i, j) => i + ", " + j)}`\n";
+                            commands += $"\n{levels[i]}: ";
+                            commands += GenericBot.Commands
+                                .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                                .Where(c => c.RequiredPermission == GetPermFromInt(i))
+                                .OrderBy(c => c.RequiredPermission)
+                                .ThenBy(c => c.Name)
+                                .Select(c => $"`{c.Name}`")
+                                .ToList().SumAnd();
+                        }
+                        if (guildCustomCommands.Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param))) > 0)
+                        {
+                            commands += "\nCustom Commands:\n";
+                            commands += guildCustomCommands
+                                .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                                .Select(c => $"`{c.Name}`")
+                                .OrderBy(c => c)
+                                .ToList().SumAnd();
                         }
                     }
-                    if (guildCustomCommands.Any())
+                    else
                     {
-                        foreach (var cmd in guildCustomCommands.Where(c => c.Name.Contains(paramList[0]) || c.Aliases.Any(a => a.Contains(paramList[0]))))
+                        var cmds = GenericBot.Commands
+                            .Where(c => c.RequiredPermission <= help.GetPermissions(msg.Author, msg.GetGuild().Id))
+                            .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                            .OrderBy(c => c.RequiredPermission)
+                            .ThenBy(c => c.Name);
+                        var ccmds =  guildCustomCommands.Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                            .OrderBy(c => c.Name);
+
+                        foreach (var cmd in cmds)
+                        {
+                            commands += $"`{cmd.Name}`: {cmd.Description} (`{cmd.Usage}`)\n";
+                            if (cmd.Aliases.Any())
+                            {
+                                commands += $"\tAliases: {cmd.Aliases.Select(c => $"`{c}`").ToList().SumAnd()}\n";
+                            }
+                        }
+                        foreach (var cmd in ccmds)
                         {
                             commands += $"`{cmd.Name}`: Custom Command\n";
                             if (cmd.Aliases.Any())
                             {
-                                commands += $"\tAliases: `{cmd.Aliases.Aggregate((i, j) => i + ", " + j)}`\n";
+                                commands += $"\tAliases: {cmd.Aliases.Select(c => $"`{c}`").ToList().SumAnd()}\n";
                             }
                         }
                     }
-
                 }
+
                 foreach (var str in commands.SplitSafe())
                 {
                     await msg.Channel.SendMessageAsync(str);
@@ -68,6 +113,47 @@ namespace GenericBot.CommandModules
             helpCommands.Add(help);
 
             return helpCommands;
+        }
+
+        private Command.PermissionLevels GetPermFromInt(int inp)
+        {
+            switch (inp)
+            {
+                case 0:
+                    return Command.PermissionLevels.User;
+                case 1:
+                    return Command.PermissionLevels.Moderator;
+                case 2:
+                    return Command.PermissionLevels.Admin;
+                case 3:
+                    return Command.PermissionLevels.GuildOwner;
+                case 4:
+                    return Command.PermissionLevels.GlobalAdmin;
+                case 5:
+                    return Command.PermissionLevels.BotOwner;
+                default:
+                    return Command.PermissionLevels.User;
+            }
+        }
+        private int GetIntFromPerm(Command.PermissionLevels inp)
+        {
+            switch (inp)
+            {
+                case Command.PermissionLevels.User:
+                    return 0;
+                case Command.PermissionLevels.Moderator:
+                    return 1;
+                case Command.PermissionLevels.Admin:
+                    return 2;
+                case Command.PermissionLevels.GuildOwner:
+                    return 3;
+                case Command.PermissionLevels.GlobalAdmin:
+                    return 4;
+                case Command.PermissionLevels.BotOwner:
+                    return 5;
+                default:
+                    return 0;
+            }
         }
     }
 }
