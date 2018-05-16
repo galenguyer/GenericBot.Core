@@ -146,9 +146,9 @@ namespace GenericBot.CommandModules
 
                 string message = parameters.reJoin();
                 message = (msg.Author.Username + ": " + message);
-                if (message.Length > 135)
+                if (message.Length > 255)
                 {
-                    message = message.Substring(0, 135) + "...";
+                    message = message.Substring(0, 255) + "...";
                 }
 
                 if (tweet.GetPermissions(msg.Author, msg.GetGuild().Id) < Command.PermissionLevels.GlobalAdmin)
