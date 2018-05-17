@@ -135,6 +135,25 @@ namespace GenericBot.CommandModules
 
             FunCommands.Add(roll);
 
+            Command cat = new Command("cat");
+            cat.Description = "Link a cat pic";
+            cat.ToExecute += async (client, msg, parameters) =>
+            {
+                await msg.ReplyAsync(GenericBot.Animols.GetCat());
+                GenericBot.Animols.RenewCats();
+            };
+            FunCommands.Add(cat);
+
+            Command dog = new Command("dog");
+            dog.Description = "Link a dog pic";
+            dog.ToExecute += async (client, msg, parameters) =>
+            {
+                await msg.ReplyAsync(GenericBot.Animols.GetDog());
+                GenericBot.Animols.RenewDogs();
+            };
+            FunCommands.Add(dog);
+
+
             return FunCommands;
         }
     }

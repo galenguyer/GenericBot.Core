@@ -27,6 +27,7 @@ namespace GenericBot
         public static string SessionId;
         public static bool DebugMode = false;
         public static string DBConnectionString = "filename=files/GuildDatabase.db; password="+DBPassword;
+        public static Animols Animols = new Animols();
 
         public static TwitterService Twitter = new TwitterService("AfaD74ulbQQmjb1yDuGKWtVY9", "WAuRJS6Z4RUDgignHmsDzudbIx2YP4PgnAcz3tp7G7nd1ZHs2z");
         public static List<GenericTweet> TweetStore;
