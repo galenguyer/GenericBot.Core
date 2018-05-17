@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Discord;
@@ -13,6 +14,56 @@ namespace GenericBot.CommandModules
         public List<Command> GetBanCommands()
         {
             List<Command> banCommands = new List<Command>();
+
+            Command globalBan = new Command("globalBan");
+            globalBan.RequiredPermission = Command.PermissionLevels.BotOwner;
+            globalBan.Description = "Ban someone from every server the bot is currently on";
+            globalBan.ToExecute += async (client, msg, parameters) =>
+            {
+                if (!ulong.TryParse(parameters[0], out ulong userId))
+                {
+                    await msg.ReplyAsync($"Invalid UserId");
+                    return;
+                }
+
+                if (parameters.Count <= 1)
+                {
+                    await msg.ReplyAsync($"Need a reasono and/or userId");
+                    return;
+                }
+
+                string reason = $"Globally banned for: {parameters.reJoin()}";
+
+                int succ = 0, fail= 0 , opt = 0;
+
+                foreach (var guild in client.Guilds)
+                {
+                    if (GenericBot.GuildConfigs[guild.Id].GlobalBanOptOut)
+                    {
+                        opt++;
+                        continue;
+                    }
+
+                    try
+                    {
+                        await guild.AddBanAsync(userId, 0, reason);
+                        succ++;
+                    }
+                    catch
+                    {
+                        fail++;
+                    }
+                }
+
+                string repl =
+                    $"Result: Banned `{msg.GetGuild().GetBansAsync().Result.First(b => b.User.Id == userId).User}` for `{reason}`\n";
+                repl += $"\nSuccesses: `{succ}`\nFailures: `{fail}`\nOpt-Outs: `{opt}`";
+
+                await msg.ReplyAsync(repl);
+
+            };
+
+            banCommands.Add(globalBan);
 
             Command ban = new Command("ban");
             ban.Description = "Ban a user from the server, whether or not they're on it";

@@ -512,6 +512,37 @@ namespace GenericBot.CommandModules
 
                 #endregion Points
 
+                #region GlobalBanOptOut
+
+                else if (paramList[0].ToLower().Equals("globalbanoptout"))
+                {
+                    if (paramList.Count > 1 && paramList[1].ToLower().Equals("true"))
+                    {
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].GlobalBanOptOut = true;
+                        await msg.ReplyAsync($"You have opted out of the global bans");
+                    }
+                    else if (paramList.Count > 1 && paramList[1].ToLower().Equals("false"))
+                    {
+
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].GlobalBanOptOut = false;
+                        await msg.ReplyAsync($"You have opted into the global bans");
+                    }
+                    else
+                    {
+                        GenericBot.GuildConfigs[msg.GetGuild().Id].GlobalBanOptOut = !GenericBot.GuildConfigs[msg.GetGuild().Id].GlobalBanOptOut;
+                        if (GenericBot.GuildConfigs[msg.GetGuild().Id].GlobalBanOptOut)
+                        {
+                            await msg.ReplyAsync($"You have opted out of the global bans");
+                        }
+                        else
+                        {
+                            await msg.ReplyAsync($"You have opted into the global bans");
+                        }
+                    }
+                }
+
+                #endregion GlobalBanOptOut
+
                 else await msg.ReplyAsync($"Unknown property `{paramList[0]}`.");
 
                 GenericBot.GuildConfigs[msg.GetGuild().Id].Save();

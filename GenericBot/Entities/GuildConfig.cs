@@ -25,6 +25,8 @@ namespace GenericBot.Entities
         public string PointsVerb;
         public bool PointsEnabled = false;
 
+        public bool GlobalBanOptOut = false;
+
         public ulong FourChannelId;
         public string Prefix;
         public bool AllowTwitter = false;
