@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using Discord;
 using GenericBot.Entities;
@@ -137,15 +138,25 @@ namespace GenericBot.CommandModules
 
             Command cat = new Command("cat");
             cat.Description = "Link a cat pic";
+            cat.SendTyping = false;
             cat.ToExecute += async (client, msg, parameters) =>
             {
-                await msg.ReplyAsync(GenericBot.Animols.GetCat());
-                GenericBot.Animols.RenewCats();
+                try
+                {
+                    await msg.ReplyAsync(GenericBot.Animols.GetCat());
+                    GenericBot.Animols.RenewCats();
+                }
+                catch (Exception ex)
+                {
+                    await msg.ReplyAsync("Uh oh, something borked a bit. Wait a sec and try again.");
+                    GenericBot.Animols.RenewCats();
+                }
             };
             FunCommands.Add(cat);
 
             Command dog = new Command("dog");
             dog.Description = "Link a dog pic";
+            dog.SendTyping = false;
             dog.ToExecute += async (client, msg, parameters) =>
             {
                 await msg.ReplyAsync(GenericBot.Animols.GetDog());
