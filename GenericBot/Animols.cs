@@ -15,46 +15,58 @@ namespace GenericBot
         public Animols()
         {
             webclient = new HttpClient(new HttpClientHandler(){AllowAutoRedirect = false});
-            RenewDogs();
-            RenewCats();
+            while (cats.Count < 5)
+            {
+                var url = webclient.GetAsync("https://thecatapi.com/api/images/get?api_key=MzE0MDUx").Result.Headers.GetValues("original_image").First();
+                cats.Add(url);
+            }
+            while (dogs.Count < 5)
+            {
+                var url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
+                while (url.EndsWith("mp4"))
+                {
+                    url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
+                }
+                dogs.Add(url);
+            }
         }
 
         public string GetCat()
         {
-            string cat = cats.ElementAt(0);
-            cats.RemoveAt(0);
-            return cat;
+            lock ("cats")
+            {
+                string cat = cats.ElementAt(0);
+                cats.RemoveAt(0);
+                return cat;
+            }
         }
 
-        public async void RenewCats()
+        public void RenewCats()
         {
-            while (cats.Count < 5)
-            {
-                var url = webclient.GetAsync("https://thecatapi.com/api/images/get").Result.Headers.GetValues("original_image").First();
+            var url = webclient.GetAsync("https://thecatapi.com/api/images/get?api_key=MzE0MDUx").Result.Headers.GetValues("original_image").First();
+            lock("cats")
                 cats.Add(url);
-            }
         }
 
         public string GetDog()
         {
-            string dog = dogs.ElementAt(0);
-            dogs.RemoveAt(0);
-            return dog;
+            lock ("dogs")
+            {
+                string dog = dogs.ElementAt(0);
+                dogs.RemoveAt(0);
+                return dog;
+            }
         }
 
-        public async void RenewDogs()
+        public void RenewDogs()
         {
-            while (dogs.Count < 5)
+            var url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
+            while (url.EndsWith("mp4"))
             {
-                var url = JsonConvert.DeserializeObject<Dictionary<string, string>>(webclient
-                    .GetStringAsync(new Uri("https://random.dog/woof.json")).Result)["url"];
-                while (url.EndsWith("mp4"))
-                {
-                    url = JsonConvert.DeserializeObject<Dictionary<string, string>>(webclient
-                        .GetStringAsync(new Uri("https://random.dog/woof.json")).Result)["url"];
-                }
-                dogs.Add(url);
+                url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
             }
+            lock("dogs")
+               dogs.Add(url);
         }
     }
 }
