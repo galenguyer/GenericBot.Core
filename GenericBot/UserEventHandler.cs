@@ -81,7 +81,21 @@ namespace GenericBot
                 }
                 if (guildConfig.UserJoinedShowModNotes == true && (DateTimeOffset.Now - user.CreatedAt).TotalDays < 7)
                 {
-                    message = $"{message} **New User:** Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalDays)}` days `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Hours)}` hours ago.";
+                    if (Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalDays) > 0)
+                    {
+                        message =
+                            $"{message} **New User:** Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalDays)}` days `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Hours)}` hours ago.";
+                    }
+                    else if (Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalHours) > 0) //Days = 0
+                    {
+                        message =
+                            $"{message} **New User:** Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalHours)}` hours `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Minutes)}` minutes ago.";
+                    }
+                    else //Days = 0 && Hours = 0
+                    {
+                        message =
+                            $"{message} **New User:** Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalMinutes)}` minutes `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Seconds)}` seconds ago.";
+                    }
                 }
                 var logMessage = user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync(message).Result;
 
