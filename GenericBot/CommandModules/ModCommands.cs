@@ -169,10 +169,32 @@ namespace GenericBot.CommandModules
                 }
                 else
                 {
-                    try{dbUsers.AddRange(guildDb.Users.Where(u => u.Nicknames != null && u.Nicknames.Any(n => n.ToLower().Contains(input.ToLower()))));}
-                    catch(Exception ex){}
-                    try{dbUsers.AddRange(guildDb.Users.Where(u => u.Usernames != null && u.Usernames.Any(n => n.ToLower().Contains(input.ToLower()))));}
-                    catch(Exception ex){}
+                    foreach (var user in guildDb.Users)
+                    {
+                        try
+                        {
+                            if (!user.Nicknames.Empty())
+                            {
+                                if (user.Nicknames.Any(n => n.ToLower().Contains(input.ToLower())))
+                                {
+                                    dbUsers.Add(user);
+                                }
+                            }
+
+                            if (!user.Usernames.Empty())
+                            {
+                                if (user.Usernames.Any(n => n.ToLower().Contains(input.ToLower())))
+                                {
+                                    dbUsers.Add(user);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            if(new Command("test").GetPermissions(msg.Author, msg.GetGuild().Id) >= Command.PermissionLevels.GlobalAdmin)
+                                await msg.ReplyAsync($"```\n{ex.Message}\n{ex.StackTrace}\n{user.ID} : {user.Usernames.Count} | {user.Nicknames.Count}\n```");
+                        }
+                    }
                     dbUsers = dbUsers.Distinct().ToList();
                 }
 
