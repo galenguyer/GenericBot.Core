@@ -27,7 +27,7 @@ namespace GenericBot
                 {
                     url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
                 }
-                dogs.Add(url);
+                dogs.Add("http://random.dog/"+url);
             }
         }
 
@@ -66,7 +66,7 @@ namespace GenericBot
                 url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
             }
             lock("dogs")
-               dogs.Add(url);
+               dogs.Add("http://random.dog/"+url);
         }
     }
 }
