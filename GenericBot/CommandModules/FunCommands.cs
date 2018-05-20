@@ -175,6 +175,37 @@ namespace GenericBot.CommandModules
             };
             FunCommands.Add(addQuote);
 
+            Command removeQuote = new Command("removeQuote");
+            removeQuote.Description = "Remove a quote from the server's list";
+            removeQuote.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("You must supply a number");
+                    return;
+                }
+
+                var dbGuild = new DBGuild(msg.GetGuild().Id);
+                if (int.TryParse(parameters[0], out int quid))
+                {
+                    if (dbGuild.RemoveQuote(quid))
+                    {
+                        await msg.ReplyAsync($"Succefully removed quote #{quid}");
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync($"The number was greater than the number of quotes saved");
+                        return;
+                    }
+                }
+                else
+                {
+                    await msg.ReplyAsync("You must pass in a number");
+                }
+                dbGuild.Save();
+            };
+            FunCommands.Add(removeQuote);
+
             Command quote = new Command("quote");
             quote.Description = "Get a random quote from the server's list";
             quote.ToExecute += async (client, msg, parameters) =>

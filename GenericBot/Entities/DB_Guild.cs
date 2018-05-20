@@ -139,5 +139,17 @@ namespace GenericBot.Entities
                 return new Quote {Content = "Could not find quote", Id = -0};
             }
         }
+
+        public bool RemoveQuote(int id)
+        {
+            if (id > Quotes.Last().Id)
+            {
+                return false;
+            }
+
+            var quote = Quotes.First(q => q.Id == id);
+            quote.Active = false;
+            return true;
+        }
     }
 }
