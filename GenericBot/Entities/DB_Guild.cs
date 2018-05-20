@@ -100,9 +100,9 @@ namespace GenericBot.Entities
                 }
                 else
                 {
-                    if (int.TryParse(identifer, out int id))
+                    if (int.TryParse(identifer.Trim(), out int id))
                     {
-                        if (Quotes.Last(q => q.Active).Id <= id)
+                        if (Quotes.Last(q => q.Active).Id >= id)
                         {
                             var quote = Quotes.Find(q => q.Id.Equals(id));
                             if (quote.Active)
@@ -111,12 +111,12 @@ namespace GenericBot.Entities
                             }
                             else
                             {
-                                return new Quote {Content = "Could not find quote", Id = id};
+                                return new Quote {Content = "Quote deleted", Id = id};
                             }
                         }
                         else
                         {
-                            return new Quote {Content = "Could not find quote", Id = id};
+                            return new Quote {Content = "Could not find quote", Id = -2};
                         }
                     }
                     else

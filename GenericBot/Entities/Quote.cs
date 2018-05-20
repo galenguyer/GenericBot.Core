@@ -15,6 +15,7 @@
         {
             Content = c;
             Id = i;
+            Active = true;
         }
 
         public override string ToString()
