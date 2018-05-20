@@ -19,6 +19,9 @@ namespace GenericBot
                 return;
             }
 
+            if(parameterMessage.Author.Id == GenericBot.DiscordClient.CurrentUser.Id)
+                return;
+
             if (parameterMessage.Channel.GetType().FullName.ToLower().Contains("dmchannel"))
             {
                 if (message.Author.Id == GenericBot.DiscordClient.CurrentUser.Id) return;
