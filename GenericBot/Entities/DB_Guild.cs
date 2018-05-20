@@ -11,6 +11,7 @@ namespace GenericBot.Entities
         public ulong ID { get; set; }
         public List<DBUser> Users { get; set; }
 
+        public List<Quote> Quotes { get; set; }
 
         public DBGuild()
         {
@@ -61,6 +62,82 @@ namespace GenericBot.Entities
                 Users.Add(new DBUser(){ID = id});
                 return Users.First(u => u.ID == id);
             };
+        }
+
+        public Quote AddQuote(string content)
+        {
+            if (Quotes == null || Quotes.Count == 0)
+            {
+                Quotes = new List<Quote>();
+            }
+            var q = new Quote
+            {
+                Content = content,
+                Id = Quotes.Count == 0 ? 1 : Quotes.Last().Id + 1,
+                Active = true
+            };
+            Quotes.Add(q);
+
+            this.Save();
+
+            return Quotes.Last();
+        }
+
+        public Quote GetQuote(string identifer)
+        {
+            try
+            {
+                if (Quotes == null || Quotes.Count == 0)
+                {
+                    return new Quote {Content = "This server has no quotes", Id = -1};
+                }
+
+                if (string.IsNullOrEmpty(identifer))
+                {
+                    var ql = Quotes.Where(q => q.Active);
+                    int max = ql.Count();
+                    return ql.ElementAt(new Random().Next(0, max));
+                }
+                else
+                {
+                    if (int.TryParse(identifer, out int id))
+                    {
+                        if (Quotes.Last(q => q.Active).Id <= id)
+                        {
+                            var quote = Quotes.Find(q => q.Id.Equals(id));
+                            if (quote.Active)
+                            {
+                                return quote;
+                            }
+                            else
+                            {
+                                return new Quote {Content = "Could not find quote", Id = id};
+                            }
+                        }
+                        else
+                        {
+                            return new Quote {Content = "Could not find quote", Id = id};
+                        }
+                    }
+                    else
+                    {
+                        var ql = Quotes.Where(q => q.Active)
+                            .Where(q => q.Content.ToLower().Contains(identifer.ToLower()));
+                        if (ql.Count() == 0)
+                        {
+                            return new Quote {Content = "Could not find quote", Id = -1};
+                        }
+
+                        int max = ql.Count();
+                        return ql.ElementAt(new Random().Next(0, max));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+                return new Quote {Content = "Could not find quote", Id = -0};
+            }
         }
     }
 }

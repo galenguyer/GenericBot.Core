@@ -164,6 +164,24 @@ namespace GenericBot.CommandModules
             };
             FunCommands.Add(dog);
 
+            Command addQuote = new Command("addQuote");
+            addQuote.Description = "Add a quote to the server's list";
+            addQuote.ToExecute += async (client, msg, parameters) =>
+            {
+                var dbGuild = new DBGuild(msg.GetGuild().Id);
+                var q = dbGuild.AddQuote(parameters.reJoin());
+                dbGuild.Save();
+                await msg.ReplyAsync($"Added {q.ToString()}");
+            };
+            FunCommands.Add(addQuote);
+
+            Command quote = new Command("quote");
+            quote.Description = "Get a random quote from the server's list";
+            quote.ToExecute += async (client, msg, parameters) =>
+            {
+                await msg.ReplyAsync(new DBGuild(msg.GetGuild().Id).GetQuote(parameters.reJoin()));
+            };
+            FunCommands.Add(quote);
 
             return FunCommands;
         }
