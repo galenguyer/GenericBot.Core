@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Discord.WebSocket;
+using Hammock.Retries;
 using Newtonsoft.Json;
 
 namespace GenericBot.Entities
@@ -10,18 +12,11 @@ namespace GenericBot.Entities
     {
         public ulong ID { get; set; }
         public List<DBUser> Users { get; set; }
-
         public List<Quote> Quotes { get; set; }
 
         public DBGuild()
         {
 
-        }
-
-        public DBGuild(SocketGuild guild)
-        {
-            this.ID = guild.Id;
-            this.Users = new List<DBUser>();
         }
 
         public DBGuild(ulong guildId)
@@ -30,11 +25,14 @@ namespace GenericBot.Entities
             if (GenericBot.LoadedGuilds.ContainsKey(this.ID))
             {
                 this.Users = GenericBot.LoadedGuilds[this.ID].Users;
+                this.Quotes = GenericBot.LoadedGuilds[this.ID].Quotes;
             }
             else if (File.Exists($"files/guildDbs/{ID}.json"))
             {
-                this.Users = JsonConvert.DeserializeObject<List<DBUser>>(AES.DecryptText(
+                var db = JsonConvert.DeserializeObject<DBGuild>(AES.DecryptText(
                     File.ReadAllText($"files/guildDbs/{ID}.json"), GenericBot.DBPassword));
+                this.Users = db.Users;
+                this.Quotes = db.Quotes;
                 GenericBot.LoadedGuilds.TryAdd(ID, this);
             }
             else
@@ -48,7 +46,7 @@ namespace GenericBot.Entities
             GenericBot.LoadedGuilds[this.ID] = this;
             Directory.CreateDirectory("files");
             Directory.CreateDirectory("files/guildDbs");
-            File.WriteAllText($"files/guildDbs/{ID}.json", AES.EncryptText(JsonConvert.SerializeObject(this.Users), GenericBot.DBPassword));
+            File.WriteAllText($"files/guildDbs/{ID}.json", AES.EncryptText(JsonConvert.SerializeObject(this), GenericBot.DBPassword));
         }
 
         public DBUser GetUser(ulong id)
