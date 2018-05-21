@@ -207,9 +207,18 @@ namespace GenericBot.CommandModules
             FunCommands.Add(removeQuote);
 
             Command quote = new Command("quote");
+            quote.SendTyping = false;
             quote.Description = "Get a random quote from the server's list";
             quote.ToExecute += async (client, msg, parameters) =>
             {
+                if (!parameters.Empty() && parameters[0] == "all" && quote.GetPermissions(msg.Author, msg.GetGuild().Id) >=
+                    Command.PermissionLevels.GlobalAdmin)
+                {
+                    System.IO.File.WriteAllText("quotes.txt", new DBGuild(msg.GetGuild().Id).Quotes.Where(q => q.Active).Select(q => $"{q.Content} (#{q.Id})").Aggregate((i, j) => i + "\n" + j));
+                    await msg.Channel.SendFileAsync("quotes.txt");
+                    System.IO.File.Delete("quotes.txt");
+                    return;
+                }
                 await msg.ReplyAsync(new DBGuild(msg.GetGuild().Id).GetQuote(parameters.reJoin()));
             };
             FunCommands.Add(quote);
