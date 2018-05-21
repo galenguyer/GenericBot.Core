@@ -18,9 +18,9 @@ namespace GenericBot
                 if (guildDb.Users.Any(u => u.ID.Equals(afterUser.Id))) // if already exists
                 {
                     guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(beforeUser.Username);
-                    guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(beforeUser.Nickname);
+                    guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddNickname(beforeUser);
                     guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(afterUser.Username);
-                    guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddUsername(afterUser.Nickname);
+                    guildDb.Users.Find(u => u.ID.Equals(afterUser.Id)).AddNickname(afterUser);
                 }
                 else
                 {
