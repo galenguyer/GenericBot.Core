@@ -35,6 +35,11 @@ namespace GenericBot
         public static Timer TweetSender = new Timer();
         public static Timer Updater = new Timer();
 
+        public static Timer StatusPollingTimer = new Timer();
+        public static int MessageCounter = 0;
+        public static int CommandCounter = 0;
+        public static int Latency = 0;
+
         public static Dictionary<ulong, List<IMessage>> MessageDeleteQueue = new Dictionary<ulong, List<IMessage>>();
         public static Timer MessageDeleteTimer = new Timer();
         public static bool Test = true;
@@ -255,6 +260,27 @@ namespace GenericBot
             catch (Exception ex)
             {
                 GenericBot.MessageDeleteQueue[messages.First().Channel.Id].AddRange(messages);
+            }
+        }
+
+        private static void StatusPollingTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                using (var httpClient = new WebClient())
+                {
+                    httpClient.Headers["Authorization"] =
+                        NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
+                    httpClient.Headers[HttpRequestHeader.ContentType] = "application/json";
+
+                    var result = httpClient.UploadString("http://localhost:1337/update/", JsonConvert.SerializeObject(new BotStatus()));
+                }
+                StatusPollingTimer.Interval = 1 * 1000;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                StatusPollingTimer.Interval = 5 * 1000;
             }
         }
     }

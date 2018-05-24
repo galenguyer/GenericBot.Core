@@ -14,6 +14,10 @@ namespace GenericBot
             // Don't handle the command if it is a system message
             var message = parameterMessage;
 
+            GenericBot.MessageCounter++;
+            GenericBot.Latency = (int) Math.Round((DateTimeOffset.UtcNow - parameterMessage.Timestamp).TotalMilliseconds);
+
+
             if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(message.Author.Id))
             {
                 return;
@@ -83,6 +87,7 @@ namespace GenericBot
                 DMChannel:
                 GenericBot.LastCommand = commandInfo;
                 commandInfo.Command.ExecuteCommand(GenericBot.DiscordClient, message, commandInfo.Parameters).FireAndForget();
+                GenericBot.CommandCounter++;
             }
             catch (NullReferenceException nullRefEx)
             {
