@@ -183,6 +183,8 @@ namespace GenericBot
                     .WithValue($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT").WithIsInline(true));
             }
 
+            await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
+            
             #endregion Logging
         }
     }
