@@ -51,9 +51,8 @@ namespace GenericBot.CommandModules
                                $"Servers: `{client.Guilds.Count}`\n" +
                                $"Users: `{client.Guilds.Sum(g => g.Users.Count)}`\n" +
                                $"Shards: `{client.Shards.Count}`\n" +
+                              // $"CPU Usage: `{Math.Round(GenericBot.CpuCounter.NextValue())}`% \n" +
                                $"Memory: `{Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB`\n" +
-                               $"Threads: `{Process.GetCurrentProcess().Threads.OfType<ProcessThread>().Count()}` " +
-                               $"(`{Process.GetCurrentProcess().Threads.OfType<ProcessThread>().Count(t => t.ThreadState == ThreadState.Running)} Active`)\n" +
                                $"Uptime: `{(DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss")}`\n" +
                                $"Disconnects: `{GenericBot.Disconnects}`\n\n";
 
@@ -61,7 +60,10 @@ namespace GenericBot.CommandModules
                 {
                     stats += $"Shard `{shard.ShardId}`: `{shard.Guilds.Count}` Guilds (`{shard.Guilds.Sum(g => g.Users.Count)}` Users)\n";
                 }
-                               await msg.Channel.SendMessageAsync(stats);
+
+                stats += $"\n_\\*For some more live stats, check https://mastrchef.rocks/programs/genericbot/status/*_";
+
+                await msg.Channel.SendMessageAsync(stats);
             };
             botCommands.Add(global);
 
