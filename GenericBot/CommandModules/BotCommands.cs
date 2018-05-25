@@ -8,6 +8,7 @@ using System.Threading;
 using Discord;
 using Discord.Commands;
 using Discord.Net.Queue;
+using Discord.WebSocket;
 using GenericBot.Entities;
 using Hammock.Web;
 using Newtonsoft.Json;
@@ -97,6 +98,15 @@ namespace GenericBot.CommandModules
             {
                 var channel = client.GetUser(ulong.Parse(paramList[0])).GetOrCreateDMChannelAsync().Result;
 
+                if (paramList.Count == 1)
+                {
+                    var messages = channel.GetMessagesAsync().FlattenAsync().Result.Reverse();
+                    string str = messages.Select(m => $"{m.Author}: {m.Content} {m.Attachments.Select(a => a.Url).ToList().SumAnd()}").Aggregate((a, b) => a + "\n" + b);
+                    File.WriteAllText("file.txt", str);
+                    await msg.Channel.SendFileAsync("file.txt");
+                    File.Delete("file.txt");
+                    return;
+                }
                 string pref = GenericBot.GlobalConfiguration.DefaultPrefix;
                 if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix))
                     pref = GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix;
@@ -177,7 +187,7 @@ namespace GenericBot.CommandModules
                         await msg.ReplyAsync("Done.");
                     }
                 }
-                {
+                else {
                     await msg.ReplyAsync("Bye!");
                     await msg.GetGuild().LeaveAsync();
                 }

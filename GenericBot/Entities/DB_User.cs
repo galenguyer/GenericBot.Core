@@ -39,6 +39,14 @@ namespace GenericBot.Entities
                 Usernames.Add(username);
             }
         }
+        public void AddNickname(string username)
+        {
+            if(Nicknames == null) Nicknames = new List<string>();
+            if (!Nicknames.Contains(username))
+            {
+                Nicknames.Add(username);
+            }
+        }
 
         public void AddNickname(SocketGuildUser user)
         {

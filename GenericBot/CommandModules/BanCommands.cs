@@ -35,7 +35,7 @@ namespace GenericBot.CommandModules
                 string reason = $"Globally banned for: {parameters.reJoin()}";
 
                 int succ = 0, fail= 0 , opt = 0;
-
+                GenericBot.GlobalConfiguration.BlacklistedIds.Add(userId);
                 foreach (var guild in client.Guilds)
                 {
                     if (GenericBot.GuildConfigs[guild.Id].GlobalBanOptOut)
@@ -78,34 +78,35 @@ namespace GenericBot.CommandModules
                     return;
                 }
 
-                var mentionedUsers = msg.GetMentionedUsers();
-                if (!mentionedUsers.Any())
+                ulong uid;
+                if (ulong.TryParse(parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out uid))
                 {
-                    await msg.ReplyAsync($"You have to give someone to ban");
-                    return;
-                }
-                string reason = parameters.reJoin();
-                reason = Regex.Replace(reason, @"^((<\@)?[0-9]{17,18}>?\s?)*", string.Empty);
+                    parameters.RemoveAt(0);
+                    string reason = parameters.reJoin();
 
-                await msg.ReplyAsync(reason);
+                    var bans = msg.GetGuild().GetBansAsync().Result;
 
-                var bans = msg.GetGuild().GetBansAsync().Result;
-
-                foreach (var user in mentionedUsers)
-                {
-                    if (bans.Any(b => b.User.Id == user.Id))
+                    if (bans.Any(b => b.User.Id == uid))
                     {
-                        await msg.ReplyAsync($"**`{user}` is already banned for `{bans.First(b => b.User.Id == user.Id).Reason}`**");
+                        await msg.ReplyAsync(
+                            $"`{bans.First(b => b.User.Id == uid).User}` is already banned for `{bans.First(b => b.User.Id == uid).Reason}`");
                     }
                     else
                     {
-                        string banMessage = $"**Banned `{user}`(`{user.Id}`)";
+                        await msg.GetGuild().AddBanAsync(uid);
+                        bans = msg.GetGuild().GetBansAsync().Result;
+                        var user = bans.First(u => u.User.Id == uid).User;
+                        string banMessage = $"Banned `{user}`(`{user.Id}`)";
                         if (string.IsNullOrEmpty(reason))
-                            banMessage += $"** 👌";
+                            banMessage += $" 👌";
                         else
-                            banMessage += $"For `{reason}`** 👌";
-                        await msg.GetGuild().AddBanAsync(user.Id);
+                            banMessage += $" for `{reason}`) 👌";
                         await msg.ReplyAsync(banMessage);
+                        var guilddb = new DBGuild(msg.GetGuild().Id);
+                        guilddb.GetUser(user.Id)
+                            .AddWarning(
+                                $"Banned permanently for `{reason}` (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
+                        guilddb.Save();
                     }
                 }
             };

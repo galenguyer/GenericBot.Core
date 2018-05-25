@@ -231,9 +231,9 @@ namespace GenericBot.CommandModules
                     result += $"\n**`{role.Name}` ({role.Members.Count()} Members)**\n";
                     foreach (var user in role.Members.OrderBy(u => u.Username))
                     {
-                        if (!string.IsNullOrEmpty(user.Nickname)) result += $"{user.Nickname} ";
-                        else result += $"{user.Username} ";
-                        result += $"(`{user}`)\n";
+                        if (!string.IsNullOrEmpty(user.Nickname)) result += $"{user.Nickname.Replace('`', '\'').Replace("_", "\\_")} ";
+                        else result += $"{user.Username.Replace('`', '\'').Replace("_", "\\_")} ";
+                        result += $"(`{user.ToString().Replace('`', '\'')}`)\n";
                     }
                 }
 

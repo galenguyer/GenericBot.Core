@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Net;
 using System.Security.Cryptography;
 using Discord;
+using Discord.Rest;
 using GenericBot.Entities;
 using MarkVSharp;
+using Newtonsoft.Json;
 
 namespace GenericBot.CommandModules
 {
@@ -164,7 +166,9 @@ namespace GenericBot.CommandModules
             };
             FunCommands.Add(dog);
 
+
             Command addQuote = new Command("addQuote");
+            addQuote.SendTyping = false;
             addQuote.Description = "Add a quote to the server's list";
             addQuote.ToExecute += async (client, msg, parameters) =>
             {
@@ -177,6 +181,8 @@ namespace GenericBot.CommandModules
 
             Command removeQuote = new Command("removeQuote");
             removeQuote.Description = "Remove a quote from the server's list";
+            removeQuote.SendTyping = false;
+            removeQuote.RequiredPermission = Command.PermissionLevels.Moderator;
             removeQuote.ToExecute += async (client, msg, parameters) =>
             {
                 if (parameters.Empty())
@@ -212,7 +218,7 @@ namespace GenericBot.CommandModules
             quote.ToExecute += async (client, msg, parameters) =>
             {
                 if (!parameters.Empty() && parameters[0] == "all" && quote.GetPermissions(msg.Author, msg.GetGuild().Id) >=
-                    Command.PermissionLevels.GlobalAdmin)
+                    Command.PermissionLevels.Admin)
                 {
                     System.IO.File.WriteAllText("quotes.txt", new DBGuild(msg.GetGuild().Id).Quotes.Where(q => q.Active).Select(q => $"{q.Content} (#{q.Id})").Aggregate((i, j) => i + "\n" + j));
                     await msg.Channel.SendFileAsync("quotes.txt");

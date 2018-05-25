@@ -30,7 +30,7 @@ namespace GenericBot
             {
                 if (message.Author.Id == GenericBot.DiscordClient.CurrentUser.Id) return;
                 var msg =  GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.GetOrCreateDMChannelAsync().Result
-                    .SendMessageAsync($"```\nDM from: {message.Author}({message.Author.Id})\nContent: {message.Content.SafeSubstring(1900)}\n```").Result;
+                    .SendMessageAsync($"```\nDM from: {message.Author}({message.Author.Id})\nContent: {message.Content.SafeSubstring(1500)}\n```").Result;
                 if (parameterMessage.Content.Split().Length == 1)
                 {
                     var guild = VerificationEngine.GetGuildFromCode(parameterMessage.Content, message.Author.Id);
