@@ -57,22 +57,27 @@ namespace GenericBot
             if (guildConfig.UserLogChannelId == 0 || guildConfig.MessageLoggingIgnoreChannels.Contains(arg2.Channel.Id)
                                                   ||!arg1.HasValue) return;
 
-            string logMessage = $"```diff\n+ Message EDITED by {arg2.Author} ({arg2.Author.Id})\nat {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm.ss")} GMT" +
-                                $" (Sent at {arg1.Value.Timestamp.ToString(@"yyyy-MM-dd HH:mm.ss")} GMT) \nin #{arg2.Channel.Name.TrimStart('#')}\n";
+            EmbedBuilder log = new EmbedBuilder()
+                .WithTitle("Message Edited")
+                .WithAuthor(new EmbedAuthorBuilder().WithName($"{arg2.Author} ({arg2.Author.Id})")
+                    .WithIconUrl(arg2.Author.GetAvatarUrl() + " "))
+                .WithColor(243, 110, 33)
+                .WithCurrentTimestamp();
 
-            logMessage += $"+ Before: {arg1.Value.Content.Replace('`', '\'').SafeSubstring(900)}\n\n";
-            logMessage += $"+ After: {arg2.Content.Replace('`', '\'').SafeSubstring(900)}\n```";
+            log.AddField(new EmbedFieldBuilder().WithName("Channel").WithValue("#" + arg2.Channel.Name).WithIsInline(true));
+            log.AddField(new EmbedFieldBuilder().WithName("Sent At").WithValue(arg1.Value.Timestamp.ToString(@"yyyy-MM-dd HH:mm.ss") + "GMT").WithIsInline(true));
 
+            log.WithDescription("**Before:** " + arg1.Value.Content.SafeSubstring(1000) + "\n\n**After:** " + arg2.Content.SafeSubstring(1000));
             foreach (var uid in arg1.Value.MentionedUserIds)
             {
-                logMessage = logMessage.Replace($"<@!{uid}>", "@" + GenericBot.DiscordClient.GetUser(uid).Username);
+                log.Description = log.Description.Replace($"<@!{uid}>", "@" + GenericBot.DiscordClient.GetUser(uid).Username);
             }
-            foreach (var user in arg2.MentionedUsers)
+            foreach (var uid in arg2.MentionedUsers)
             {
-                logMessage = logMessage.Replace(user.Mention, "@" + user.Username);
+                log.Description = log.Description.Replace($"<@!{uid.Id}>", "@" + uid.Username);
             }
 
-            arg2.GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync(logMessage);
+            await (arg2 as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
         }
 
 

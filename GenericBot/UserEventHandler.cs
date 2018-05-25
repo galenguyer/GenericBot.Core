@@ -72,44 +72,53 @@ namespace GenericBot
 
             if (guildConfig.UserLogChannelId == 0) return;
 
+            EmbedBuilder log = new EmbedBuilder()
+                .WithTitle("User Joined")
+                .WithAuthor(new EmbedAuthorBuilder().WithName($"{user} ({user.Id})")
+                    .WithIconUrl(user.GetAvatarUrl()))
+                .WithColor(114, 137, 218)
+                .WithDescription(guildConfig.UserJoinedMessage.Replace("{id}", user.Id.ToString()).Replace("{username}", user.ToString()).Replace("{mention}", user.Mention));
+
+            if (guildConfig.UserLogTimestamp == true)
+            {
+                log.AddField(new EmbedFieldBuilder().WithName("Time")
+                    .WithValue($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT").WithIsInline(true));
+            }
+
+            if (guildConfig.UserJoinedShowModNotes == true && (DateTimeOffset.Now - user.CreatedAt).TotalDays < 7)
+            {
+                if (Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalDays) > 0)
+                {
+                    log.AddField(new EmbedFieldBuilder().WithName("New User")
+                        .WithValue($"Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalDays)}` days `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Hours)}` hours ago").WithIsInline(true));
+                }
+                else if (Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalHours) > 0) //Days = 0
+                {
+                    log.AddField(new EmbedFieldBuilder().WithName("New User")
+                        .WithValue($"Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalHours)}` hours `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Minutes)}` minutes ago").WithIsInline(true));
+                }
+                else //Days = 0 && Hours = 0
+                {
+                    log.AddField(new EmbedFieldBuilder().WithName("New User")
+                        .WithValue($"Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalMinutes)}` minutes `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Seconds)}` seconds ago").WithIsInline(true));
+                }
+            }
+
             try
             {
-                string message = guildConfig.UserJoinedMessage.Replace("{id}", user.Id.ToString()).Replace("{username}", user.ToString()).Replace("{mention}", user.Mention);
-                if (guildConfig.UserLogTimestamp == true)
-                {
-                    message = $"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}` {message}";
-                }
-                if (guildConfig.UserJoinedShowModNotes == true && (DateTimeOffset.Now - user.CreatedAt).TotalDays < 7)
-                {
-                    if (Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalDays) > 0)
-                    {
-                        message =
-                            $"{message} **New User:** Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalDays)}` days `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Hours)}` hours ago.";
-                    }
-                    else if (Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalHours) > 0) //Days = 0
-                    {
-                        message =
-                            $"{message} **New User:** Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalHours)}` hours `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Minutes)}` minutes ago.";
-                    }
-                    else //Days = 0 && Hours = 0
-                    {
-                        message =
-                            $"{message} **New User:** Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalMinutes)}` minutes `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Seconds)}` seconds ago.";
-                    }
-                }
-                var logMessage = user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync(message).Result;
-
                 DBUser usr = guildDb.Users.First(u => u.ID.Equals(user.Id));
 
                 if (guildConfig.UserJoinedShowModNotes && !usr.Warnings.Empty())
                 {
-                    await logMessage.ModifyAsync(m =>
-                        m.Content = $"{message}\n**{usr.Warnings.Count}** Warnings: {usr.Warnings.reJoin(", ")}");
-                }            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
+                    log.AddField(new EmbedFieldBuilder().WithName($"{usr.Warnings.Count} Warnings")
+                        .WithValue(usr.Warnings.SumAnd()));
+                }
             }
+            catch
+            {
+            }
+
+            await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
 
             #endregion Logging
         }
@@ -161,18 +170,17 @@ namespace GenericBot
 
             if (guildConfig.UserLogChannelId == 0) return;
 
-            try
+            EmbedBuilder log = new EmbedBuilder()
+                .WithTitle("User Left")
+                .WithAuthor(new EmbedAuthorBuilder().WithName($"{user} ({user.Id})")
+                    .WithIconUrl(user.GetAvatarUrl()))
+                .WithColor(156, 39, 176)
+                .WithDescription(guildConfig.UserLeftMessage.Replace("{id}", user.Id.ToString()).Replace("{username}", user.ToString()).Replace("{mention}", user.Mention));
+
+            if (guildConfig.UserLogTimestamp == true)
             {
-                string message = guildConfig.UserLeftMessage.Replace("{id}", user.Id.ToString()).Replace("{username}", user.ToString()).Replace("{mention}", user.Mention);
-                if (guildConfig.UserLogTimestamp == true)
-                {
-                    message = $"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}` {message}";
-                }
-                var logMessage = user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync(message).Result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
+                log.AddField(new EmbedFieldBuilder().WithName("Time")
+                    .WithValue($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT").WithIsInline(true));
             }
 
             #endregion Logging

@@ -113,26 +113,33 @@ namespace GenericBot
 
             if (guildConfig.UserLogChannelId == 0 || guildConfig.MessageLoggingIgnoreChannels.Contains(channel.Id)) return;
 
+            EmbedBuilder log = new EmbedBuilder()
+                .WithTitle("Message Deleted")
+                .WithAuthor(new EmbedAuthorBuilder().WithName($"{arg.Value.Author} ({arg.Value.Author.Id})")
+                    .WithIconUrl(arg.Value.Author.GetAvatarUrl() + " "))
+                .WithColor(255, 0, 0)
+                .WithCurrentTimestamp();
 
-            string logMessage = $"```diff\n- Message DELETED by {arg.Value.Author} ({arg.Value.Author.Id})\nat {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm.ss")} GMT" +
-                                $" (Sent at {arg.Value.Timestamp.ToString(@"yyyy-MM-dd HH:mm.ss")} GMT)\nin #{arg.Value.Channel.Name.TrimStart('#')}\n";
+            log.AddField(new EmbedFieldBuilder().WithName("Channel").WithValue("#" + arg.Value.Channel.Name).WithIsInline(true));
+            log.AddField(new EmbedFieldBuilder().WithName("Sent At").WithValue(arg.Value.Timestamp.ToString(@"yyyy-MM-dd HH:mm.ss") + "GMT").WithIsInline(true));
 
-            logMessage += $"Content: {arg.Value.Content.Replace('`', '\'').SafeSubstring(1650)}";
 
-            if(arg.Value.Attachments.Any()){
-                foreach (var a in arg.Value.Attachments)
+            if (!string.IsNullOrEmpty(arg.Value.Content))
+            {
+                log.WithDescription("**Message:** " + arg.Value.Content);
+                foreach (var uid in arg.Value.MentionedUserIds)
                 {
-                    logMessage += $"\nFile: {a.Filename}";
+                    log.Description = log.Description.Replace($"<@!{uid}>", "@" + GenericBot.DiscordClient.GetUser(uid).Username);
                 }
             }
-            foreach (var uid in arg.Value.MentionedUserIds)
+
+            if (arg.Value.Attachments.Any())
             {
-                logMessage = logMessage.Replace($"<@!{uid}>", "@" + GenericBot.DiscordClient.GetUser(uid).Username);
+                log.AddField(new EmbedFieldBuilder().WithName("Attachments").WithValue(arg.Value.Attachments.Select(a =>
+                    $"File: {a.Filename}").Aggregate((a, b) => a + "\n" + b)));
             }
 
-            logMessage += "\n```";
-
-            (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync(logMessage);
+            await (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
         }
 
     }
