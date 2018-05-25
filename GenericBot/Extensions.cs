@@ -35,19 +35,25 @@ namespace GenericBot
 
         public static string reJoin(this List<string> list, string joinChar = " ")
         {
+            if (list.Count == 0) return "";
             return list.Aggregate((i, j) => i + joinChar + j);
         }
 
-        public static List<SocketUser> GetMentionedUsers(this SocketMessage msg)
+        public static List<SocketGuildUser> GetMentionedUsers(this SocketMessage msg)
         {
-            var users = msg.MentionedUsers.ToHashSet();
+            var users = new HashSet<SocketGuildUser>();
+            if (msg.MentionedUsers.Any())
+            {
+                foreach (var user in msg.MentionedUsers)
+                    users.Add((SocketGuildUser) user);
+            }
 
             foreach (Match match in Regex.Matches(msg.Content, "[0-9]{16,19}"))
             {
-                users.Add(GenericBot.DiscordClient.GetUser(Convert.ToUInt64(match.Value)));
+                users.Add((SocketGuildUser) msg.GetGuild().GetUser(Convert.ToUInt64(match.Value)));
             }
 
-            return users.GroupBy(u => u.Id).Select(g => g.First()).ToList();
+            return users.ToList();
         }
 
         public static bool HasElement<T>(this IEnumerable<T> inEnum, Func<T, bool> predicate, out T output)
