@@ -110,6 +110,59 @@ namespace GenericBot.CommandModules
 
             botCommands.Add(dmuser);
 
+            Command getGuild = new Command("getGuild");
+            getGuild.Description = "Get a guild or list of guilds matching a pattern";
+            getGuild.RequiredPermission = Command.PermissionLevels.BotOwner;
+            getGuild.Aliases = new List<string>() { "getguilds" };
+            getGuild.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    string reply = "";
+                    foreach (var guild in client.Guilds)
+                    {
+                        reply += $"{guild.Name} (`{guild.Id}`)\n";
+                    }
+
+                    await msg.ReplyAsync(reply);
+                }
+                else if (ulong.TryParse(parameters[0], out ulong id))
+                {
+                    string reply = "";
+                    foreach (var guild in client.Guilds)
+                    {
+                        if (guild.Id == id)
+                            reply +=
+                                $"Guild Match: {guild.Name} (`{guild.Id}`) Owner: {guild.Owner} (`{guild.Owner.Id}`)\n";
+                        if (guild.OwnerId == id)
+                            reply +=
+                                $"Owner Match: {guild.Name} (`{guild.Id}`) Owner: {guild.Owner} (`{guild.Owner.Id}`)\n";
+                    }
+
+                    await msg.ReplyAsync(reply);
+                }
+            };
+
+            botCommands.Add(getGuild);
+
+            Command getInvite = new Command("getInvite");
+            getInvite.Description = "Get a guild invite matching an ID";
+            getInvite.RequiredPermission = Command.PermissionLevels.BotOwner;
+            getInvite.ToExecute += async (client, msg, parameters) =>
+            {
+                if (!parameters.Empty() && ulong.TryParse(parameters[0], out ulong id))
+                {
+                    if (client.Guilds.HasElement(g => g.Id == id, out var guild))
+                    {
+                        await msg.ReplyAsync($"Guild: {guild.Name}\nOwner: {guild.Owner}\nInvite: {guild.DefaultChannel.CreateInviteAsync(maxUses: 1).Result.Url}");
+                    }
+                    else await msg.ReplyAsync("Guild does not exist");
+                }
+                else await msg.ReplyAsync("Invalid format");
+            };
+            botCommands.Add(getInvite);
+
+
             Command leaveGuild = new Command("leaveGuild");
             leaveGuild.Description = "Instruct the bot to leave the guild";
             leaveGuild.RequiredPermission = Command.PermissionLevels.Admin;
@@ -118,10 +171,9 @@ namespace GenericBot.CommandModules
                 if (!parameters.Empty() &&
                     leaveGuild.GetPermissions(msg.Author, msg.GetGuild().Id) >= Command.PermissionLevels.GlobalAdmin)
                 {
-                    ulong guildId;
-                    if (ulong.TryParse(parameters[0], out guildId))
+                    if (ulong.TryParse(parameters[0], out ulong guildId))
                     {
-                        await msg.GetGuild().LeaveAsync();
+                        await client.GetGuild(guildId).LeaveAsync();
                         await msg.ReplyAsync("Done.");
                     }
                 }
