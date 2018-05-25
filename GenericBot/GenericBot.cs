@@ -70,8 +70,19 @@ namespace GenericBot
             MessageDeleteTimer.Elapsed += MessageDeleteTimerOnElapsed;
             MessageDeleteTimer.Start();
 
-            new GenericBot().Start().GetAwaiter().GetResult();
+            StatusPollingTimer.AutoReset = true;
+            StatusPollingTimer.Interval = 1 * 1000;
+            StatusPollingTimer.Elapsed += StatusPollingTimerOnElapsed;
+            StatusPollingTimer.Start();
+
+            #endregion Timers
+
+            while (true)
+            {
+                new GenericBot().Start().GetAwaiter().GetResult();
+            }
         }
+
         public async Task Start()
         {
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
@@ -279,7 +290,6 @@ namespace GenericBot
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
                 StatusPollingTimer.Interval = 5 * 1000;
             }
         }
