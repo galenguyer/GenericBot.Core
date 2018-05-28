@@ -117,7 +117,7 @@ namespace GenericBot
                 .WithTitle("Message Deleted")
                 .WithAuthor(new EmbedAuthorBuilder().WithName($"{arg.Value.Author} ({arg.Value.Author.Id})")
                     .WithIconUrl(arg.Value.Author.GetAvatarUrl() + " "))
-                .WithColor(255, 0, 0)
+                .WithColor(139, 0, 0)
                 .WithCurrentTimestamp();
 
             log.AddField(new EmbedFieldBuilder().WithName("Channel").WithValue("#" + arg.Value.Channel.Name).WithIsInline(true));

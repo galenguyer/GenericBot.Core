@@ -282,7 +282,33 @@ namespace GenericBot.CommandModules
                         guildDb.Users.Add(new DBUser{ID = uid, Warnings = new List<string>{warning}});
                     }
                     guildDb.Save();
-                    await msg.ReplyAsync($"Added `{warning.Replace('`', '\'')}` to <@{uid}> (`{uid}`)");
+
+                    var builder = new EmbedBuilder()
+                        .WithTitle("Warning Added")
+                        .WithDescription(warning)
+                        .WithColor(new Color(0xFFFF00))
+                        .WithFooter(footer => {
+                            footer
+                                .WithText($"By {msg.Author} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                        });
+
+                    try
+                    {
+                        var user = client.GetUser(uid);
+                        builder.Author = new EmbedAuthorBuilder().WithName(user.ToString()).WithIconUrl(user.GetAvatarUrl());
+                    }
+                    catch
+                    {
+                        builder.Author = new EmbedAuthorBuilder().WithName(uid.ToString());
+                    }
+
+
+                    await msg.Channel.SendMessageAsync("", embed: builder.Build());
+                    if (GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId != 0)
+                    {
+                        await ((SocketTextChannel) client.GetChannel(GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId))
+                            .SendMessageAsync("", embed: builder.Build());
+                    }
                 }
                 else
                 {
@@ -329,12 +355,27 @@ namespace GenericBot.CommandModules
                     {
                         await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(
                             $"The Moderator team of **{msg.GetGuild().Name}** has issued you the following warning:\n{parameters.reJoin()}");
-                        await msg.ReplyAsync(
-                            $"Sent the warning `{warning.Replace('`', '\'')}` to {user.Mention} (`{user.Id}`)");
                     }
                     catch (Exception ex)
                     {
-                        await msg.ReplyAsync($"Could not message {user.Mention}. The warning has been added");
+                        warning += $"\nCould not message {user}";
+                    }
+
+                    var builder = new EmbedBuilder()
+                        .WithTitle("Warning Issued")
+                        .WithDescription(warning)
+                        .WithColor(new Color(0xFFFF00))
+                        .WithFooter(footer => {
+                            footer
+                                .WithText($"By {msg.Author} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                        });
+                    builder.Author = new EmbedAuthorBuilder().WithName(user.ToString()).WithIconUrl(user.GetAvatarUrl());
+
+                    await msg.Channel.SendMessageAsync("", embed: builder.Build());
+                    if (GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId != 0)
+                    {
+                        await ((SocketTextChannel) client.GetChannel(GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId))
+                            .SendMessageAsync("", embed: builder.Build());
                     }
                 }
                 else
