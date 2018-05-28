@@ -77,7 +77,7 @@ namespace GenericBot.CommandModules
                             message = await msg.ReplyAsync("Done!");
                         }
 
-                        await Task.Delay(2000);
+                        await Task.Delay(5000);
                         await msg.DeleteAsync();
                         await message.DeleteAsync();
                     }
@@ -105,7 +105,7 @@ namespace GenericBot.CommandModules
                             message = await msg.ReplyAsync($"I've assigned you `{role.Name}`");
                         }
 
-                        await Task.Delay(2000);
+                        await Task.Delay(5000);
                         await msg.DeleteAsync();
                         await message.DeleteAsync();
                     }
@@ -113,7 +113,8 @@ namespace GenericBot.CommandModules
                     {
                         await GenericBot.Logger.LogErrorMessage(e.Message);
                         await msg.ReplyAsync($"I may not have permissions to do that!");
-                    }                }
+                    }
+                }
             };
 
             RoleCommands.Add(iam);
@@ -155,7 +156,7 @@ namespace GenericBot.CommandModules
                             message = await msg.ReplyAsync("Done!");
                         }
 
-                        await Task.Delay(2000);
+                        await Task.Delay(5000);
                         await msg.DeleteAsync();
                         await message.DeleteAsync();
                     }
@@ -180,7 +181,7 @@ namespace GenericBot.CommandModules
                             message = await msg.ReplyAsync($"Removed `{roles.First()}`");
                         }
 
-                        await Task.Delay(2000);
+                        await Task.Delay(5000);
                         await msg.DeleteAsync();
                         await message.DeleteAsync();
                     }
@@ -266,6 +267,30 @@ namespace GenericBot.CommandModules
             };
 
             RoleCommands.Add(createRole);
+
+            Command createUserRole = new Command("createUserRole");
+            createUserRole.Description = "Create a new role with default permissions and add it to the public role list";
+            createUserRole.Usage = "createUserRole <name>";
+            createUserRole.RequiredPermission = Command.PermissionLevels.Admin;
+            createUserRole.ToExecute += async (client, msg, parameters) =>
+            {
+                RestRole role;
+                bool makeMentionable = false;
+                if (parameters[0].ToLower().Equals("+m"))
+                {
+                    parameters.RemoveAt(0);
+                    makeMentionable = true;
+                }
+
+                role = msg.GetGuild().CreateRoleAsync(parameters.reJoin(), GuildPermissions.None).Result;
+                var gc = GenericBot.GuildConfigs[msg.GetGuild().Id];
+                gc.UserRoleIds.Add(role.Id);
+                gc.Save();
+                if(makeMentionable) await role.ModifyAsync(r => r.Mentionable = true);
+                await msg.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}` and added it to the user roles");
+            };
+
+            RoleCommands.Add(createUserRole);
 
             Command roleeveryone = new Command("roleeveryone");
             roleeveryone.Aliases = new List<string>{"roleveryone"};
