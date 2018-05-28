@@ -199,5 +199,25 @@ namespace GenericBot
                 return SumAndPriv<T>(input, previous);
             }
         }
+
+        public static string Nice(this TimeSpan time)
+        {
+            if (Math.Floor(time.TotalDays) > 0)
+            {
+                return $"{Math.Floor(time.TotalDays)} days";
+            }
+            else if (Math.Floor(time.TotalDays) > 0)
+            {
+                return $"{Math.Floor(time.TotalDays)} days {Math.Floor((double) time.Hours)} hours";
+            }
+            else if (Math.Floor(time.TotalHours) > 0) //Days = 0
+            {
+                return $"{Math.Floor(time.TotalHours)} hours {Math.Floor((double) time.Minutes)} minutes";
+            }
+            else //Days = 0 && Hours = 0
+            {
+                return $"{Math.Floor(time.TotalMinutes)} minutes {Math.Floor((double) time.Seconds)} seconds";
+            }
+        }
     }
 }

@@ -87,21 +87,8 @@ namespace GenericBot
 
             if (guildConfig.UserJoinedShowModNotes == true && (DateTimeOffset.Now - user.CreatedAt).TotalDays < 7)
             {
-                if (Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalDays) > 0)
-                {
-                    log.AddField(new EmbedFieldBuilder().WithName("New User")
-                        .WithValue($"Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalDays)}` days `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Hours)}` hours ago").WithIsInline(true));
-                }
-                else if (Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalHours) > 0) //Days = 0
-                {
-                    log.AddField(new EmbedFieldBuilder().WithName("New User")
-                        .WithValue($"Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalHours)}` hours `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Minutes)}` minutes ago").WithIsInline(true));
-                }
-                else //Days = 0 && Hours = 0
-                {
-                    log.AddField(new EmbedFieldBuilder().WithName("New User")
-                        .WithValue($"Account made `{Math.Floor((DateTimeOffset.Now - user.CreatedAt).TotalMinutes)}` minutes `{Math.Floor((double) (DateTimeOffset.Now - user.CreatedAt).Seconds)}` seconds ago").WithIsInline(true));
-                }
+                log.AddField(new EmbedFieldBuilder().WithName("New User")
+                    .WithValue($"Account made {(DateTimeOffset.Now - user.CreatedAt).Nice()} ago").WithIsInline(true));
             }
 
             try
@@ -184,7 +171,7 @@ namespace GenericBot
             }
 
             await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
-            
+
             #endregion Logging
         }
     }
