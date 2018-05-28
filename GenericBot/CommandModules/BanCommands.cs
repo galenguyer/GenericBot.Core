@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Discord;
+using Discord.WebSocket;
 using GenericBot.Entities;
 
 namespace GenericBot.CommandModules
@@ -69,7 +70,7 @@ namespace GenericBot.CommandModules
             ban.Description = "Ban a user from the server, whether or not they're on it";
             ban.Delete = false;
             ban.RequiredPermission = Command.PermissionLevels.Moderator;
-            ban.Usage = $"{ban.Name} <user> <reason>";
+            ban.Usage = $"{ban.Name} <user> <time in days> <reason>";
             ban.ToExecute += async (client, msg, parameters) =>
             {
                 if (parameters.Empty())
@@ -82,6 +83,13 @@ namespace GenericBot.CommandModules
                 if (ulong.TryParse(parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out uid))
                 {
                     parameters.RemoveAt(0);
+                    int time = 0;
+
+                    if (int.TryParse(parameters[0].TrimEnd('d'), out time))
+                    {
+                        parameters.RemoveAt(0);
+                    }
+
                     string reason = parameters.reJoin();
 
                     var bans = msg.GetGuild().GetBansAsync().Result;
@@ -93,20 +101,64 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
+                        bool dmSuccess = true;
+                        string dmMessage = $"You have been banned from **{msg.GetGuild().Name}** ";
+                        dmMessage += time == 0 ? "permanently" : $"for `{time}` days";
+                        if(!string.IsNullOrEmpty(reason))
+                            dmMessage += $" for the following reason: \n\n{reason}\n\n";
+                        try
+                        {
+                            await msg.GetGuild().GetUser(uid).GetOrCreateDMChannelAsync().Result
+                                .SendMessageAsync(dmMessage);
+                        }
+                        catch
+                        {
+                            dmSuccess = false;
+                        }
+
                         await msg.GetGuild().AddBanAsync(uid);
                         bans = msg.GetGuild().GetBansAsync().Result;
                         var user = bans.First(u => u.User.Id == uid).User;
-                        string banMessage = $"Banned `{user}`(`{user.Id}`)";
+                        string banMessage = $"Banned `{user}` (`{user.Id}`)";
                         if (string.IsNullOrEmpty(reason))
                             banMessage += $" 👌";
                         else
-                            banMessage += $" for `{reason}`) 👌";
-                        await msg.ReplyAsync(banMessage);
+                            banMessage += $" for `{reason}`";
+                        banMessage += time == 0 ? $" permanently 👌" : $" for `{time}` days 👌";
+
+                        if (!dmSuccess) banMessage += "\nThe user could not be messaged";
+
+                        var builder = new EmbedBuilder()
+                            .WithTitle("User Banned")
+                            .WithDescription(banMessage)
+                            .WithColor(new Color(0xFFFF00))
+                            .WithFooter(footer => {
+                                footer
+                                    .WithText($"By {msg.Author} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                            })
+                            .WithAuthor(author => {
+                                author
+                                    .WithName(user.ToString())
+                                    .WithIconUrl(user.GetAvatarUrl());
+                            });
+
                         var guilddb = new DBGuild(msg.GetGuild().Id);
+                        var guildconfig = GenericBot.GuildConfigs[msg.GetGuild().Id];
+                        guildconfig.Bans.Add(
+                            new GenericBan(user.Id, msg.GetGuild().Id, reason, time));
+                        string t = time == 0 ? "permanently" : $"for `{time}` days";
+                        guildconfig.Save();
                         guilddb.GetUser(user.Id)
                             .AddWarning(
-                                $"Banned permanently for `{reason}` (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
+                                $"Banned {t} for `{reason}` (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
                         guilddb.Save();
+
+                        await msg.Channel.SendMessageAsync("", embed: builder.Build());
+                        if (guildconfig.UserLogChannelId != 0)
+                        {
+                            await (client.GetChannel(guildconfig.UserLogChannelId) as SocketTextChannel)
+                                .SendMessageAsync("", embed: builder.Build());
+                        }
                     }
                 }
             };
