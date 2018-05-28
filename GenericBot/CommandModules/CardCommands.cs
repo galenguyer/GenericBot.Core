@@ -86,14 +86,49 @@ namespace GenericBot.CommandModules
                 info += $"Roles: `{guild.Roles.Count}`\n";
                 info += $"Verification Level: `{guild.VerificationLevel}`\n";
                 info += $"Partnered: `{guild.Features.Any()}`\n";
-                info += $"Bans: `{bans.Count}` (`{bans.Count(b => b.User.AvatarId == null && b.User.Username.StartsWith("Deleted User "))}` Accounts Deleted)";
-                info += $"";
+                info += $"Bans: `{bans.Count}` (`{bans.Count(b => b.User.AvatarId == null && b.User.Username.StartsWith("Deleted User "))}` Accounts Deleted)\n";
+                info += $"Active Invites: `{guild.GetInvitesAsync().Result.Count}`\n";
                 info += $"";
 
                 await msg.ReplyAsync(info);
             };
 
             cardCommands.Add(serverInfo);
+
+            Command listInvites = new Command("listInvites");
+            listInvites.RequiredPermission = Command.PermissionLevels.Moderator;
+            listInvites.Description = "List all the active invites for the server";
+            listInvites.ToExecute += async (client, msg, parameters) =>
+            {
+                var invites = msg.GetGuild().GetInvitesAsync().Result;
+
+                if (invites.Count == 0)
+                {
+                    await msg.ReplyAsync($"No invites");
+                    return;
+                }
+
+                string resp = "";
+                foreach (var invite in invites)
+                {
+                    resp += $"Code: `{invite.Code}`\n" +
+                            $"  Uses: `{invite.Uses}`\n" +
+                            $"  Channel: <#{invite.ChannelId}>\n";
+                    resp += invite.MaxUses == 0 ? "  Infinite uses\n" : $"  `{invite.MaxUses.Value}` max uses (`{invite.MaxUses.Value - invite.Uses}` remaining)\n";
+                    resp += !invite.MaxAge.HasValue ? "  Never expires\n" : $"  Expires in {(TimeSpan.FromSeconds(invite.MaxAge.Value).Nice())}\n";
+                    resp += $"  Created by `{invite.Inviter}` (`{invite.Inviter.Id}`)";
+                    resp += $"  Created {(DateTime.Now - (invite.CreatedAt)).Nice()} ago\n";
+                }
+
+                foreach (var r in resp.SplitSafe())
+                {
+                    await msg.ReplyAsync(r);
+                }
+
+            };
+
+
+            cardCommands.Add(listInvites);
 
             return cardCommands;
         }
