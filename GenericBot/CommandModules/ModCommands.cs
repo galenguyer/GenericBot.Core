@@ -203,6 +203,13 @@ namespace GenericBot.CommandModules
                     string info =
                         $"Found `{dbUsers.Count}` users. Their first stored usernames are:\n{dbUsers.Select(u => $"`{u.Usernames.First()}`").ToList().SumAnd()}" +
                         $"\nTry using more precise search parameters";
+                    foreach (var user in dbUsers)
+                    {
+                        if (user.Usernames.First().ToLower().Equals(input.ToLower()))
+                        {
+                            info = info.Replace($"`{user.Usernames.First()}`", $"`{user.Usernames.First()}` (`{user.ID}`)");
+                        }
+                    }
                     foreach (var str in info.SplitSafe(','))
                     {
                         await msg.ReplyAsync(str.TrimStart(','));
