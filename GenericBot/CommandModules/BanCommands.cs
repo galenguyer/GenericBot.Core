@@ -146,6 +146,7 @@ namespace GenericBot.CommandModules
                         var guildconfig = GenericBot.GuildConfigs[msg.GetGuild().Id];
                         guildconfig.Bans.Add(
                             new GenericBan(user.Id, msg.GetGuild().Id, reason, time));
+                        guildconfig.ProbablyMutedUsers.Remove(user.Id);
                         string t = time == 0 ? "permanently" : $"for `{time}` days";
                         guildconfig.Save();
                         guilddb.GetUser(user.Id)

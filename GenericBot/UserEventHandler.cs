@@ -69,6 +69,11 @@ namespace GenericBot
             {
             }
 
+            if (guildConfig.ProbablyMutedUsers.Contains(user.Id))
+            {
+                try{user.AddRoleAsync(user.Guild.GetRole(guildConfig.MutedRoleId));}
+                catch{}
+            }
 
             if (guildConfig.UserLogChannelId == 0) return;
 

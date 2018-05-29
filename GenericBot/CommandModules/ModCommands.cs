@@ -447,6 +447,7 @@ namespace GenericBot.CommandModules
                     {
                         (msg.GetGuild().GetUser(user)).AddRolesAsync(new List<IRole> {mutedRole});
                         gc.ProbablyMutedUsers.Add(user);
+                        gc.Save();
                         mutedUsers.Add(msg.GetGuild().GetUser(user));
                     }
                     catch
@@ -454,20 +455,9 @@ namespace GenericBot.CommandModules
                     }
                 }
 
-                string res = "Succesfully muted ";
-                for (int i = 0; i < mutedUsers.Count; i++)
-                {
-                    if (i == mutedUsers.Count - 1 && mutedUsers.Count > 1)
-                    {
-                        res += $"and {mutedUsers.ElementAt(i).Mention}";
-                    }
-                    else
-                    {
-                        res += $"{mutedUsers.ElementAt(i).Mention}, ";
-                    }
-                }
+                string res = "Succesfully muted " + mutedUsers.Select(u => u.Mention).SumAnd();
 
-                await msg.ReplyAsync(res.TrimEnd(',', ' '));
+                await msg.ReplyAsync(res);
 
 
             };
