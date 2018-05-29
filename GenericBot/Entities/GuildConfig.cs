@@ -40,6 +40,7 @@ namespace GenericBot.Entities
         public Dictionary<ulong, ulong> VoiceChannelRoles = new Dictionary<ulong, ulong>();
         public List<ulong> ProbablyMutedUsers = new List<ulong>();
         public ulong MutedRoleId = 0;
+        public List<GenericBan> Bans = new List<GenericBan>();
 
         public GuildConfig(ulong id)
         {
@@ -49,6 +50,7 @@ namespace GenericBot.Entities
             UserRoleIds = new List<ulong>();
             CustomCommands = new List<CustomCommand>();
             CustomAliases = new List<CustomAlias>();
+            Bans = new List<GenericBan>();
 
             UserLogTimestamp = true;
             UserJoinedMessage = "{mention} (`{id}` | `{username}`) **joined** the server.";
@@ -89,15 +91,15 @@ namespace GenericBot.Entities
     public class GenericBan
     {
         public ulong Id;
+        public ulong GuildId;
         public DateTimeOffset BannedUntil;
-        public bool IsPermanent;
         public string Reason;
 
-        public GenericBan(ulong id, string reason, string until = null, bool permanent = false)
+        public GenericBan(ulong userid, ulong guildid, string reason, int days = 0)
         {
-            this.Id = id;
-            this.BannedUntil = !permanent ? DateTimeOffset.Parse(until) : DateTimeOffset.MaxValue;
-            this.IsPermanent = permanent;
+            this.Id = userid;
+            this.GuildId = guildid;
+            this.BannedUntil = days != 0 ? DateTimeOffset.UtcNow + TimeSpan.FromDays(days) : DateTimeOffset.MaxValue;
             this.Reason = reason;
         }
     }

@@ -209,10 +209,41 @@ namespace GenericBot
                         .RemovePermissionOverwriteAsync(DiscordClient.GetUser(mute.UserId));
                     GuildConfigs[((SocketGuildChannel) DiscordClient.GetChannel(mute.ChannelId)).Guild.Id].ChannelMutes
                         .Remove(mute);
+                    GuildConfigs[((SocketGuildChannel) DiscordClient.GetChannel(mute.ChannelId)).Guild.Id].Save();
                     GenericBot.Logger.LogGenericMessage($"Unmuted {mute.UserId} from {mute.ChannelId}");
                 }
             }
             File.WriteAllText("files/guildConfigs.json", JsonConvert.SerializeObject(GuildConfigs, Formatting.Indented));
+
+            foreach (var gc in GuildConfigs.Select(l => l.Value))
+            {
+                foreach (var ban in gc.Bans)
+                {
+                    if (ban.BannedUntil < DateTime.UtcNow)
+                    {
+                        var user = DiscordClient.GetGuild(ban.GuildId).GetBansAsync().Result
+                            .First(b => b.User.Id == ban.Id).User;
+                        DiscordClient.GetGuild(ban.GuildId).RemoveBanAsync(ban.Id);
+                        var builder = new EmbedBuilder()
+                            .WithTitle("User Unbanned")
+                            .WithDescription($"Banned for: {ban.Reason}")
+                            .WithColor(new Color(0xFFFF00))
+                            .WithFooter(footer => {
+                                footer
+                                    .WithText($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                            })
+                            .WithAuthor(author => {
+                                author
+                                    .WithName(user.ToString())
+                                    .WithIconUrl(user.GetAvatarUrl());
+                            })
+                            .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
+                                new DBGuild(ban.GuildId).GetUser(ban.Id).Warnings.SumAnd()));
+                        ((SocketTextChannel) DiscordClient.GetChannel(gc.UserLogChannelId))
+                            .SendMessageAsync("", embed: builder.Build());
+                    }
+                }
+            }
         }
 
         private static async void TweetSenderOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
