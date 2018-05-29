@@ -67,17 +67,10 @@ namespace GenericBot
             log.AddField(new EmbedFieldBuilder().WithName("Channel").WithValue("#" + arg2.Channel.Name).WithIsInline(true));
             log.AddField(new EmbedFieldBuilder().WithName("Sent At").WithValue(arg1.Value.Timestamp.ToString(@"yyyy-MM-dd HH:mm.ss") + "GMT").WithIsInline(true));
 
-            log.WithDescription("**Before:** " + arg1.Value.Content.SafeSubstring(1000) + "\n\n**After:** " + arg2.Content.SafeSubstring(1000));
-            foreach (var uid in arg1.Value.MentionedUserIds)
-            {
-                log.Description = log.Description.Replace($"<@!{uid}>", "@" + GenericBot.DiscordClient.GetUser(uid).Username);
-            }
-            foreach (var uid in arg2.MentionedUsers)
-            {
-                log.Description = log.Description.Replace($"<@!{uid.Id}>", "@" + uid.Username);
-            }
+            log.AddField(new EmbedFieldBuilder().WithName("Before").WithValue(arg1.Value.Content.SafeSubstring(1016)));
+            log.AddField(new EmbedFieldBuilder().WithName("After").WithValue(arg2.Content.SafeSubstring(1016)));
 
-            await (arg2 as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
+            await arg2.GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
         }
 
 

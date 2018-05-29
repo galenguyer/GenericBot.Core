@@ -455,7 +455,7 @@ namespace GenericBot.CommandModules
                     }
                 }
 
-                string res = "Succesfully muted " + mutedUsers.Select(u => u.Mention).SumAnd();
+                string res = "Succesfully muted " + mutedUsers.Select(u => u.Mention).ToList().SumAnd();
 
                 await msg.ReplyAsync(res);
 
