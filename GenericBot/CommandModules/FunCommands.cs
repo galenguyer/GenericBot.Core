@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
+using System.Text;
 using Discord;
 using Discord.Rest;
 using GenericBot.Entities;
@@ -228,6 +229,36 @@ namespace GenericBot.CommandModules
                 await msg.ReplyAsync(new DBGuild(msg.GetGuild().Id).GetQuote(parameters.reJoin()));
             };
             FunCommands.Add(quote);
+
+            Command redact = new Command(nameof(redact));
+            redact.ToExecute += async (client, msg, parameters) =>
+            {
+                msg.DeleteAsync();
+                char block = '█';
+                int rcont = 1;
+                StringBuilder resp = new StringBuilder();
+                foreach (var str in parameters)
+                {
+                    int rand = new Random().Next(0, rcont) + 1;
+                    if (rand == rcont)
+                    {
+                        resp.Append(' ');
+                        resp.Append(str);
+                        resp.Append(' ');
+                        rcont = 1;
+                    }
+                    else
+                    {
+                        resp.Append(block.Multiply(str.Length));
+                        if (rcont == 16) rcont = 1;
+                    }
+                    rcont++;
+                }
+
+                await msg.ReplyAsync(resp.ToString().Replace("  "," "));
+            };
+
+            FunCommands.Add(redact);
 
             return FunCommands;
         }
