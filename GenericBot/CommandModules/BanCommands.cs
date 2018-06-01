@@ -166,6 +166,94 @@ namespace GenericBot.CommandModules
 
             banCommands.Add(ban);
 
+
+            Command kick = new Command("kick");
+            kick.Description = "kick a user from the server, whether or not they're on it";
+            kick.Delete = false;
+            kick.RequiredPermission = Command.PermissionLevels.Moderator;
+            kick.Usage = $"{kick.Name} <user> <reason>";
+            kick.ToExecute += async (client, msg, parameters) =>
+            {
+                if (!msg.GetMentionedUsers().Any())
+                {
+                    await msg.ReplyAsync($"You need to specify a user to kick");
+                    return;
+                }
+
+                var user = msg.GetMentionedUsers().First();
+                parameters.RemoveAt(0);
+                if (user.Id == client.GetApplicationInfoAsync().Result.Owner.Id)
+                {
+                    await msg.ReplyAsync("Haha lol no");
+                    return;
+                }
+
+                string reason = parameters.reJoin();
+
+                bool dmSuccess = true;
+                string dmMessage = $"You have been kicked from **{msg.GetGuild().Name}**";
+                if(!string.IsNullOrEmpty(reason))
+                    dmMessage += $" for the following reason: \n\n{reason}\n\n";
+                try
+                {
+                    await msg.GetGuild().GetUser(user.Id).GetOrCreateDMChannelAsync().Result
+                        .SendMessageAsync(dmMessage);
+                }
+                catch
+                {
+                    dmSuccess = false;
+                }
+
+                try
+                {
+                    await msg.GetGuild().GetUser(user.Id).KickAsync();
+                }
+                catch
+                {
+                    await msg.ReplyAsync($"Could not ban the given user. Try checking role hierarchy and permissions");
+                    return;
+                }
+
+                string kickMessage = $"Kicked `{user}` (`{user.Id}`)";
+                if (!string.IsNullOrEmpty(reason))
+                    kickMessage += $" for `{reason}`";
+
+                if (!dmSuccess) kickMessage += "\nThe user could not be messaged";
+
+                var builder = new EmbedBuilder()
+                    .WithTitle("User Kicked")
+                    .WithDescription(kickMessage)
+                    .WithColor(new Color(0xFFFF00))
+                    .WithFooter(footer => {
+                        footer
+                            .WithText($"By {msg.Author} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                    })
+                    .WithAuthor(author => {
+                        author
+                            .WithName(user.ToString())
+                            .WithIconUrl(user.GetAvatarUrl());
+                    });
+
+                var guilddb = new DBGuild(msg.GetGuild().Id);
+                var guildconfig = GenericBot.GuildConfigs[msg.GetGuild().Id];
+                guildconfig.ProbablyMutedUsers.Remove(user.Id);
+                guildconfig.Save();
+                guilddb.GetUser(user.Id)
+                    .AddWarning(
+                        $"Kicked for `{reason}` (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
+                guilddb.Save();
+
+                await msg.Channel.SendMessageAsync("", embed: builder.Build());
+                if (guildconfig.UserLogChannelId != 0)
+                {
+                    await (client.GetChannel(guildconfig.UserLogChannelId) as SocketTextChannel)
+                        .SendMessageAsync("", embed: builder.Build());
+                }
+            };
+
+            banCommands.Add(kick);
+
+
             return banCommands;
         }
     }
