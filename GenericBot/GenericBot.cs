@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Timers;
@@ -26,8 +29,13 @@ namespace GenericBot
         public static List<Command> Commands = new List<Command>();
         public static string SessionId;
         public static bool DebugMode = false;
-        public static string DBConnectionString = "filename=files/GuildDatabase.db; password="+DBPassword;
         public static Animols Animols = new Animols();
+        //public static PerformanceCounter CpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+        //private static string _DBPassword = "MasterChef";
+        //public static string DBConnectionString = "filename=files/GuildDatabase.db; password="+_DBPassword;
+        //public static LiteDatabase GlobalDatabase = new LiteDatabase(DBConnectionString);
+
+        public static ConcurrentDictionary<ulong, DBGuild> LoadedGuilds = new ConcurrentDictionary<ulong, DBGuild>();
 
         public static TwitterService Twitter = new TwitterService("AfaD74ulbQQmjb1yDuGKWtVY9", "WAuRJS6Z4RUDgignHmsDzudbIx2YP4PgnAcz3tp7G7nd1ZHs2z");
         public static List<GenericTweet> TweetStore;
@@ -43,7 +51,8 @@ namespace GenericBot
         public static Dictionary<ulong, List<IMessage>> MessageDeleteQueue = new Dictionary<ulong, List<IMessage>>();
         public static Timer MessageDeleteTimer = new Timer();
         public static bool Test = true;
-
+        public static Stopwatch QuickWatch = new Stopwatch();
+        public static ParsedCommand LastCommand;
 
         public static int Disconnects = 0;
 
@@ -53,8 +62,10 @@ namespace GenericBot
             GlobalConfiguration = new GlobalConfiguration().Load();
             GuildConfigs = new Dictionary<ulong, GuildConfig>();
             TweetStore = JsonConvert.DeserializeObject<List<GenericTweet>>(File.ReadAllText("files/tweetStore.json"));
-
+            //CpuCounter.NextValue();
             Twitter.AuthenticateWith("924464831813398529-pi51h6UB3iitJB2UQwGrHukYjD1Pz7F", "3R0vFFQLCGe9vuGvn00Avduq1K8NHjmRBUFJVuo9nRYXJ");
+
+            #region Timers
 
             TweetSender.AutoReset = true;
             TweetSender.Interval = 60 * 1000;
@@ -103,6 +114,7 @@ namespace GenericBot
             catch (Exception e)
             {
                 await Logger.LogErrorMessage($"{e.Message}\n{e.StackTrace.Split('\n').First(s => s.Contains("line"))}");
+                return;
             }
 
             if (GlobalConfiguration.OwnerId == 0)
@@ -137,6 +149,7 @@ namespace GenericBot
             }
 
             DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
+            DiscordClient.MessageDeleted += MessageEventHandler.MessageDeleted;
             DiscordClient.JoinedGuild += GuildEventHandler.OnJoinedGuild;
             DiscordClient.LeftGuild += GuildEventHandler.OnLeftGuild;
             DiscordClient.UserVoiceStateUpdated += UserEventHandler.UserChangedVc;
@@ -194,7 +207,7 @@ namespace GenericBot
         {
             foreach (var kvp in MessageDeleteQueue)
             {
-                ((ISocketMessageChannel) DiscordClient.GetChannel(kvp.Key)).DeleteMessagesAsync(kvp.Value);
+                ((ITextChannel) DiscordClient.GetChannel(kvp.Key)).DeleteMessagesAsync(kvp.Value);
                 MessageDeleteQueue.Remove(kvp.Key);
             }
         }
@@ -213,7 +226,6 @@ namespace GenericBot
                     GenericBot.Logger.LogGenericMessage($"Unmuted {mute.UserId} from {mute.ChannelId}");
                 }
             }
-            File.WriteAllText("files/guildConfigs.json", JsonConvert.SerializeObject(GuildConfigs, Formatting.Indented));
 
             foreach (var gc in GuildConfigs.Select(l => l.Value))
             {
@@ -239,6 +251,7 @@ namespace GenericBot
                             })
                             .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
                                 new DBGuild(ban.GuildId).GetUser(ban.Id).Warnings.SumAnd()));
+                        gc.Bans.Remove(ban);
                         ((SocketTextChannel) DiscordClient.GetChannel(gc.UserLogChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }
@@ -321,6 +334,7 @@ namespace GenericBot
             }
             catch (Exception ex)
             {
+                //Console.WriteLine(ex);
                 StatusPollingTimer.Interval = 5 * 1000;
             }
         }

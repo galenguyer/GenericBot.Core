@@ -49,7 +49,7 @@ namespace GenericBot
 
             if (GenericBot.GlobalConfiguration.DefaultExecuteEdits)
             {
-                await MessageEventHandler.MessageRecieved(arg2);
+                await MessageEventHandler.MessageRecieved(arg2, edited: true);
             }
 
             var guildConfig = GenericBot.GuildConfigs[arg2.GetGuild().Id];

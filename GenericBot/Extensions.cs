@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
@@ -218,6 +219,17 @@ namespace GenericBot
             {
                 return $"{Math.Floor(time.TotalMinutes)} minutes {Math.Floor((double) time.Seconds)} seconds";
             }
+        }
+
+        public static string Multiply(this char str, int count)
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < count; i++)
+            {
+                builder.Append(str);
+            }
+
+            return builder.ToString();
         }
     }
 }

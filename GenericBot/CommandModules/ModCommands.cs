@@ -214,6 +214,7 @@ namespace GenericBot.CommandModules
                     {
                         await msg.ReplyAsync(str.TrimStart(','));
                     }
+
                     return;
                 }
                 else if (dbUsers.Count == 0)
@@ -539,8 +540,7 @@ namespace GenericBot.CommandModules
                 foreach (var m in msgs)
                 {
                     string msgstr = "";
-                    if(lastMsg != null && m.Author.Id != lastMsg.Author.Id) msgstr += $"{m.Author} | {m.Author.Id}\n";
-                    if (lastMsg != null && m.Author.Id != lastMsg.Author.Id) msgstr += $"{m.Timestamp}\n";
+                    if(lastMsg != null && m.Author.Id != lastMsg.Author.Id) msgstr += $"{m.Author} | {m.Author.Id}\n{m.Timestamp}\n";
                     msgstr += $"{m.Content}\n";
                     foreach (var a in m.Attachments)
                     {
@@ -548,7 +548,6 @@ namespace GenericBot.CommandModules
                     }
                     str += msgstr + "\n";
                     lastMsg = m;
-                    await Task.Yield();
                 }
 
                 string filename = $"{channel.Name}.txt";

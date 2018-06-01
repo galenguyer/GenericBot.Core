@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -9,7 +10,7 @@ namespace GenericBot
 {
     public static class MessageEventHandler
     {
-        public static async Task MessageRecieved(SocketMessage parameterMessage)
+        public static async Task MessageRecieved(SocketMessage parameterMessage, bool edited = false)
         {
             // Don't handle the command if it is a system message
             var message = parameterMessage;
@@ -62,6 +63,10 @@ namespace GenericBot
                 await parameterMessage.ReplyAsync(
                     $"**[Anonymous]** {string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss}", DateTimeOffset.UtcNow)}\n{parameterMessage.Content}");
             }
+
+            string rgx = @"(\s+|^)((((I|i|l)((`|'|’)?|\s+a)(\\?)(M|m|ⅿ|m|ｍ))))\s+(.{2,32})$";
+            if (message.GetGuild().Id == 437722207934873628 && message.Channel.Id != 438077853951721472 && Regex.IsMatch(message.Content, rgx) && !edited)
+                await message.ReplyAsync("Hi " + Regex.Match(message.Content, rgx).Groups.Last().Value.Trim() + ", I'm GenericBot");
 
             GenericBot.QuickWatch.Restart();
             try
@@ -142,5 +147,9 @@ namespace GenericBot
             await (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
         }
 
+        public static async Task MessageRecieved(SocketMessage arg)
+        {
+            MessageEventHandler.MessageRecieved(arg, false);
+        }
     }
 }
