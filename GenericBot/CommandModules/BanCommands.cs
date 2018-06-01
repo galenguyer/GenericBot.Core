@@ -82,6 +82,12 @@ namespace GenericBot.CommandModules
                 ulong uid;
                 if (ulong.TryParse(parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out uid))
                 {
+                    if (uid == client.GetApplicationInfoAsync().Result.Owner.Id)
+                    {
+                        await msg.ReplyAsync("Haha lol no");
+                        return;
+                    }
+
                     parameters.RemoveAt(0);
                     int time = 0;
 
@@ -116,7 +122,16 @@ namespace GenericBot.CommandModules
                             dmSuccess = false;
                         }
 
-                        await msg.GetGuild().AddBanAsync(uid);
+                        try
+                        {
+                            await msg.GetGuild().AddBanAsync(uid);
+                        }
+                        catch
+                        {
+                            await msg.ReplyAsync($"Could not ban the given user. Try checking role hierarchy and permissions");
+                            return;
+                        }
+
                         bans = msg.GetGuild().GetBansAsync().Result;
                         var user = bans.First(u => u.User.Id == uid).User;
                         string banMessage = $"Banned `{user}` (`{user.Id}`)";
