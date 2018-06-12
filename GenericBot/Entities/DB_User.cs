@@ -12,7 +12,7 @@ namespace GenericBot.Entities
         public List<string> Warnings { get; set; }
         public List<ulong> SavedRoles { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
-        public int PointsCount { get; set; }
+        public double PointsCount { get; set; }
         public DateTimeOffset LastThanks { get; set; }
         public DBUser()
         {
