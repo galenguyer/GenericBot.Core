@@ -25,6 +25,7 @@ namespace GenericBot.Entities
             Usernames = new List<string>{user.Username};
             Warnings = new List<string>();
             PointsCount = 0;
+            LastThanks = DateTimeOffset.FromUnixTimeSeconds(0);
 
             if(!string.IsNullOrEmpty(user.Nickname))
                 Nicknames.Add(user.Nickname);

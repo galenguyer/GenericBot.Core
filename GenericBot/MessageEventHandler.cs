@@ -68,6 +68,22 @@ namespace GenericBot
             if (message.GetGuild().Id == 437722207934873628 && message.Channel.Id != 438077853951721472 && Regex.IsMatch(message.Content, rgx) && !edited)
                 await message.ReplyAsync("Hi " + Regex.Match(message.Content, rgx).Groups.Last().Value.Trim() + ", I'm GenericBot");
 
+            var thanksRegex = new Regex(@"(\b)((thanks?)|(thx)|(ty))(\b)", RegexOptions.IgnoreCase);
+            if (thanksRegex.IsMatch(message.Content) && GenericBot.GuildConfigs[message.GetGuild().Id].PointsEnabled && message.MentionedUsers.Any())
+            {
+                if (new DBGuild(message.GetGuild().Id).GetUser(message.Author.Id).LastThanks.AddMinutes(1) < DateTimeOffset.UtcNow)
+                {
+                    var db = new DBGuild(message.GetGuild().Id);
+                    db.GetUser(message.Author.Id).LastThanks = DateTimeOffset.UtcNow;
+                    foreach(var user in message.MentionedUsers)
+                    {
+                        db.GetUser(user.Id).PointsCount++;
+                    }
+                    db.Save();
+                    await message.ReplyAsync($"{message.MentionedUsers.Select(us => us.Mention).ToList().SumAnd()} recieved a {GenericBot.GuildConfigs[message.GetGuild().Id].PointsName} of thanks from {message.Author.Mention}");
+                }
+            }
+
             GenericBot.QuickWatch.Restart();
             try
             {

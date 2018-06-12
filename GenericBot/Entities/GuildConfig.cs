@@ -21,8 +21,8 @@ namespace GenericBot.Entities
         public ulong VerifiedRole = 0;
         public string VerifiedMessage;
 
-        public string PointsName;
-        public string PointsVerb;
+        public string PointsName = "point";
+        public string PointsVerb = "used";
         public bool PointsEnabled = false;
 
         public bool GlobalBanOptOut = false;
