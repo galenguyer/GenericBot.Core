@@ -55,6 +55,9 @@ namespace GenericBot.CommandModules
                         {
                             foreach(var u in msg.MentionedUsers)
                             {
+
+                                if (u.Id == msg.Author.Id) continue;
+
                                 user.PointsCount--;
                                 dbGuild.GetUser(u.Id).PointsCount++;
                             }

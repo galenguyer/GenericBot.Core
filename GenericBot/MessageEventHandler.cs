@@ -78,12 +78,20 @@ namespace GenericBot
                 {
                     if (new DBGuild(message.GetGuild().Id).GetUser(message.Author.Id).LastThanks.AddMinutes(1) < DateTimeOffset.UtcNow)
                     {
-                        db.GetUser(message.Author.Id).LastThanks = DateTimeOffset.UtcNow;
+                        List<IUser> givenUsers = new List<IUser>();
                         foreach (var user in message.MentionedUsers)
                         {
+                            if (user.Id == message.Author.Id) continue;
+
                             db.GetUser(user.Id).PointsCount++;
+                            givenUsers.Add(user);
                         }
-                        message.ReplyAsync($"{message.MentionedUsers.Select(us => us.Mention).ToList().SumAnd()} recieved a {GenericBot.GuildConfigs[message.GetGuild().Id].PointsName} of thanks from {message.Author.Mention}");
+                        if (givenUsers.Any())
+                        {
+                            message.ReplyAsync($"{givenUsers.Select(us => us.Mention).ToList().SumAnd()} recieved a {GenericBot.GuildConfigs[message.GetGuild().Id].PointsName} of thanks from {message.Author.Mention}");
+                            db.GetUser(message.Author.Id).LastThanks = DateTimeOffset.UtcNow;
+                        }
+                        else message.ReplyAsync("You can't give yourself a point!");
                     }
                 }
                 db.Save();
