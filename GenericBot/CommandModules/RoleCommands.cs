@@ -16,6 +16,27 @@ namespace GenericBot.CommandModules
         {
             List<Command> RoleCommands = new List<Command>();
 
+            Command mentionRole = new Command(nameof(mentionRole));
+            mentionRole.RequiredPermission = Command.PermissionLevels.Moderator;
+            mentionRole.Description = "Mention a role that's not normally mentionable";
+            mentionRole.ToExecute += async (client, msg, parameters) =>
+            {
+                if(msg.GetGuild().Roles.HasElement(r => r.Name.ToLower().Contains(parameters.reJoin().ToLower()), out SocketRole role))
+                {
+                    var state = role.IsMentionable;
+                    if(!state) await role.ModifyAsync(r => r.Mentionable = true);
+                    await msg.ReplyAsync(role.Mention);
+                    await msg.DeleteAsync();
+                    if(!state) await role.ModifyAsync(r => r.Mentionable = state);
+                }
+                else
+                {
+                    await msg.ReplyAsync("Couldn't find that role!");
+                }
+            };
+
+            RoleCommands.Add(mentionRole);
+
             Command UserRoles = new Command("userroles");
             UserRoles.Description = $"Show all user roles on this server";
             UserRoles.Usage = "userroles";
