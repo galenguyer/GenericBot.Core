@@ -29,6 +29,30 @@ namespace GenericBot.CommandModules
             };
             pointCommands.Add(points);
 
+            Command leaderboard = new Command(nameof(leaderboard));
+            leaderboard.ToExecute += async (client, msg, parameters) => 
+            {
+                var db = new DBGuild(msg.GetGuild().Id);
+                var topUsers = db.Users.OrderByDescending(u => u.PointsCount).Take(10);
+                string result = $"Top 10 users in {msg.GetGuild().Name}\n";
+                int i = 1;
+                var config = GenericBot.GuildConfigs[msg.GetGuild().Id];
+                foreach(var user in topUsers)
+                {
+                    if (msg.GetGuild().Users.HasElement(u => u.Id == user.ID, out SocketGuildUser sgu))
+                    {
+                        result += $"{i++}: {sgu.GetDisplayName().Escape()}: `{Math.Floor(user.PointsCount)}` {config.PointsName}s\n";
+                    }
+                    else
+                    {
+                        result += $"{i++}: Unknown User (ID: `{user.ID}`): `{Math.Floor(user.PointsCount)}` {config.PointsName}s\n";
+                    }
+                }
+                await msg.ReplyAsync(result);
+            };
+
+            pointCommands.Add(leaderboard);
+
             Command award = new Command("award");
             award.Description = "Give a user one of your points";
             award.ToExecute += async (client, msg, parameters) =>
