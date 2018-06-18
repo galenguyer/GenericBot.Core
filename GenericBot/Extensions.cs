@@ -17,6 +17,26 @@ namespace GenericBot
             await task.ConfigureAwait(false);
         }
 
+        public static string Escape(this string input)
+        {
+            var result = input;
+            result = result.Replace(@"\", @"\\");
+            result = result.Replace(@"*", @"\*");
+            result = result.Replace(@"_", @"\_");
+            result = result.Replace(@"~", @"\~");
+            result = result.Replace(@"`", @"\`");
+       
+            return result;
+        }
+
+        public static string GetDisplayName(this SocketGuildUser user)
+        {
+            if (string.IsNullOrEmpty(user.Nickname))
+                return user.Username;
+
+            return user.Nickname;
+        }
+
         public static SocketGuild GetGuild(this SocketMessage msg)
         {
             return ((SocketGuildChannel) msg.Channel).Guild;
