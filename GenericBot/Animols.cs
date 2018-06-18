@@ -15,20 +15,25 @@ namespace GenericBot
         public Animols()
         {
             webclient = new HttpClient(new HttpClientHandler(){AllowAutoRedirect = false});
-            while (cats.Count < 5)
+            System.Threading.Thread t = new System.Threading.Thread(() => 
             {
-                var url = webclient.GetAsync("https://thecatapi.com/api/images/get?api_key=MzE0MDUx").Result.Headers.GetValues("original_image").First();
-                cats.Add(url);
-            }
-            while (dogs.Count < 5)
-            {
-                var url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
-                while (url.EndsWith("mp4"))
+                while (cats.Count < 5)
                 {
-                    url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
+                    var url = webclient.GetAsync("https://thecatapi.com/api/images/get?api_key=MzE0MDUx").Result.Headers.GetValues("original_image").First();
+                    cats.Add(url);
                 }
-                dogs.Add("http://random.dog/"+url);
-            }
+                while (dogs.Count < 5)
+                {
+                    var url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
+                    while (url.EndsWith("mp4"))
+                    {
+                        url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
+                    }
+                    dogs.Add("http://random.dog/" + url);
+                }
+            });
+            t.IsBackground = true;
+            t.Start();
         }
 
         public string GetCat()
