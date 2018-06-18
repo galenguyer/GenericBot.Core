@@ -55,25 +55,22 @@ namespace GenericBot.CommandModules
                 await msg.GetGuild().DownloadUsersAsync();
                 int newUsers = 0;
 
-                using (var db = new LiteDatabase(GenericBot.DBConnectionString))
+                var db = new DBGuild(msg.GetGuild().Id);
+                foreach (var user in msg.GetGuild().Users)
                 {
-                    var col = db.GetCollection<DBGuild>("userDatabase");
-                    col.EnsureIndex(c => c.ID, true);
-                    DBGuild guildDb;
-                    if(col.Exists(g => g.ID.Equals(msg.GetGuild().Id)))
-                        guildDb = col.FindOne(g => g.ID.Equals(msg.GetGuild().Id));
-                    else guildDb = new DBGuild (msg.GetGuild().Id);
-                    foreach (var user in msg.GetGuild().Users)
+                    if (!db.Users.Any(u => u.ID.Equals(user.Id)))
                     {
-                        if (!guildDb.Users.Any(u => u.ID.Equals(user.Id)))
-                        {
-                            guildDb.Users.Add(new DBUser(user));
-                            newUsers++;
-                        }
+                        db.Users.Add(new DBUser(user));
+                        newUsers++;
                     }
-                    col.Upsert(guildDb);
-                    db.Dispose();
+                    else
+                    {
+                        db.GetUser(user.Id).AddUsername(user.Username);
+                        db.GetUser(user.Id).AddNickname(user);
+                    }
                 }
+
+                db.Save();
                 await msg.ReplyAsync($"`{newUsers}` users added to database");
             };
 
