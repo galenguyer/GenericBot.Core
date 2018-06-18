@@ -339,8 +339,45 @@ namespace GenericBot.CommandModules
             };
             TestCommands.Add(cmdp);
 
+            Command decryptDb = new Command("decryptDb");
+            decryptDb.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            decryptDb.ToExecute += async (client, msg, parameters) =>
+            {
+                File.WriteAllText($"files/guildDbs/{msg.GetGuild().Id}_raw.json", JsonConvert.SerializeObject(new DBGuild(msg.GetGuild().Id), Formatting.Indented));
+                var res = msg.Channel.SendFileAsync($"files/guildDbs/{msg.GetGuild().Id}_raw.json", "Self-destructing in 15 seconds!").Result;
+                await Task.Delay(TimeSpan.FromSeconds(15));
+                try{await res.DeleteAsync();}
+                catch{}
+            };
 
-            TestCommands.Add(countdown);
+            TestCommands.Add(decryptDb);
+
+            Command repairDb = new Command("repairDb");
+            repairDb.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            repairDb.ToExecute += async (client, msg, paramList) =>
+            {
+                var db = new DBGuild(msg.GetGuild().Id);
+
+
+                foreach (var user in db.Users)
+                {
+                    if (!user.Nicknames.Empty())
+                    {
+                        user.Nicknames = user.Nicknames.Where(n => !string.IsNullOrEmpty(n)).ToList();
+                    }
+
+                    if (!user.Usernames.Empty())
+                    {
+                        user.Usernames = user.Usernames.Where(n => !string.IsNullOrEmpty(n)).ToList();
+                    }
+
+                }
+                db.Save();
+
+                await msg.ReplyAsync($"Done!");
+            };
+
+            TestCommands.Add(repairDb);
 
             return TestCommands;
         }
