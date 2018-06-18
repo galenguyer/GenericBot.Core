@@ -5,9 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using GenericBot.Entities;
+using Newtonsoft.Json;
 
 namespace GenericBot.CommandModules
 {
@@ -107,17 +109,16 @@ namespace GenericBot.CommandModules
                 stw.Start();
                 string info = "";
 
-                var guildDb  = new DBGuild().GetDBGuildFromId(msg.GetGuild().Id);
+                var guildDb = new DBGuild(msg.GetGuild().Id);
 
-                info += $"Access time: `{stw.ElapsedMilliseconds}`ms\n";
                 info += $"Registered Users: `{guildDb.Users.Count}`\n";
 
                 int unc = 0, nnc = 0, wnc = 0, nuc = 0;
                 foreach (var user in guildDb.Users)
                 {
-                    if(user.Usernames != null && user.Usernames.Any())
+                    if (user.Usernames != null && user.Usernames.Any())
                         unc += user.Usernames.Count;
-                    if(user.Nicknames != null && user.Nicknames.Any())
+                    if (user.Nicknames != null && user.Nicknames.Any())
                         nnc += user.Nicknames.Count;
                     if (user.Warnings != null && user.Warnings.Any())
                     {
@@ -131,7 +132,7 @@ namespace GenericBot.CommandModules
                 info += $"Stored Warnings:  `{wnc}`\n";
                 info += $"Users with Warnings:  `{nuc}`\n";
 
-
+                info += $"Access time: `{stw.ElapsedMilliseconds}`ms\n";
                 await msg.ReplyAsync(info);
             };
 
