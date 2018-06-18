@@ -191,7 +191,20 @@ namespace GenericBot.CommandModules
                         }
                         catch (Exception ex)
                         {
-                            if(new Command("test").GetPermissions(msg.Author, msg.GetGuild().Id) >= Command.PermissionLevels.GlobalAdmin)
+                            foreach (var u in guildDb.Users)
+                            {
+                                if (!u.Nicknames.Empty())
+                                {
+                                    user.Nicknames = user.Nicknames.Where(n => !string.IsNullOrEmpty(n)).ToList();
+                                }
+
+                                if (!u.Usernames.Empty())
+                                {
+                                    user.Usernames = user.Usernames.Where(n => !string.IsNullOrEmpty(n)).ToList();
+                                }
+
+                            }
+                            if (new Command("test").GetPermissions(msg.Author, msg.GetGuild().Id) >= Command.PermissionLevels.GlobalAdmin)
                                 await msg.ReplyAsync($"```\n{ex.Message}\n{ex.StackTrace}\n{user.ID} : {user.Usernames.Count} | {user.Nicknames.Count}\n```");
                         }
                     }
