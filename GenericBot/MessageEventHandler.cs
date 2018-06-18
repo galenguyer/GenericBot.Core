@@ -94,7 +94,10 @@ namespace GenericBot
                         else message.ReplyAsync("You can't give yourself a point!");
                     }
                 }
-                db.Save();
+                lock ("db")
+                {
+                    db.Save();
+                }
             });
             pointThread.IsBackground = true;
             pointThread.Start();

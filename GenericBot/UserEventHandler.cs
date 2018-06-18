@@ -43,7 +43,10 @@ namespace GenericBot
             {
                 guildDb.Users.Add(new DBUser(user));
             }
-            guildDb.Save();
+            lock ("db")
+            {
+                guildDb.Save();
+            }
 
             #endregion Databasae
 
