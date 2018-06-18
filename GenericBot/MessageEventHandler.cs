@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace GenericBot
             var message = parameterMessage;
 
             GenericBot.MessageCounter++;
-            GenericBot.Latency = (int) Math.Round((DateTimeOffset.UtcNow - parameterMessage.Timestamp).TotalMilliseconds);
+            GenericBot.Latency = (int)Math.Round((DateTimeOffset.UtcNow - parameterMessage.Timestamp).TotalMilliseconds);
 
 
             if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(message.Author.Id))
@@ -24,15 +25,14 @@ namespace GenericBot
                 return;
             }
 
-            if(parameterMessage.Author.Id == GenericBot.DiscordClient.CurrentUser.Id)
+            if (parameterMessage.Author.Id == GenericBot.DiscordClient.CurrentUser.Id)
                 return;
 
             if (parameterMessage.Channel.GetType().FullName.ToLower().Contains("dmchannel"))
             {
-                if (message.Author.Id == GenericBot.DiscordClient.CurrentUser.Id) return;
-                var msg =  GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.GetOrCreateDMChannelAsync().Result
-                    .SendMessageAsync($"```\nDM from: {message.Author}({message.Author.Id})\nContent: {message.Content.SafeSubstring(1500)}\n```").Result;
-                if (parameterMessage.Content.Split().Length == 1)
+                var msg = GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.GetOrCreateDMChannelAsync().Result
+                    .SendMessageAsync($"```\nDM from: {message.Author}({message.Author.Id})\nContent: {message.Content}\n```").Result;
+                if (parameterMessage.Content.Trim().Split().Length == 1)
                 {
                     var guild = VerificationEngine.GetGuildFromCode(parameterMessage.Content, message.Author.Id);
                     if (guild == null)
@@ -43,12 +43,11 @@ namespace GenericBot
                     {
                         await guild.GetUser(message.Author.Id)
                             .AddRoleAsync(guild.GetRole(GenericBot.GuildConfigs[guild.Id].VerifiedRole));
-                        if (GenericBot.GuildConfigs[guild.Id].UserJoinedShowModNotes && guild.TextChannels.HasElement(c =>c.Id == (GenericBot.GuildConfigs[guild.Id].UserLogChannelId), out SocketTextChannel logChannel))
+                        if (guild.TextChannels.HasElement(c => c.Id == (GenericBot.GuildConfigs[guild.Id].UserLogChannelId), out SocketTextChannel logChannel))
                         {
                             logChannel.SendMessageAsync($"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}`:  `{message.Author}` (`{message.Author.Id}`) just verified");
                         }
                         await message.ReplyAsync($"You've been verified on **{guild.Name}**!");
-
                         await msg.ModifyAsync(m =>
                             m.Content = $"```\nDM from: {message.Author}({message.Author.Id})\nContent: {message.Content.SafeSubstring(1900)}\nVerified on {guild.Name}\n```");
                     }
@@ -65,7 +64,9 @@ namespace GenericBot
             }
 
             string rgx = @"(\s+|^)((((I|i|l)((`|'|’)?|\s+a)(\\?)(M|m|ⅿ|m|ｍ))))\s+(.{2,32})$";
-            if (message.GetGuild().Id == 437722207934873628 && message.Channel.Id != 438077853951721472 && Regex.IsMatch(message.Content, rgx) && !edited)
+            //            if (message.GetGuild().Id == 437722207934873628 && message.Channel.Id != 438077853951721472 && Regex.IsMatch(message.Content, rgx) && !edited)
+            //                await message.ReplyAsync("Hi " + Regex.Match(message.Content, rgx).Groups.Last().Value.Trim() + ", I'm GenericBot");
+            if (message.GetGuild().Id == 401908664018927626 && Regex.IsMatch(message.Content, rgx) && !edited)
                 await message.ReplyAsync("Hi " + Regex.Match(message.Content, rgx).Groups.Last().Value.Trim() + ", I'm GenericBot");
 
             System.Threading.Thread pointThread = new System.Threading.Thread(() =>
@@ -145,7 +146,7 @@ namespace GenericBot
             }
         }
 
-        public static async Task MessageDeleted(Cacheable<IMessage, ulong> arg,ISocketMessageChannel channel)
+        public static async Task MessageDeleted(Cacheable<IMessage, ulong> arg, ISocketMessageChannel channel)
         {
             if (!arg.HasValue) return;
 

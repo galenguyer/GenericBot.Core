@@ -72,8 +72,8 @@ namespace GenericBot
             }
             if (guildConfig.ProbablyMutedUsers.Contains(user.Id))
             {
-                try{user.AddRoleAsync(user.Guild.GetRole(guildConfig.MutedRoleId));}
-                catch{}
+                try { user.AddRoleAsync(user.Guild.GetRole(guildConfig.MutedRoleId)); }
+                catch { }
             }
 
             if (guildConfig.UserLogChannelId == 0) return;
@@ -133,14 +133,14 @@ namespace GenericBot
                     }
                     catch (Exception e)
                     {
-                        GenericBot.Logger.LogErrorMessage(e.Message +"\n"  +e.StackTrace);
+                        GenericBot.Logger.LogErrorMessage(e.Message + "\n" + e.StackTrace);
                     }
                 }
             }
             if (after.VoiceChannel != null)
             {
-              if (GenericBot.GuildConfigs[(user as SocketGuildUser).Guild.Id].VoiceChannelRoles
-                    .HasElement(kvp => kvp.Key.Equals(after.VoiceChannel.Id), out chanrole))
+                if (GenericBot.GuildConfigs[(user as SocketGuildUser).Guild.Id].VoiceChannelRoles
+                      .HasElement(kvp => kvp.Key.Equals(after.VoiceChannel.Id), out chanrole))
                 {
                     try
                     {
@@ -149,7 +149,7 @@ namespace GenericBot
                     }
                     catch (Exception e)
                     {
-                        GenericBot.Logger.LogErrorMessage(e.Message +"\n"  +e.StackTrace);
+                        GenericBot.Logger.LogErrorMessage(e.Message + "\n" + e.StackTrace);
                     }
                 }
             }

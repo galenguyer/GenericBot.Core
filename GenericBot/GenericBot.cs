@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -175,8 +174,8 @@ namespace GenericBot
             }
             foreach (var guild in DiscordClient.Guilds)
             {
-                GuildConfigs.Add(guild.Id, JsonConvert.DeserializeObject<GuildConfig>(
-                    File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
+                var config = JsonConvert.DeserializeObject<GuildConfig>(File.ReadAllText($"files/guildConfigs/{guild.Id}.json"));
+                GuildConfigs.Add(guild.Id, config);
             }
             await Task.Delay(100);
             await Logger.LogGenericMessage($"Loaded {GuildConfigs.Count} Configs on Startup");
