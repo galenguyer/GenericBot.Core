@@ -35,9 +35,11 @@ namespace GenericBot
             #region Database
 
             var guildDb = new DBGuild(user.Guild.Id);
+            bool alreadyJoined = false;
             if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
             {
                 guildDb.Users.Find(u => u.ID.Equals(user.Id)).AddUsername(user.Username);
+                alreadyJoined = true;
             }
             else
             {
@@ -85,8 +87,8 @@ namespace GenericBot
                 .AddField(new EmbedFieldBuilder().WithName("Username").WithValue(user.ToString()).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("UserId").WithValue(user.Id).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("Mention").WithValue(user.Mention).WithIsInline(true))
-                .AddField(new EmbedFieldBuilder().WithName("User Number").WithValue(user.Guild.MemberCount).WithIsInline(true))
-                .AddField(new EmbedFieldBuilder().WithName("Database Number").WithValue(guildDb.Users.Count).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("User Number").WithValue(user.Guild.MemberCount + (!alreadyJoined ? " (New Member)" : "")).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("Database Number").WithValue(guildDb.Users.Count + (alreadyJoined ? " (Previous Member)" : "" )).WithIsInline(true))
                 .WithFooter($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
 
             if ((DateTimeOffset.Now - user.CreatedAt).TotalDays < 7)
