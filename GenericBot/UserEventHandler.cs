@@ -51,24 +51,22 @@ namespace GenericBot
 
             var guildConfig = GenericBot.GuildConfigs[user.Guild.Id];
 
-            if (guildConfig.VerifiedRole == 0 || (string.IsNullOrEmpty(guildConfig.VerifiedMessage) || guildConfig.VerifiedMessage.Split().Length < 32 || !user.Guild.Roles.Any(r => r.Id == guildConfig.VerifiedRole)))
+            if (!(guildConfig.VerifiedRole == 0 || (string.IsNullOrEmpty(guildConfig.VerifiedMessage) || guildConfig.VerifiedMessage.Split().Length < 32 || !user.Guild.Roles.Any(r => r.Id == guildConfig.VerifiedRole))))
             {
-                return;
-            }
-            string vMessage = $"Hey {user.Username}! To get verified on **{user.Guild.Name}** reply to this message with the hidden code in the message below\n\n"
-                             + GenericBot.GuildConfigs[user.Guild.Id].VerifiedMessage;
+                string vMessage = $"Hey {user.Username}! To get verified on **{user.Guild.Name}** reply to this message with the hidden code in the message below\n\n"
+                                 + GenericBot.GuildConfigs[user.Guild.Id].VerifiedMessage;
 
-            string verificationMessage =
-                VerificationEngine.InsertCodeInMessage(vMessage, VerificationEngine.GetVerificationCode(user.Id, user.Guild.Id));
+                string verificationMessage =
+                    VerificationEngine.InsertCodeInMessage(vMessage, VerificationEngine.GetVerificationCode(user.Id, user.Guild.Id));
 
-            try
-            {
-                await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
+                try
+                {
+                    await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
+                }
+                catch (Exception ex)
+                {
+                }
             }
-            catch (Exception ex)
-            {
-            }
-
             if (guildConfig.ProbablyMutedUsers.Contains(user.Id))
             {
                 try{user.AddRoleAsync(user.Guild.GetRole(guildConfig.MutedRoleId));}
