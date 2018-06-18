@@ -136,27 +136,85 @@ namespace GenericBot.CommandModules
             };
 
             TestCommands.Add(DBStats);
-                    {
-                        if(user.Usernames != null && user.Usernames.Any())
-                            unc += user.Usernames.Count;
-                        if(user.Nicknames != null && user.Nicknames.Any())
-                            nnc += user.Nicknames.Count;
-                        if (user.Warnings != null && user.Warnings.Any())
-                        {
-                            wnc += user.Warnings.Count;
-                            nuc++;
-                        }
-                    }
 
-                    info += $"Stored Usernames: `{unc}`\n";
-                    info += $"Stored Nicknames: `{nnc}`\n";
-                    info += $"Stored Warnings:  `{wnc}`\n";
-                    info += $"Users with Warnings:  `{nuc}`\n";
-
-                    db.Dispose();
+            Command addwarning = new Command("oldwarning");
+            addwarning.Description += "Add a warning to the database without meta info";
+            addwarning.Usage = "oldwarning <user> <warning>";
+            addwarning.RequiredPermission = Command.PermissionLevels.Admin;
+            ulong uid;
+            addwarning.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("You must specify a user");
+                    return;
                 }
-                await msg.ReplyAsync(info);
+
+                if (ulong.TryParse(parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out uid))
+                {
+                    parameters.RemoveAt(0);
+                    string warning = parameters.reJoin();
+                    var guildDb = new DBGuild (msg.GetGuild().Id);
+                    if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
+                    {
+                        guildDb.Users.Find(u => u.ID.Equals(uid)).AddWarning(warning);
+                    }
+                    else
+                    {
+                        guildDb.Users.Add(new DBUser{ID = uid, Warnings = new List<string>{warning}});
+                    }
+                    guildDb.Save();
+                    await msg.ReplyAsync($"Added `{warning.Replace('`', '\'')}` to <@{uid}> (`{uid}`)");
+                }
+                else
+                {
+                    await msg.ReplyAsync("Could not find that user");
+                }
+
             };
+
+            TestCommands.Add(addwarning);
+
+            Command archivePins = new Command("archivePins");
+            archivePins.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            archivePins.ToExecute += async (client, msg, parameters) =>
+            {
+                var msgs = msg.Channel.GetPinnedMessagesAsync().Result.ToList();
+                if (msgs.Any())
+                {
+
+                    msgs.Reverse();
+                    string header = "<html><head><style>body {background-color: #36393e; color: #fff; font-family: \"Trebuchet MS\", Helvetica, sans-serif; font-size: small }server {font-size: 150%}channel {font-size: 130%}username {font-size: 100%}message {font-size: 80%}reqinf {font-size: 60%; color: grey;}</style></head>";
+                    string server =$"<body> <i><server>{msg.GetGuild().Name}</server> in <channel>#{msg.Channel.Name}</channel></i><hr>";
+                    string messages = "";
+                    foreach (var m in msgs)
+                    {
+                        string mess = m.Content;
+                        foreach (var u in m.MentionedUsers)
+                        {
+                            mess = mess.Replace($"<@!{u.Id}>", $"@{u.Username}");
+                            mess = mess.Replace($"<@{u.Id}>", $"@{u.Username}");
+                            mess = mess.Replace(u.Mention, $"@{u.Username}");
+                        }
+                        foreach (var c in m.MentionedChannelIds)
+                        {
+                            mess = mess.Replace($"<#{c}>", $"#{(client.GetChannel(c) as IMessageChannel).Name}");
+                        }
+                        foreach (var u in m.MentionedRoleIds)
+                        {
+                            mess = mess.Replace($"<@&u>", $"@{msg.GetGuild().GetRole(u).Name}");
+                        }
+                        messages += $"<username>{m.Author}</username><br><message>{mess}</message><hr>";
+                    }
+                    string footer = $"<br><br> <i><reqinf>Requested by <b>{msg.Author}</b></reqinf></i></body></html>";
+
+                    File.WriteAllText($"files/{msg.Channel.Name}_pins.html", header + server + messages + footer, Encoding.UTF8);
+                    await msg.Channel.SendFileAsync($"files/{msg.Channel.Name}_pins.html");
+                    File.Delete($"files/{msg.Channel.Name}_pins.html");
+                }
+                else await msg.ReplyAsync($"This channel has no pinned messages!");
+            };
+            TestCommands.Add(archivePins);
 
             TestCommands.Add(DBStats);
             Command verify = new Command("verify");
