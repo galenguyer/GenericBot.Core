@@ -251,51 +251,6 @@ namespace GenericBot.CommandModules
                             else await msg.ReplyAsync("Invalid Channel Id");
                         }
                     }
-                    else if (paramList[1].ToLower().Equals("joinmessage"))
-                    {
-                        if (paramList.Count() == 2)
-                        {
-                            await msg.ReplyAsync(
-                                $"Current user joined message: `{GenericBot.GuildConfigs[msg.GetGuild().Id].UserJoinedMessage.Replace("`", "'")}`");
-                        }
-                        else
-                        {
-                            paramList.RemoveRange(0, 2);
-                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserJoinedMessage = paramList.reJoin();
-                            await msg.ReplyAsync($"User Join message set to `{GenericBot.GuildConfigs[msg.GetGuild().Id].UserJoinedMessage.Replace("`", "'")}`");
-                        }
-                    }
-                    else if (paramList[1].ToLower().Equals("leavemessage"))
-                    {
-                        if (paramList.Count() == 2)
-                        {
-                            await msg.ReplyAsync(
-                                $"Current user left message: `{GenericBot.GuildConfigs[msg.GetGuild().Id].UserLeftMessage.Replace("`", "'")}`");
-                        }
-                        else
-                        {
-                            paramList.RemoveRange(0, 2);
-                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserLeftMessage = paramList.reJoin();
-                            await msg.ReplyAsync($"User Join message set to `{GenericBot.GuildConfigs[msg.GetGuild().Id].UserLeftMessage.Replace("`", "'")}`");
-                        }
-                    }
-                    else if (paramList[1].ToLower().Equals("info"))
-                    {
-                        if (paramList[2].ToLower().Equals(("true")))
-                        {
-                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserJoinedShowModNotes = true;
-                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogTimestamp= true;
-                        }
-                        else if (paramList[2].ToLower().Equals(("false")))
-                        {
-                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserJoinedShowModNotes = false;
-                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogTimestamp= false;
-                        }
-                        else
-                        {
-                            await msg.ReplyAsync("Invalid Option");
-                        }
-                    }
                     else if (paramList[1].ToLower().Equals("ignorechannel"))
                     {
                         if (paramList.Count == 2)

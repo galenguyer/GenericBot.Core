@@ -78,19 +78,15 @@ namespace GenericBot
             if (guildConfig.UserLogChannelId == 0) return;
 
             EmbedBuilder log = new EmbedBuilder()
-                .WithTitle("User Joined")
-                .WithAuthor(new EmbedAuthorBuilder().WithName($"{user} ({user.Id})")
-                    .WithIconUrl(user.GetAvatarUrl()))
+                .WithAuthor(new EmbedAuthorBuilder().WithName("User Joined")
+                    .WithIconUrl(user.GetAvatarUrl()).WithUrl(user.GetAvatarUrl()))
                 .WithColor(114, 137, 218)
-                .WithDescription(guildConfig.UserJoinedMessage.Replace("{id}", user.Id.ToString()).Replace("{username}", user.ToString()).Replace("{mention}", user.Mention));
+                .AddField(new EmbedFieldBuilder().WithName("Username").WithValue(user.ToString()).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("UserId").WithValue(user.Id).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("Mention").WithValue(user.Mention).WithIsInline(true))
+                .WithFooter($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
 
-            if (guildConfig.UserLogTimestamp == true)
-            {
-                log.AddField(new EmbedFieldBuilder().WithName("Time")
-                    .WithValue($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT").WithIsInline(true));
-            }
-
-            if (guildConfig.UserJoinedShowModNotes == true && (DateTimeOffset.Now - user.CreatedAt).TotalDays < 7)
+            if ((DateTimeOffset.Now - user.CreatedAt).TotalDays < 7)
             {
                 log.AddField(new EmbedFieldBuilder().WithName("New User")
                     .WithValue($"Account made {(DateTimeOffset.Now - user.CreatedAt).Nice()} ago").WithIsInline(true));
@@ -100,10 +96,15 @@ namespace GenericBot
             {
                 DBUser usr = guildDb.Users.First(u => u.ID.Equals(user.Id));
 
-                if (guildConfig.UserJoinedShowModNotes && !usr.Warnings.Empty())
+                if (!usr.Warnings.Empty())
                 {
+                    string warns = "";
+                    for(int i = 0; i < usr.Warnings.Count; i++)
+                    {
+                        warns += $"{i + 1}: {usr.Warnings.ElementAt(i)}\n";
+                    }
                     log.AddField(new EmbedFieldBuilder().WithName($"{usr.Warnings.Count} Warnings")
-                        .WithValue(usr.Warnings.SumAnd()));
+                        .WithValue(warns));
                 }
             }
             catch
@@ -159,21 +160,16 @@ namespace GenericBot
 
             var guildConfig = GenericBot.GuildConfigs[user.Guild.Id];
 
-
             if (guildConfig.UserLogChannelId == 0) return;
 
             EmbedBuilder log = new EmbedBuilder()
-                .WithTitle("User Left")
-                .WithAuthor(new EmbedAuthorBuilder().WithName($"{user} ({user.Id})")
-                    .WithIconUrl(user.GetAvatarUrl()))
+				.WithAuthor(new EmbedAuthorBuilder().WithName("User Left")
+                    .WithIconUrl(user.GetAvatarUrl()).WithUrl(user.GetAvatarUrl()))
                 .WithColor(156, 39, 176)
-                .WithDescription(guildConfig.UserLeftMessage.Replace("{id}", user.Id.ToString()).Replace("{username}", user.ToString()).Replace("{mention}", user.Mention));
-
-            if (guildConfig.UserLogTimestamp == true)
-            {
-                log.AddField(new EmbedFieldBuilder().WithName("Time")
-                    .WithValue($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT").WithIsInline(true));
-            }
+				.AddField(new EmbedFieldBuilder().WithName("Username").WithValue(user.ToString()).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("UserId").WithValue(user.Id).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("Mention").WithValue(user.Mention).WithIsInline(true))
+				.WithFooter($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
 
             await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
 

@@ -13,10 +13,6 @@ namespace GenericBot.Entities
         public List<ulong> ModRoleIds;
         public List<ulong> UserRoleIds;
         public ulong UserLogChannelId;
-        public bool UserLogTimestamp;
-        public string UserJoinedMessage;
-        public string UserLeftMessage;
-        public bool UserJoinedShowModNotes;
         public List<ulong> MessageLoggingIgnoreChannels = new List<ulong>();
         public ulong VerifiedRole = 0;
         public string VerifiedMessage;
@@ -51,11 +47,6 @@ namespace GenericBot.Entities
             CustomCommands = new List<CustomCommand>();
             CustomAliases = new List<CustomAlias>();
             Bans = new List<GenericBan>();
-
-            UserLogTimestamp = true;
-            UserJoinedMessage = "{mention} (`{id}` | `{username}`) **joined** the server.";
-            UserLeftMessage = "**{username}** (`{id}`) **left** the server.";
-            UserJoinedShowModNotes = false;
 
             Prefix = "";
         }
