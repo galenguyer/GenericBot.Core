@@ -40,7 +40,6 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new QuickCommands().GetQuickCommands());
             GenericBot.Commands.AddRange(new PointsCommands().GetPointsCommands());
 
-            GenericBot.Commands.AddRange(new HackingCommands().GetHackedCommands());
             Console.WriteLine(GenericBot.Commands.Select(c => c.Name).Aggregate((i, j) => i+ ", " + j));
         }
 
