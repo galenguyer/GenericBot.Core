@@ -228,7 +228,7 @@ namespace GenericBot.CommandModules
 
                 #endregion Prefix
 
-                #region UserEvents
+                #region Logging
 
                 else if (paramList[0].ToLower().Equals("logging"))
                 {
@@ -287,43 +287,7 @@ namespace GenericBot.CommandModules
                     }
                 }
 
-                #endregion UserEvents
-
-                #region VoiceChannelRoles
-
-                else if (paramList[0].ToLower().Equals("voicerole"))
-                {
-                    paramList.RemoveAt(0);
-                    if (paramList.Count != 2)
-                    {
-                        await msg.ReplyAsync("Incorrect number of arguments. Make sure the command is `voicerole [VoiceChannelId] [RoleId]`");
-                        return;
-                    }
-                    ulong channelId, roleId;
-                    if (ulong.TryParse(paramList[0], out channelId) && ulong.TryParse(paramList[1], out roleId))
-                    {
-                        SocketVoiceChannel vc;
-                        SocketRole role;
-                        if (msg.GetGuild().VoiceChannels.HasElement(c => c.Id == channelId, out vc) &&
-                            msg.GetGuild().Roles.HasElement(r => r.Id == roleId, out role))
-                        {
-                            GenericBot.GuildConfigs[msg.GetGuild().Id].VoiceChannelRoles.Override(channelId, roleId);
-                            GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
-                            await msg.ReplyAsync($"Anyone who joins the {vc.Name} voice channel will get the {role.Name} role!");
-                        }
-                        else
-                        {
-                            await msg.ReplyAsync("One of those IDs does not exist on this server");
-                        }
-                    }
-                    else
-                    {
-                        await msg.ReplyAsync(("Role or Channel ID is in an incorrect format"));
-                    }
-
-                }
-
-                #endregion VoiceChannelRoles
+                #endregion Logging
 
                 #region MutedRoleId
 

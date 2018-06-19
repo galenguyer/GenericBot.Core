@@ -121,44 +121,6 @@ namespace GenericBot
             #endregion Logging
         }
 
-        public static async Task UserChangedVc(SocketUser user, SocketVoiceState before, SocketVoiceState after)
-        {
-            var config = GenericBot.GuildConfigs[(user as SocketGuildUser).Guild.Id];
-            KeyValuePair<ulong, ulong> chanrole;
-            if (before.VoiceChannel != null)
-            {
-                if (GenericBot.GuildConfigs[(user as SocketGuildUser).Guild.Id].VoiceChannelRoles
-                    .HasElement(kvp => kvp.Key.Equals(before.VoiceChannel.Id), out chanrole))
-                {
-                    try
-                    {
-                        (user as IGuildUser).RemoveRoleAsync((user as SocketGuildUser).Guild.Roles.
-                            FirstOrDefault(r => r.Id == chanrole.Value));
-                    }
-                    catch (Exception e)
-                    {
-                        GenericBot.Logger.LogErrorMessage(e.Message + "\n" + e.StackTrace);
-                    }
-                }
-            }
-            if (after.VoiceChannel != null)
-            {
-                if (GenericBot.GuildConfigs[(user as SocketGuildUser).Guild.Id].VoiceChannelRoles
-                      .HasElement(kvp => kvp.Key.Equals(after.VoiceChannel.Id), out chanrole))
-                {
-                    try
-                    {
-                        (user as IGuildUser).AddRoleAsync((user as SocketGuildUser).Guild.Roles.
-                            FirstOrDefault(r => r.Id == chanrole.Value));
-                    }
-                    catch (Exception e)
-                    {
-                        GenericBot.Logger.LogErrorMessage(e.Message + "\n" + e.StackTrace);
-                    }
-                }
-            }
-        }
-
         public static async Task UserLeft(SocketGuildUser user)
         {
             #region Logging

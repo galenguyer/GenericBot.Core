@@ -32,7 +32,6 @@ namespace GenericBot.Entities
         public List<CustomCommand> CustomCommands;
         public List<CustomAlias> CustomAliases;
 
-        public Dictionary<ulong, ulong> VoiceChannelRoles = new Dictionary<ulong, ulong>();
         public List<ulong> ProbablyMutedUsers = new List<ulong>();
         public ulong MutedRoleId = 0;
         public List<GenericBan> Bans = new List<GenericBan>();

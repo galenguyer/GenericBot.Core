@@ -151,7 +151,6 @@ namespace GenericBot
             DiscordClient.MessageDeleted += MessageEventHandler.MessageDeleted;
             DiscordClient.JoinedGuild += GuildEventHandler.OnJoinedGuild;
             DiscordClient.LeftGuild += GuildEventHandler.OnLeftGuild;
-            DiscordClient.UserVoiceStateUpdated += UserEventHandler.UserChangedVc;
             DiscordClient.UserLeft += UserEventHandler.UserLeft;
 
             var serviceProvider = ConfigureServices();
