@@ -56,6 +56,7 @@ namespace GenericBot.CommandModules
             {
                 await msg.GetGuild().DownloadUsersAsync();
                 int newUsers = 0;
+                int updatedUsers = 0;
 
                 var db = new DBGuild(msg.GetGuild().Id);
                 foreach (var user in msg.GetGuild().Users)
@@ -69,11 +70,12 @@ namespace GenericBot.CommandModules
                     {
                         db.GetUser(user.Id).AddUsername(user.Username);
                         db.GetUser(user.Id).AddNickname(user);
+                        updatedUsers++;
                     }
                 }
 
                 db.Save();
-                await msg.ReplyAsync($"`{newUsers}` users added to database");
+                await msg.ReplyAsync($"`{newUsers}` users added to database, `{updatedUsers}` updated");
             };
 
             TestCommands.Add(updateDB);

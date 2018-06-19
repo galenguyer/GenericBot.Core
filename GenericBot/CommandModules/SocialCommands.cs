@@ -291,9 +291,10 @@ namespace GenericBot.CommandModules
             {
                 string input = parameters.reJoin();
 
+                var exp = new Expression(input);
                 var emb = new EmbedBuilder()
                 .AddField("Input", $"```\n{input}\n```")
-                .AddField("Output", $"```\n{new Expression(input).calculate()}\n```");
+                .AddField("Output", $"```\n{exp.calculate()}\n```");
                 await msg.Channel.SendMessageAsync("", embed: emb.Build());
             };
 

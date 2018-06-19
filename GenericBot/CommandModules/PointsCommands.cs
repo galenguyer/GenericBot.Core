@@ -105,7 +105,7 @@ namespace GenericBot.CommandModules
                 var user = dbGuild.GetUser(msg.GetMentionedUsers().First().Id);
                 user.PointsCount = decimal.Parse(parameters[1]);
                 dbGuild.Save();
-                await msg.ReplyAsync($"{msg.GetMentionedUsers().First().Mention} now has {Math.Floor(user.PointsCount)} points");
+                await msg.ReplyAsync($"{msg.GetMentionedUsers().First().Mention} now has {(user.PointsCount)} points");
             };
             pointCommands.Add(setPoints);
 
