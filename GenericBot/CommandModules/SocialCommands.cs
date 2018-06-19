@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Color = System.Drawing.Color;
 using Image = System.Drawing.Image;
+using org.mariuszgromada.math.mxparser;
 using ImageFormat = Discord.ImageFormat;
 
 namespace GenericBot.CommandModules
@@ -284,6 +285,19 @@ namespace GenericBot.CommandModules
 
             SocialCommands.Add(checkinvite);
 
+            Command calc = new Command("calc");
+            calc.Description = "Do some math";
+            calc.ToExecute += async (client, msg, parameters) =>
+            {
+                string input = parameters.reJoin();
+
+                var emb = new EmbedBuilder()
+                .AddField("Input", $"```\n{input}\n```")
+                .AddField("Output", $"```\n{new Expression(input).calculate()}\n```");
+                await msg.Channel.SendMessageAsync("", embed: emb.Build());
+            };
+
+            SocialCommands.Add(calc);
             return SocialCommands;
         }
     }
