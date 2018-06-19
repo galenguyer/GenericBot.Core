@@ -20,6 +20,7 @@ namespace GenericBot.Entities
         public string PointsName = "point";
         public string PointsVerb = "used";
         public bool PointsEnabled = false;
+        public Dictionary<decimal, ulong> Levels = new Dictionary<decimal, ulong>();
 
         public bool GlobalBanOptOut = false;
 

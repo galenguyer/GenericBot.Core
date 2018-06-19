@@ -73,7 +73,18 @@ namespace GenericBot
             {
                 var db = new DBGuild(message.GetGuild().Id);
                 if (!edited)
+                {
                     db.GetUser(message.Author.Id).PointsCount += (decimal)(.01);
+                    if (GenericBot.GuildConfigs[message.GetGuild().Id].Levels.Any(kvp => kvp.Key < db.GetUser(message.Author.Id).PointsCount))
+                    {
+                        foreach (var level in GenericBot.GuildConfigs[message.GetGuild().Id].Levels
+                        .Where(kvp => kvp.Value >= db.GetUser(message.Author.Id).PointsCount)
+                        .Where(kvp => (message.Author as SocketGuildUser).Roles.Any(r => r.Id.Equals(kvp.Value))))
+                        {
+                            (message.Author as SocketGuildUser).AddRoleAsync(message.GetGuild().GetRole(level.Value));
+                        }
+                    }
+                }
                 var thanksRegex = new Regex(@"(\b)((thanks?)|(thx)|(ty))(\b)", RegexOptions.IgnoreCase);
                 if (thanksRegex.IsMatch(message.Content) && GenericBot.GuildConfigs[message.GetGuild().Id].PointsEnabled && message.MentionedUsers.Any())
                 {

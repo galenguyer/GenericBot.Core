@@ -469,6 +469,87 @@ namespace GenericBot.CommandModules
 
             ConfigCommands.Add(config);
 
+            Command levels = new Command(nameof(levels));
+            levels.RequiredPermission = Command.PermissionLevels.Admin;
+            levels.Description = "Set the number of points to get a role";
+            levels.ToExecute += async (client, msg, parameters) => 
+            {
+                var guildConfig = GenericBot.GuildConfigs[msg.GetGuild().Id];
+                if (parameters.Empty())
+                {
+                    if (guildConfig.Levels.Any(kvp => msg.GetGuild().GetRole(kvp.Value) != null))
+                    {
+                        string res = "";
+                        foreach(var level in guildConfig.Levels.OrderBy(kvp => kvp.Key).Where(kvp => msg.GetGuild().GetRole(kvp.Value) != null))
+                        {
+                            var role = msg.GetGuild().GetRole(level.Value);
+                            res += $"Role `{role.Name.Escape()}` at `{level.Key}` Points\n";
+                        }
+                        await msg.ReplyAsync(res);
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("There are no levels for this server!");
+                    }
+                }
+                else
+                {
+                    if (parameters[0].ToLower() == "add")
+                    {
+                        if (parameters.Count == 3)
+                        {
+                            if(decimal.TryParse(parameters[1], out decimal pointValue) && ulong.TryParse(parameters[2], out ulong roleId) 
+                                && msg.GetGuild().Roles.Any(r => r.Id == roleId))
+                            {
+                                var db = new DBGuild(msg.GetGuild().Id);
+                                guildConfig.Levels.Add(pointValue, roleId);
+                                int addedUsers = 0;
+                                foreach(var user in msg.GetGuild().Users)
+                                {
+                                    if(db.GetUser(user.Id).PointsCount >= pointValue)
+                                    {
+                                        try
+                                        {
+                                            await user.AddRoleAsync(msg.GetGuild().GetRole(roleId));
+                                            addedUsers++;
+                                        }
+                                        catch
+                                        { }
+                                    }
+                                }
+                                await msg.ReplyAsync($"Users will get `{msg.GetGuild().GetRole(roleId).Name.Escape()}` at `{pointValue}` points. `{addedUsers}` had the more than the number of points and have had the role assigned");
+                            }
+                        }
+                        else
+                        {
+                            await msg.ReplyAsync($"The command should be formatted as `levels add pointsValue roleId`");
+                        }
+                    }
+                    else if (parameters[0].ToLower() == "remove")
+                    {
+                        if (parameters.Count == 2)
+                        {
+                            if(ulong.TryParse(parameters[1], out ulong roleId) && guildConfig.Levels.Any(kvp => kvp.Value.Equals(roleId)))
+                            {
+                                guildConfig.Levels.Remove(guildConfig.Levels.First(kvp => kvp.Value.Equals(roleId)).Key);
+                                await msg.ReplyAsync("Done!");
+                            }
+                            else
+                            {
+                                await msg.ReplyAsync("That is not a valid RoleId!");
+                            }
+                        }
+                        else
+                        {
+                            await msg.ReplyAsync($"The command should be formatted as `levels remove roleId`");
+                        }
+                    }
+                    guildConfig.Save();
+                }
+            };
+
+            ConfigCommands.Add(levels);
+
             return ConfigCommands;
         }
     }
