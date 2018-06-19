@@ -105,6 +105,12 @@ namespace GenericBot.CommandModules
                     }
                 }
 
+                if (string.IsNullOrEmpty(commands))
+                {
+                    await msg.ReplyAsync($"Could not find any commands matching `{paramList.reJoin()}`");
+                    return;
+                }
+
                 foreach (var str in commands.SplitSafe())
                 {
                     await msg.Channel.SendMessageAsync(str);

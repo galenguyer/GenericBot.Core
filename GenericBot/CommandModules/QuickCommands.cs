@@ -36,6 +36,7 @@ namespace GenericBot.CommandModules
 
             quickCommands.Add(new QuickCommand("touc", "https://i.imgur.com/3rYGu6V.jpg", "Posts a picture of a toucan").GetCommand());
             quickCommands.Add(new QuickCommand("justask", " If you have a question, don't ask if you can ask it. Just ask it, and someone will be along to help you as soon as they can", "Just ask copypaste").GetCommand());
+            quickCommands.Add(new QuickCommand("github", "https://github.com/MasterChief-John-117/GenericBot", "Link the bot's github repo").GetCommand());
 
             return quickCommands;
         }

@@ -75,11 +75,6 @@ namespace GenericBot
             Updater.Interval = 5 * 1000;
             Updater.Elapsed += CheckMuteRemoval;
 
-            MessageDeleteTimer.AutoReset = true;
-            MessageDeleteTimer.Interval = 60 * 1000;
-            MessageDeleteTimer.Elapsed += MessageDeleteTimerOnElapsed;
-            MessageDeleteTimer.Start();
-
             StatusPollingTimer.AutoReset = true;
             StatusPollingTimer.Interval = 1 * 1000;
             StatusPollingTimer.Elapsed += StatusPollingTimerOnElapsed;
@@ -198,16 +193,6 @@ namespace GenericBot
                 .AddSingleton(DiscordClient);
             var provider = new DefaultServiceProviderFactory().CreateServiceProvider(services);
             return provider;
-        }
-
-
-        private static void MessageDeleteTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
-        {
-            foreach (var kvp in MessageDeleteQueue)
-            {
-                ((ITextChannel) DiscordClient.GetChannel(kvp.Key)).DeleteMessagesAsync(kvp.Value);
-                MessageDeleteQueue.Remove(kvp.Key);
-            }
         }
 
         private static void CheckMuteRemoval(object sender, ElapsedEventArgs elapsedEventArgs)

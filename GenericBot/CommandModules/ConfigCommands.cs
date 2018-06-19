@@ -17,7 +17,7 @@ namespace GenericBot.CommandModules
             List<Command> ConfigCommands = new List<Command>();
 
             Command config = new Command("config");
-            config.Usage = "config <option> <value>`\nOptions are: `adminroles`, `moderatorroles`, `userroles`, `twitter`, `voicerole, `user`, `mutedroleid";
+            config.Usage = "config <option> <value>`\nOptions are: `adminroles`, `moderatorroles`, `userroles`, `twitter`, `user`, `mutedroleid";
             config.Description = "Configure the bot's option";
             config.RequiredPermission = Command.PermissionLevels.Admin;
             config.ToExecute += async (client, msg, paramList) =>
