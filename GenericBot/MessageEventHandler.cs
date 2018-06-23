@@ -63,12 +63,6 @@ namespace GenericBot
                     $"**[Anonymous]** {string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss}", DateTimeOffset.UtcNow)}\n{parameterMessage.Content}");
             }
 
-            string rgx = @"(\s+|^)((((I|i|l)((`|'|’)?|\s+a)(\\?)(M|m|ⅿ|m|ｍ))))\s+(.{2,32})$";
-            //            if (message.GetGuild().Id == 437722207934873628 && message.Channel.Id != 438077853951721472 && Regex.IsMatch(message.Content, rgx) && !edited)
-            //                await message.ReplyAsync("Hi " + Regex.Match(message.Content, rgx).Groups.Last().Value.Trim() + ", I'm GenericBot");
-            if (message.GetGuild().Id == 401908664018927626 && Regex.IsMatch(message.Content, rgx) && !edited)
-                await message.ReplyAsync("Hi " + Regex.Match(message.Content, rgx).Groups.Last().Value.Trim() + ", I'm GenericBot");
-
             System.Threading.Thread pointThread = new System.Threading.Thread(() =>
             {
                 var db = new DBGuild(message.GetGuild().Id);
