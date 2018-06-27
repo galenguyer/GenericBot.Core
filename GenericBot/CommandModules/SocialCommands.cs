@@ -285,6 +285,7 @@ namespace GenericBot.CommandModules
 
             Command calc = new Command("calc");
             calc.Description = "Do some math";
+            calc.SendTyping = false;
             calc.ToExecute += async (client, msg, parameters) =>
             {
                 string input = parameters.reJoin();

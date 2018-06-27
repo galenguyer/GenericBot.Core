@@ -20,31 +20,54 @@ namespace GenericBot.Entities
         public DBGuild(ulong guildId)
         {
             this.ID = guildId;
-            if (GenericBot.LoadedGuilds.ContainsKey(this.ID))
+            try
             {
-                this.Users = GenericBot.LoadedGuilds[this.ID].Users;
-                this.Quotes = GenericBot.LoadedGuilds[this.ID].Quotes;
+                if (GenericBot.LoadedGuilds.ContainsKey(this.ID))
+                {
+                    this.Users = GenericBot.LoadedGuilds[this.ID].Users;
+                    this.Quotes = GenericBot.LoadedGuilds[this.ID].Quotes;
+                }
+                else if (File.Exists($"files/guildDbs/{ID}.json"))
+                {
+                    if (!File.ReadAllText($"files/guildDbs/{ID}.json").StartsWith("{"))
+                    {
+                        var db = JsonConvert.DeserializeObject<DBGuild>(AES.DecryptText(
+                           File.ReadAllText($"files/guildDbs/{ID}.json"), GenericBot.DBPassword));
+                        this.Users = db.Users;
+                        this.Quotes = db.Quotes;
+                        GenericBot.LoadedGuilds.TryAdd(ID, this);
+                    }
+                    else
+                    {
+                        var db = JsonConvert.DeserializeObject<DBGuild>(File.ReadAllText($"files/guildDbs/{ID}.json"));
+                        this.Users = db.Users;
+                        this.Quotes = db.Quotes;
+                        GenericBot.LoadedGuilds.TryAdd(ID, this);
+                    }
+                }
+
             }
-            else if (File.Exists($"files/guildDbs/{ID}.json"))
+            catch (Exception ex)
             {
-                var db = JsonConvert.DeserializeObject<DBGuild>(AES.DecryptText(
-                    File.ReadAllText($"files/guildDbs/{ID}.json"), GenericBot.DBPassword));
-                this.Users = db.Users;
-                this.Quotes = db.Quotes;
-                GenericBot.LoadedGuilds.TryAdd(ID, this);
-            }
-            else
-            {
-                this.Users = new List<DBUser>();
+                GenericBot.Logger.LogErrorMessage($"Load DB for {guildId} Failed: {ex.Message}");
             }
         }
 
         public async void Save()
         {
-            GenericBot.LoadedGuilds[this.ID] = this;
-            Directory.CreateDirectory("files");
-            Directory.CreateDirectory("files/guildDbs");
-            File.WriteAllText($"files/guildDbs/{ID}.json", AES.EncryptText(JsonConvert.SerializeObject(this), GenericBot.DBPassword));
+            try
+            {
+                if (JsonConvert.SerializeObject(this).Length < 8) return;
+                GenericBot.LoadedGuilds[this.ID] = this;
+                Directory.CreateDirectory("files");
+                Directory.CreateDirectory("files/guildDbs");
+                File.WriteAllText($"files/guildDbs/{ID}.json", AES.EncryptText(JsonConvert.SerializeObject(this), GenericBot.DBPassword));
+            }
+            catch(Exception ex)
+            {
+                await GenericBot.Logger.LogErrorMessage($"GuildID: {this.ID}\n{ex.Message}\n{ex.StackTrace}");
+                this.Save();
+            }
         }
 
         public DBUser GetUser(ulong id)
@@ -56,7 +79,7 @@ namespace GenericBot.Entities
             else
             {
                 Users.Add(new DBUser() { ID = id });
-                return Users.First(u => u.ID == id);
+                return GetUser(id);
             };
         }
 

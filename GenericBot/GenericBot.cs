@@ -163,6 +163,9 @@ namespace GenericBot
 
         private async Task OnGuildConnected(SocketGuild guild)
         {
+            Logger.LogGenericMessage($"Connected to {guild.Name} ({guild.Id})");
+            bool f = LoadedGuilds.TryAdd(guild.Id, new DBGuild(guild.Id));
+            Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}");
             if (!File.Exists($"files/guildConfigs/{guild.Id}.json"))
             {
                 new GuildConfig(guild.Id).Save();
@@ -173,6 +176,7 @@ namespace GenericBot
                     File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
             }
         }
+
         private IServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection()
@@ -202,6 +206,7 @@ namespace GenericBot
                 {
                     if (ban.BannedUntil < DateTime.UtcNow)
                     {
+                        gc.Bans.Remove(ban);
                         var user = DiscordClient.GetGuild(ban.GuildId).GetBansAsync().Result
                             .First(b => b.User.Id == ban.Id).User;
                         DiscordClient.GetGuild(ban.GuildId).RemoveBanAsync(ban.Id);
@@ -209,20 +214,17 @@ namespace GenericBot
                             .WithTitle("User Unbanned")
                             .WithDescription($"Banned for: {ban.Reason}")
                             .WithColor(new Color(0xFFFF00))
-                            .WithFooter(footer =>
-                            {
+                            .WithFooter(footer => {
                                 footer
                                     .WithText($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
                             })
-                            .WithAuthor(author =>
-                            {
+                            .WithAuthor(author => {
                                 author
                                     .WithName(user.ToString())
                                     .WithIconUrl(user.GetAvatarUrl());
                             })
                             .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
                                 new DBGuild(ban.GuildId).GetUser(ban.Id).Warnings.SumAnd()));
-                        gc.Bans.Remove(ban);
                         ((SocketTextChannel)DiscordClient.GetChannel(gc.UserLogChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }

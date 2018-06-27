@@ -59,10 +59,21 @@ namespace GenericBot
 
             EmbedBuilder log = new EmbedBuilder()
                 .WithTitle("Message Edited")
-                .WithAuthor(new EmbedAuthorBuilder().WithName($"{arg2.Author} ({arg2.Author.Id})")
-                    .WithIconUrl(arg2.Author.GetAvatarUrl() + " "))
                 .WithColor(243, 110, 33)
                 .WithCurrentTimestamp();
+
+
+            Console.WriteLine(arg2.Author.GetAvatarUrl());
+            if (string.IsNullOrEmpty(arg2.Author.GetAvatarUrl()))
+            {
+                log = log.WithAuthor(new EmbedAuthorBuilder().WithName($"{arg2.Author} ({arg2.Author.Id})")
+                    .WithIconUrl(arg2.Author.GetDefaultAvatarUrl() + " "));
+            }
+            else
+            {
+                log = log.WithAuthor(new EmbedAuthorBuilder().WithName($"{arg2.Author} ({arg2.Author.Id})")
+                    .WithIconUrl(arg2.Author.GetAvatarUrl() + " "));
+            }
 
             log.AddField(new EmbedFieldBuilder().WithName("Channel").WithValue("#" + arg2.Channel.Name).WithIsInline(true));
             log.AddField(new EmbedFieldBuilder().WithName("Sent At").WithValue(arg1.Value.Timestamp.ToString(@"yyyy-MM-dd HH:mm.ss") + "GMT").WithIsInline(true));
