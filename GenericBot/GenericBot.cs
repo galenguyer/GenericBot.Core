@@ -29,10 +29,6 @@ namespace GenericBot
         public static string SessionId;
         public static bool DebugMode = false;
         public static Animols Animols = new Animols();
-        //public static PerformanceCounter CpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        //private static string _DBPassword = "MasterChef";
-        //public static string DBConnectionString = "filename=files/GuildDatabase.db; password="+_DBPassword;
-        //public static LiteDatabase GlobalDatabase = new LiteDatabase(DBConnectionString);
 
         public static ConcurrentDictionary<ulong, DBGuild> LoadedGuilds = new ConcurrentDictionary<ulong, DBGuild>();
 
@@ -41,11 +37,6 @@ namespace GenericBot
         public static LinkedList<QueuedTweet> TweetQueue = new LinkedList<QueuedTweet>();
         public static Timer TweetSender = new Timer();
         public static Timer Updater = new Timer();
-
-        public static Timer StatusPollingTimer = new Timer();
-        public static int MessageCounter = 0;
-        public static int CommandCounter = 0;
-        public static int Latency = 0;
 
         public static Dictionary<ulong, List<IMessage>> MessageDeleteQueue = new Dictionary<ulong, List<IMessage>>();
         public static Timer MessageDeleteTimer = new Timer();
@@ -61,7 +52,6 @@ namespace GenericBot
             GlobalConfiguration = new GlobalConfiguration().Load();
             GuildConfigs = new Dictionary<ulong, GuildConfig>();
             TweetStore = JsonConvert.DeserializeObject<List<GenericTweet>>(File.ReadAllText("files/tweetStore.json"));
-            //CpuCounter.NextValue();
             Twitter.AuthenticateWith("924464831813398529-pi51h6UB3iitJB2UQwGrHukYjD1Pz7F", "3R0vFFQLCGe9vuGvn00Avduq1K8NHjmRBUFJVuo9nRYXJ");
 
             #region Timers
@@ -74,11 +64,6 @@ namespace GenericBot
             Updater.AutoReset = true;
             Updater.Interval = 5 * 1000;
             Updater.Elapsed += CheckMuteRemoval;
-
-            StatusPollingTimer.AutoReset = true;
-            StatusPollingTimer.Interval = 1 * 1000;
-            StatusPollingTimer.Elapsed += StatusPollingTimerOnElapsed;
-            StatusPollingTimer.Start();
 
             #endregion Timers
 
@@ -298,27 +283,6 @@ namespace GenericBot
             catch (Exception ex)
             {
                 GenericBot.MessageDeleteQueue[messages.First().Channel.Id].AddRange(messages);
-            }
-        }
-
-        private static void StatusPollingTimerOnElapsed(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                using (var httpClient = new WebClient())
-                {
-                    httpClient.Headers["Authorization"] =
-                        NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
-                    httpClient.Headers[HttpRequestHeader.ContentType] = "application/json";
-
-                    var result = httpClient.UploadString("http://localhost:1337/update/", JsonConvert.SerializeObject(new BotStatus()));
-                }
-                StatusPollingTimer.Interval = 1 * 1000;
-            }
-            catch (Exception ex)
-            {
-                //Console.WriteLine(ex);
-                StatusPollingTimer.Interval = 5 * 1000;
             }
         }
     }
