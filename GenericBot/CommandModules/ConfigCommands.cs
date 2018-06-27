@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Discord.WebSocket;
 using GenericBot.Entities;
-using Newtonsoft.Json;
 
 namespace GenericBot.CommandModules
 {
@@ -52,7 +48,7 @@ namespace GenericBot.CommandModules
                                     GenericBot.GuildConfigs[msg.GetGuild().Id].AdminRoleIds.Add(id);
                                     await msg.ReplyAsync($"Added {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name} to Admin Roles");
                                 }
-                                else{await msg.ReplyAsync($"Admin Roles already contains {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name}");}
+                                else { await msg.ReplyAsync($"Admin Roles already contains {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name}"); }
                             }
                             else if (paramList[1].ToLower().Equals("remove"))
                             {
@@ -67,11 +63,11 @@ namespace GenericBot.CommandModules
                                         $"Admin Roles doesn't contain {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name}");
                                 }
                             }
-                            else{await msg.ReplyAsync($"Unknown property `{paramList[1]}`.");}
+                            else { await msg.ReplyAsync($"Unknown property `{paramList[1]}`."); }
                         }
-                        else{await msg.ReplyAsync($"That is not a valid roleId");}
+                        else { await msg.ReplyAsync($"That is not a valid roleId"); }
                     }
-                    else{await msg.ReplyAsync($"You don't have the permissions to do that");}
+                    else { await msg.ReplyAsync($"You don't have the permissions to do that"); }
                 }
                 #endregion AdminRoles
 
@@ -122,11 +118,11 @@ namespace GenericBot.CommandModules
                                         $"Moderator Roles doesn't contain {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name}");
                                 }
                             }
-                            else{await msg.ReplyAsync($"Unknown property `{paramList[1]}`.");}
+                            else { await msg.ReplyAsync($"Unknown property `{paramList[1]}`."); }
                         }
-                        else{await msg.ReplyAsync($"That is not a valid roleId");}
+                        else { await msg.ReplyAsync($"That is not a valid roleId"); }
                     }
-                    else{await msg.ReplyAsync($"You don't have the permissions to do that");}
+                    else { await msg.ReplyAsync($"You don't have the permissions to do that"); }
                 }
 
                 #endregion ModRoles
@@ -172,13 +168,13 @@ namespace GenericBot.CommandModules
                                             $"Removed {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name} from User Roles");
                                     }
                                 }
-                                else{await msg.ReplyAsync($"User Roles doesn't contain {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name}");}
+                                else { await msg.ReplyAsync($"User Roles doesn't contain {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name}"); }
                             }
-                            else{await msg.ReplyAsync($"Unknown property `{paramList[1]}`.");}
+                            else { await msg.ReplyAsync($"Unknown property `{paramList[1]}`."); }
                         }
-                        else{await msg.ReplyAsync($"That is not a valid roleId");}
+                        else { await msg.ReplyAsync($"That is not a valid roleId"); }
                     }
-                    else{await msg.ReplyAsync($"You don't have the permissions to do that");}
+                    else { await msg.ReplyAsync($"You don't have the permissions to do that"); }
                 }
 
                 #endregion UserRoles
@@ -337,7 +333,7 @@ namespace GenericBot.CommandModules
                                     $"Verification role is  `{msg.GetGuild().Roles.First(g => g.Id == roleId).Name}`");
                             }
                         }
-                        else if(ulong.TryParse(paramList[2], out ulong roleId) && (msg.GetGuild().Roles.Any(g => g.Id == roleId) || roleId == 0)    )
+                        else if (ulong.TryParse(paramList[2], out ulong roleId) && (msg.GetGuild().Roles.Any(g => g.Id == roleId) || roleId == 0))
                         {
                             GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedRole = roleId;
                             if (roleId != 0)
@@ -364,7 +360,7 @@ namespace GenericBot.CommandModules
                         string message = msg.Content;
                         message = message.Remove(0, pref.Length).TrimStart(' ').Remove(0, "config".Length).TrimStart(' ').Remove(0, "verification".Length).TrimStart(' ').Remove(0, "message".Length).Trim(' ');
 
-                        if(!string.IsNullOrEmpty(message))GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedMessage = message;
+                        if (!string.IsNullOrEmpty(message)) GenericBot.GuildConfigs[msg.GetGuild().Id].VerifiedMessage = message;
 
                         await msg.ReplyAsync("Example verification message:");
 
@@ -472,7 +468,7 @@ namespace GenericBot.CommandModules
             Command levels = new Command(nameof(levels));
             levels.RequiredPermission = Command.PermissionLevels.Admin;
             levels.Description = "Set the number of points to get a role";
-            levels.ToExecute += async (client, msg, parameters) => 
+            levels.ToExecute += async (client, msg, parameters) =>
             {
                 var guildConfig = GenericBot.GuildConfigs[msg.GetGuild().Id];
                 if (parameters.Empty())
@@ -480,7 +476,7 @@ namespace GenericBot.CommandModules
                     if (guildConfig.Levels.Any(kvp => msg.GetGuild().GetRole(kvp.Value) != null))
                     {
                         string res = "";
-                        foreach(var level in guildConfig.Levels.OrderBy(kvp => kvp.Key).Where(kvp => msg.GetGuild().GetRole(kvp.Value) != null))
+                        foreach (var level in guildConfig.Levels.OrderBy(kvp => kvp.Key).Where(kvp => msg.GetGuild().GetRole(kvp.Value) != null))
                         {
                             var role = msg.GetGuild().GetRole(level.Value);
                             res += $"Role `{role.Name.Escape()}` at `{level.Key}` Points\n";
@@ -498,15 +494,15 @@ namespace GenericBot.CommandModules
                     {
                         if (parameters.Count == 3)
                         {
-                            if(decimal.TryParse(parameters[1], out decimal pointValue) && ulong.TryParse(parameters[2], out ulong roleId) 
+                            if (decimal.TryParse(parameters[1], out decimal pointValue) && ulong.TryParse(parameters[2], out ulong roleId)
                                 && msg.GetGuild().Roles.Any(r => r.Id == roleId))
                             {
                                 var db = new DBGuild(msg.GetGuild().Id);
                                 guildConfig.Levels.Add(pointValue, roleId);
                                 int addedUsers = 0;
-                                foreach(var user in msg.GetGuild().Users)
+                                foreach (var user in msg.GetGuild().Users)
                                 {
-                                    if(db.GetUser(user.Id).PointsCount >= pointValue)
+                                    if (db.GetUser(user.Id).PointsCount >= pointValue)
                                     {
                                         try
                                         {
@@ -529,7 +525,7 @@ namespace GenericBot.CommandModules
                     {
                         if (parameters.Count == 2)
                         {
-                            if(ulong.TryParse(parameters[1], out ulong roleId) && guildConfig.Levels.Any(kvp => kvp.Value.Equals(roleId)))
+                            if (ulong.TryParse(parameters[1], out ulong roleId) && guildConfig.Levels.Any(kvp => kvp.Value.Equals(roleId)))
                             {
                                 guildConfig.Levels.Remove(guildConfig.Levels.First(kvp => kvp.Value.Equals(roleId)).Key);
                                 await msg.ReplyAsync("Done!");

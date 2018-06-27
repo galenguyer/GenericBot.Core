@@ -40,7 +40,7 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new QuickCommands().GetQuickCommands());
             GenericBot.Commands.AddRange(new PointsCommands().GetPointsCommands());
 
-            Console.WriteLine(GenericBot.Commands.Select(c => c.Name).Aggregate((i, j) => i+ ", " + j));
+            Console.WriteLine(GenericBot.Commands.Select(c => c.Name).Aggregate((i, j) => i + ", " + j));
         }
 
         private async Task HandleEditedCommand(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
@@ -55,7 +55,7 @@ namespace GenericBot
             var guildConfig = GenericBot.GuildConfigs[arg2.GetGuild().Id];
 
             if (guildConfig.UserLogChannelId == 0 || guildConfig.MessageLoggingIgnoreChannels.Contains(arg2.Channel.Id)
-                                                  ||!arg1.HasValue) return;
+                                                  || !arg1.HasValue) return;
 
             EmbedBuilder log = new EmbedBuilder()
                 .WithTitle("Message Edited")
@@ -100,9 +100,9 @@ namespace GenericBot
 
             Command cmd = new Command("tempCommand");
 
-            if(GenericBot.Commands.HasElement(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)) ||
-                                                   GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Any(a => a.Alias == commandId) &&
-                                                   c.Name == GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.First(a => a.Alias == commandId).Command, out cmd))
+            if (GenericBot.Commands.HasElement(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)) ||
+                                                    GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Any(a => a.Alias == commandId) &&
+                                                    c.Name == GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.First(a => a.Alias == commandId).Command, out cmd))
             {
                 parsedCommand.Command = cmd;
             }

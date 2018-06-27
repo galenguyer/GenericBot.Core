@@ -13,12 +13,12 @@ namespace GenericBot.CommandModules
             Command help = new Command("help");
             help.Description = "The help command, duh";
             help.RequiredPermission = Command.PermissionLevels.User;
-            help.Aliases = new List<string> {"halp"};
+            help.Aliases = new List<string> { "halp" };
             help.ToExecute += async (client, msg, paramList) =>
             {
-                string commands= "";
+                string commands = "";
                 var guildCustomCommands = GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands;
-                string[] levels = {"User Commands", "Moderator Commands", "Admin Commands", "Guild Owner Commands", "Global Admin Commands", "Bot Owner Commands"};
+                string[] levels = { "User Commands", "Moderator Commands", "Admin Commands", "Guild Owner Commands", "Global Admin Commands", "Bot Owner Commands" };
 
                 if (paramList.Empty())
                 {
@@ -83,7 +83,7 @@ namespace GenericBot.CommandModules
                             .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
                             .OrderBy(c => c.RequiredPermission)
                             .ThenBy(c => c.Name);
-                        var ccmds =  guildCustomCommands.Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                        var ccmds = guildCustomCommands.Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
                             .OrderBy(c => c.Name);
 
                         foreach (var cmd in cmds)

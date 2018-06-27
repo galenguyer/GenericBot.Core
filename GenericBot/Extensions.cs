@@ -25,7 +25,7 @@ namespace GenericBot
             result = result.Replace(@"_", @"\_");
             result = result.Replace(@"~", @"\~");
             result = result.Replace(@"`", @"\`");
-       
+
             return result;
         }
 
@@ -39,7 +39,7 @@ namespace GenericBot
 
         public static SocketGuild GetGuild(this SocketMessage msg)
         {
-            return ((SocketGuildChannel) msg.Channel).Guild;
+            return ((SocketGuildChannel)msg.Channel).Guild;
         }
 
         public static Task<RestUserMessage> ReplyAsync(this SocketMessage msg, object text)
@@ -66,12 +66,12 @@ namespace GenericBot
             if (msg.MentionedUsers.Any())
             {
                 foreach (var user in msg.MentionedUsers)
-                    users.Add((SocketGuildUser) user);
+                    users.Add((SocketGuildUser)user);
             }
 
             foreach (Match match in Regex.Matches(msg.Content, "[0-9]{16,19}"))
             {
-                users.Add((SocketGuildUser) msg.GetGuild().GetUser(Convert.ToUInt64(match.Value)));
+                users.Add((SocketGuildUser)msg.GetGuild().GetUser(Convert.ToUInt64(match.Value)));
             }
 
             return users.ToList();
@@ -169,27 +169,27 @@ namespace GenericBot
         }
 
         public static string SumAnd<T>(this List<T> input)
-         {
-             if (!input.Any())
-             {
-                 return "";
-             }
-             else if (input.Count == 1)
-             {
-                 return input.First().ToString();
-             }
-             else if (input.Count == 2)
-             {
-                 return $"{input.First()} and {input.Last()}";
-             }
-             else
-             {
-                 var newIN = new List<T>();
-                  newIN.AddRange(input);
+        {
+            if (!input.Any())
+            {
+                return "";
+            }
+            else if (input.Count == 1)
+            {
+                return input.First().ToString();
+            }
+            else if (input.Count == 2)
+            {
+                return $"{input.First()} and {input.Last()}";
+            }
+            else
+            {
+                var newIN = new List<T>();
+                newIN.AddRange(input);
 
-                 return SumAndPriv(newIN, "");
-             }
-         }
+                return SumAndPriv(newIN, "");
+            }
+        }
 
         private static string SumAndPriv<T>(List<T> input, string previous)
         {
@@ -229,15 +229,15 @@ namespace GenericBot
             }
             else if (Math.Floor(time.TotalDays) > 0)
             {
-                return $"{Math.Floor(time.TotalDays)} days {Math.Floor((double) time.Hours)} hours";
+                return $"{Math.Floor(time.TotalDays)} days {Math.Floor((double)time.Hours)} hours";
             }
             else if (Math.Floor(time.TotalHours) > 0) //Days = 0
             {
-                return $"{Math.Floor(time.TotalHours)} hours {Math.Floor((double) time.Minutes)} minutes";
+                return $"{Math.Floor(time.TotalHours)} hours {Math.Floor((double)time.Minutes)} minutes";
             }
             else //Days = 0 && Hours = 0
             {
-                return $"{Math.Floor(time.TotalMinutes)} minutes {Math.Floor((double) time.Seconds)} seconds";
+                return $"{Math.Floor(time.TotalMinutes)} minutes {Math.Floor((double)time.Seconds)} seconds";
             }
         }
 

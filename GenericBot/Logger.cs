@@ -16,7 +16,7 @@ namespace GenericBot
             Directory.CreateDirectory("files/sessions");
             LogGenericMessage($"New Logger created with SessionID of {SessionId}");
         }
-        
+
         public Task LogClientMessage(LogMessage msg)
         {
             string message = $"[{msg.Severity}] {DateTime.Now}: {msg.Message}";

@@ -29,6 +29,7 @@ namespace GenericBot
         public static string SessionId;
         public static bool DebugMode = false;
         public static Animols Animols = new Animols();
+        public static string DBPassword = "PASSWORD";
 
         public static ConcurrentDictionary<ulong, DBGuild> LoadedGuilds = new ConcurrentDictionary<ulong, DBGuild>();
 
@@ -188,9 +189,9 @@ namespace GenericBot
                 {
                     (DiscordClient.GetChannel(mute.ChannelId) as SocketTextChannel)
                         .RemovePermissionOverwriteAsync(DiscordClient.GetUser(mute.UserId));
-                    GuildConfigs[((SocketGuildChannel) DiscordClient.GetChannel(mute.ChannelId)).Guild.Id].ChannelMutes
+                    GuildConfigs[((SocketGuildChannel)DiscordClient.GetChannel(mute.ChannelId)).Guild.Id].ChannelMutes
                         .Remove(mute);
-                    GuildConfigs[((SocketGuildChannel) DiscordClient.GetChannel(mute.ChannelId)).Guild.Id].Save();
+                    GuildConfigs[((SocketGuildChannel)DiscordClient.GetChannel(mute.ChannelId)).Guild.Id].Save();
                     GenericBot.Logger.LogGenericMessage($"Unmuted {mute.UserId} from {mute.ChannelId}");
                 }
             }
@@ -208,11 +209,13 @@ namespace GenericBot
                             .WithTitle("User Unbanned")
                             .WithDescription($"Banned for: {ban.Reason}")
                             .WithColor(new Color(0xFFFF00))
-                            .WithFooter(footer => {
+                            .WithFooter(footer =>
+                            {
                                 footer
                                     .WithText($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
                             })
-                            .WithAuthor(author => {
+                            .WithAuthor(author =>
+                            {
                                 author
                                     .WithName(user.ToString())
                                     .WithIconUrl(user.GetAvatarUrl());
@@ -220,7 +223,7 @@ namespace GenericBot
                             .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
                                 new DBGuild(ban.GuildId).GetUser(ban.Id).Warnings.SumAnd()));
                         gc.Bans.Remove(ban);
-                        ((SocketTextChannel) DiscordClient.GetChannel(gc.UserLogChannelId))
+                        ((SocketTextChannel)DiscordClient.GetChannel(gc.UserLogChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }
                 }
@@ -237,7 +240,7 @@ namespace GenericBot
             var tweetInfo = TweetQueue.First.Value;
             var msg = tweetInfo.msg;
 
-            var response =  GenericBot.Twitter.SendTweetAsync(new SendTweetOptions
+            var response = GenericBot.Twitter.SendTweetAsync(new SendTweetOptions
             {
                 Status = tweetInfo.InputMessage
             }).Result;

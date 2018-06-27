@@ -14,8 +14,8 @@ namespace GenericBot
 
         public Animols()
         {
-            webclient = new HttpClient(new HttpClientHandler(){AllowAutoRedirect = false});
-            System.Threading.Thread t = new System.Threading.Thread(() => 
+            webclient = new HttpClient(new HttpClientHandler() { AllowAutoRedirect = false });
+            System.Threading.Thread t = new System.Threading.Thread(() =>
             {
                 while (cats.Count < 5)
                 {
@@ -49,7 +49,7 @@ namespace GenericBot
         public void RenewCats()
         {
             var url = webclient.GetAsync("https://thecatapi.com/api/images/get?api_key=MzE0MDUx").Result.Headers.GetValues("original_image").First();
-            lock("cats")
+            lock ("cats")
                 cats.Add(url);
         }
 
@@ -70,8 +70,8 @@ namespace GenericBot
             {
                 url = webclient.GetStringAsync(new Uri("https://random.dog/woof")).Result;
             }
-            lock("dogs")
-               dogs.Add("http://random.dog/"+url);
+            lock ("dogs")
+                dogs.Add("http://random.dog/" + url);
         }
     }
 }

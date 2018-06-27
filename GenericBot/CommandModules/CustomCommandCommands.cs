@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using GenericBot.Entities;
 using Newtonsoft.Json;
 
@@ -14,7 +13,7 @@ namespace GenericBot.CommandModules
             List<Command> CustomCommandCommands = new List<Command>();
 
             Command command = new Command("command");
-            command.Aliases = new List<string>{"commands"};
+            command.Aliases = new List<string> { "commands" };
             command.RequiredPermission = Command.PermissionLevels.Admin;
             command.Description = "Modify custom commands for a server";
             command.Usage = "command <list|add|remove|toggleDelete> [name] [response]";
@@ -62,7 +61,7 @@ namespace GenericBot.CommandModules
                     message = message.Remove(0, pref.Length).TrimStart(' ').Remove(0, "command".Length).TrimStart('s').TrimStart(' ').Remove(0, "add".Length).TrimStart(' ').Remove(0, cName.Length).Trim(' ');
 
                     GenericBot.GuildConfigs[msg.GetGuild().Id].CustomCommands.Add(new CustomCommand(cName.ToLower(), message));
-                    await msg.ReplyAsync($"New command created! \n```\n{JsonConvert.SerializeObject(new CustomCommand(cName.ToLower(), message),Formatting.Indented)}\n```");
+                    await msg.ReplyAsync($"New command created! \n```\n{JsonConvert.SerializeObject(new CustomCommand(cName.ToLower(), message), Formatting.Indented)}\n```");
                 }
                 else if (parameters[0].Equals("remove") || parameters[0].Equals("delete"))
                 {
@@ -105,7 +104,7 @@ namespace GenericBot.CommandModules
             CustomCommandCommands.Add(command);
 
             Command alias = new Command("alias");
-            alias.Aliases = new List<string>{"aliases"};
+            alias.Aliases = new List<string> { "aliases" };
             alias.RequiredPermission = Command.PermissionLevels.Admin;
             alias.Description = "Add an alias for a command";
             alias.Usage = "alias <add|remove> command alias";

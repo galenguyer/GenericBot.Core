@@ -21,14 +21,14 @@ namespace GenericBot.CommandModules
             mentionRole.Description = "Mention a role that's not normally mentionable";
             mentionRole.ToExecute += async (client, msg, parameters) =>
             {
-                if(msg.GetGuild().Roles.HasElement(r => r.Name.ToLower().Contains(parameters[0].ToLower()), out SocketRole role))
+                if (msg.GetGuild().Roles.HasElement(r => r.Name.ToLower().Contains(parameters[0].ToLower()), out SocketRole role))
                 {
                     var state = role.IsMentionable;
-                    if(!state) await role.ModifyAsync(r => r.Mentionable = true);
+                    if (!state) await role.ModifyAsync(r => r.Mentionable = true);
                     parameters.RemoveAt(0);
                     await msg.ReplyAsync(role.Mention + " " + parameters.reJoin());
                     await msg.DeleteAsync();
-                    if(!state) await role.ModifyAsync(r => r.Mentionable = state);
+                    if (!state) await role.ModifyAsync(r => r.Mentionable = state);
                 }
                 else
                 {
@@ -65,14 +65,14 @@ namespace GenericBot.CommandModules
             Command iam = new Command("iam");
             iam.Description = "Join a User Role";
             iam.Usage = "iam <role name>";
-            iam.Aliases = new List<string>{"join"};
+            iam.Aliases = new List<string> { "join" };
             iam.ToExecute += async (client, msg, paramList) =>
             {
                 IMessage rep;
                 if (paramList.Empty())
                 {
                     rep = msg.ReplyAsync($"Please select a role to join").Result;
-                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, rep});
+                    GenericBot.QueueMessagesForDelete(new List<IMessage> { msg, rep });
                 }
                 string input = paramList.Aggregate((i, j) => i + " " + j);
 
@@ -82,7 +82,7 @@ namespace GenericBot.CommandModules
                 if (!roles.Any())
                 {
                     rep = msg.ReplyAsync($"Could not find any user roles matching `{input}`").Result;
-                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, rep});
+                    GenericBot.QueueMessagesForDelete(new List<IMessage> { msg, rep });
                 }
                 else if (roles.Count() == 1)
                 {
@@ -116,7 +116,7 @@ namespace GenericBot.CommandModules
                         var role = roles.Any(r => r.Name.ToLower() == input.ToLower())
                             ? roles.First(r => r.Name.ToLower() == input.ToLower())
                             : roles.First();
-                            RestUserMessage message;
+                        RestUserMessage message;
                         if (msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
                         {
                             message = await msg.ReplyAsync("You already have that role!");
@@ -144,14 +144,14 @@ namespace GenericBot.CommandModules
             Command iamnot = new Command("iamnot");
             iamnot.Description = "Leave a User Role";
             iamnot.Usage = "iamnot <role name>";
-            iamnot.Aliases = new List<string>{"leave"};
+            iamnot.Aliases = new List<string> { "leave" };
             iamnot.ToExecute += async (client, msg, paramList) =>
             {
                 IMessage rep;
                 if (paramList.Empty())
                 {
-                    rep =  msg.ReplyAsync($"Please select a role to leave").Result;
-                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, rep});
+                    rep = msg.ReplyAsync($"Please select a role to leave").Result;
+                    GenericBot.QueueMessagesForDelete(new List<IMessage> { msg, rep });
                 }
                 string input = paramList.Aggregate((i, j) => i + " " + j);
 
@@ -161,7 +161,7 @@ namespace GenericBot.CommandModules
                 if (!roles.Any())
                 {
                     rep = msg.ReplyAsync($"Could not find any user roles matching `{input}`").Result;
-                    GenericBot.QueueMessagesForDelete(new List<IMessage>{msg, rep});
+                    GenericBot.QueueMessagesForDelete(new List<IMessage> { msg, rep });
                 }
                 else if (roles.Count() == 1)
                 {
@@ -284,7 +284,7 @@ namespace GenericBot.CommandModules
                 }
 
                 role = msg.GetGuild().CreateRoleAsync(parameters.reJoin(), GuildPermissions.None).Result;
-                if(makeMentionable) await role.ModifyAsync(r => r.Mentionable = true);
+                if (makeMentionable) await role.ModifyAsync(r => r.Mentionable = true);
                 await msg.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}`");
             };
 
@@ -308,14 +308,14 @@ namespace GenericBot.CommandModules
                 var gc = GenericBot.GuildConfigs[msg.GetGuild().Id];
                 gc.UserRoleIds.Add(role.Id);
                 gc.Save();
-                if(makeMentionable) await role.ModifyAsync(r => r.Mentionable = true);
+                if (makeMentionable) await role.ModifyAsync(r => r.Mentionable = true);
                 await msg.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}` and added it to the user roles");
             };
 
             RoleCommands.Add(createUserRole);
 
             Command roleeveryone = new Command("roleeveryone");
-            roleeveryone.Aliases = new List<string>{"roleveryone"};
+            roleeveryone.Aliases = new List<string> { "roleveryone" };
             roleeveryone.Description = "Give or remove a role from everyone";
             roleeveryone.Usage = "roleveryone [+-] <roleID>";
             roleeveryone.RequiredPermission = Command.PermissionLevels.Admin;
@@ -333,7 +333,7 @@ namespace GenericBot.CommandModules
                     var role = msg.GetGuild().GetRole(id);
                     foreach (var u in msg.GetGuild().Users)
                     {
-                        if ( parameters[0].Contains("-") && u.Roles.Any(r => r.Id == id))
+                        if (parameters[0].Contains("-") && u.Roles.Any(r => r.Id == id))
                         {
                             await u.RemoveRoleAsync(role);
                             i++;
@@ -360,18 +360,18 @@ namespace GenericBot.CommandModules
             {
                 if (parameters[0].ToLower().Equals("save"))
                 {
-                        var guildDb = new DBGuild(msg.GetGuild().Id);
-                        var dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
-                        List<ulong> roles = new List<ulong>();
-                        foreach(var role in (msg.Author as SocketGuildUser).Roles)
-                        {
-                            roles.Add(role.Id);
-                        }
+                    var guildDb = new DBGuild(msg.GetGuild().Id);
+                    var dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
+                    List<ulong> roles = new List<ulong>();
+                    foreach (var role in (msg.Author as SocketGuildUser).Roles)
+                    {
+                        roles.Add(role.Id);
+                    }
 
-                        dbUser.SavedRoles = roles;
+                    dbUser.SavedRoles = roles;
 
-                        await msg.ReplyAsync($"I've saved `{dbUser.SavedRoles.Count}` roles for you!");
-                        guildDb.Save();
+                    await msg.ReplyAsync($"I've saved `{dbUser.SavedRoles.Count}` roles for you!");
+                    guildDb.Save();
 
                 }
                 else if (parameters[0].ToLower().Equals("restore"))

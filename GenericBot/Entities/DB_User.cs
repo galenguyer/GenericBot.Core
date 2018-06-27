@@ -22,19 +22,19 @@ namespace GenericBot.Entities
         {
             ID = user.Id;
             Nicknames = new List<string>();
-            Usernames = new List<string>{user.Username};
+            Usernames = new List<string> { user.Username };
             Warnings = new List<string>();
             PointsCount = 0;
             LastThanks = DateTimeOffset.FromUnixTimeSeconds(0);
 
-            if(!string.IsNullOrEmpty(user.Nickname))
+            if (!string.IsNullOrEmpty(user.Nickname))
                 Nicknames.Add(user.Nickname);
             CreatedAt = user.CreatedAt;
         }
 
         public void AddUsername(string username)
         {
-            if(Usernames == null) Usernames = new List<string>();
+            if (Usernames == null) Usernames = new List<string>();
             if (!Usernames.Contains(username))
             {
                 Usernames.Add(username);
@@ -42,7 +42,7 @@ namespace GenericBot.Entities
         }
         public void AddNickname(string username)
         {
-            if(Nicknames == null) Nicknames = new List<string>();
+            if (Nicknames == null) Nicknames = new List<string>();
             if (!Nicknames.Contains(username))
             {
                 Nicknames.Add(username);
@@ -51,7 +51,7 @@ namespace GenericBot.Entities
 
         public void AddNickname(SocketGuildUser user)
         {
-            if(Nicknames == null) Nicknames = new List<string>();
+            if (Nicknames == null) Nicknames = new List<string>();
             if (!string.IsNullOrEmpty(user.Nickname) && !Nicknames.Contains(user.Nickname))
             {
                 Nicknames.Add(user.Nickname);
@@ -60,7 +60,7 @@ namespace GenericBot.Entities
 
         public void AddWarning(string warning)
         {
-            if(Warnings == null) Warnings = new List<string>();
+            if (Warnings == null) Warnings = new List<string>();
             Warnings.Add(warning);
         }
 

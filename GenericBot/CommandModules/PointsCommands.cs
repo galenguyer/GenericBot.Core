@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using System.Threading;
-using Discord;
 using Discord.WebSocket;
 using GenericBot.Entities;
-using Newtonsoft.Json;
 
 namespace GenericBot.CommandModules
 {
@@ -30,14 +25,14 @@ namespace GenericBot.CommandModules
             pointCommands.Add(points);
 
             Command leaderboard = new Command(nameof(leaderboard));
-            leaderboard.ToExecute += async (client, msg, parameters) => 
+            leaderboard.ToExecute += async (client, msg, parameters) =>
             {
                 var db = new DBGuild(msg.GetGuild().Id);
                 var topUsers = db.Users.OrderByDescending(u => u.PointsCount).Take(10);
                 string result = $"Top 10 users in {msg.GetGuild().Name}\n";
                 int i = 1;
                 var config = GenericBot.GuildConfigs[msg.GetGuild().Id];
-                foreach(var user in topUsers)
+                foreach (var user in topUsers)
                 {
                     if (msg.GetGuild().Users.HasElement(u => u.Id == user.ID, out SocketGuildUser sgu))
                     {
@@ -63,7 +58,7 @@ namespace GenericBot.CommandModules
 
                 var dbGuild = new DBGuild(msg.GetGuild().Id);
                 var user = dbGuild.GetUser(msg.Author.Id);
-                if(user.PointsCount < 1)
+                if (user.PointsCount < 1)
                 {
                     await msg.ReplyAsync($"You don't have any {config.PointsName} to give!");
                 }
@@ -77,7 +72,7 @@ namespace GenericBot.CommandModules
                         }
                         else
                         {
-                            foreach(var u in msg.MentionedUsers)
+                            foreach (var u in msg.MentionedUsers)
                             {
 
                                 if (u.Id == msg.Author.Id) continue;

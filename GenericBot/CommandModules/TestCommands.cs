@@ -81,7 +81,7 @@ namespace GenericBot.CommandModules
             TestCommands.Add(updateDB);
 
             Command IdInfo = new Command("idInfo");
-            IdInfo.Aliases = new List<string>{"id"};
+            IdInfo.Aliases = new List<string> { "id" };
             IdInfo.Description = "Get information from a given ID";
             IdInfo.ToExecute += async (client, msg, parameters) =>
             {
@@ -94,7 +94,7 @@ namespace GenericBot.CommandModules
                 if (ulong.TryParse(parameters[0], out id))
                 {
                     ulong rawtime = id >> 22;
-                    long epochtime = (long) rawtime + 1420070400000;
+                    long epochtime = (long)rawtime + 1420070400000;
                     DateTimeOffset time = DateTimeOffset.FromUnixTimeMilliseconds(epochtime);
                     await msg.ReplyAsync($"ID: `{id}`\nDateTime: `{time.ToString(@"yyyy-MM-dd HH:mm:ss.fff tt")} GMT`");
                 }
@@ -157,14 +157,14 @@ namespace GenericBot.CommandModules
                 {
                     parameters.RemoveAt(0);
                     string warning = parameters.reJoin();
-                    var guildDb = new DBGuild (msg.GetGuild().Id);
+                    var guildDb = new DBGuild(msg.GetGuild().Id);
                     if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
                     {
                         guildDb.Users.Find(u => u.ID.Equals(uid)).AddWarning(warning);
                     }
                     else
                     {
-                        guildDb.Users.Add(new DBUser{ID = uid, Warnings = new List<string>{warning}});
+                        guildDb.Users.Add(new DBUser { ID = uid, Warnings = new List<string> { warning } });
                     }
                     guildDb.Save();
                     await msg.ReplyAsync($"Added `{warning.Replace('`', '\'')}` to <@{uid}> (`{uid}`)");
@@ -188,7 +188,7 @@ namespace GenericBot.CommandModules
 
                     msgs.Reverse();
                     string header = "<html><head><style>body {background-color: #36393e; color: #fff; font-family: \"Trebuchet MS\", Helvetica, sans-serif; font-size: small }server {font-size: 150%}channel {font-size: 130%}username {font-size: 100%}message {font-size: 80%}reqinf {font-size: 60%; color: grey;}</style></head>";
-                    string server =$"<body> <i><server>{msg.GetGuild().Name}</server> in <channel>#{msg.Channel.Name}</channel></i><hr>";
+                    string server = $"<body> <i><server>{msg.GetGuild().Name}</server> in <channel>#{msg.Channel.Name}</channel></i><hr>";
                     string messages = "";
                     foreach (var m in msgs)
                     {
@@ -319,7 +319,7 @@ namespace GenericBot.CommandModules
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    Process proc = new System.Diagnostics.Process ();
+                    Process proc = new System.Diagnostics.Process();
                     proc.StartInfo.FileName = "/bin/bash";
                     proc.StartInfo.Arguments = "-c \"" + parameters.reJoin() + " > results\"";
                     proc.StartInfo.RedirectStandardOutput = true;
@@ -349,8 +349,8 @@ namespace GenericBot.CommandModules
                 File.WriteAllText($"files/guildDbs/{msg.GetGuild().Id}_raw.json", JsonConvert.SerializeObject(new DBGuild(msg.GetGuild().Id), Formatting.Indented));
                 var res = msg.Channel.SendFileAsync($"files/guildDbs/{msg.GetGuild().Id}_raw.json", "Self-destructing in 15 seconds!").Result;
                 await Task.Delay(TimeSpan.FromSeconds(15));
-                try{await res.DeleteAsync();}
-                catch{}
+                try { await res.DeleteAsync(); }
+                catch { }
             };
 
             TestCommands.Add(decryptDb);

@@ -79,7 +79,7 @@ namespace GenericBot
             }
 
             if (guildConfig.UserLogChannelId == 0) return;
-            
+
             EmbedBuilder log = new EmbedBuilder()
                 .WithAuthor(new EmbedAuthorBuilder().WithName("User Joined")
                     .WithIconUrl(user.GetAvatarUrl()).WithUrl(user.GetAvatarUrl()))
@@ -88,7 +88,7 @@ namespace GenericBot
                 .AddField(new EmbedFieldBuilder().WithName("UserId").WithValue(user.Id).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("Mention").WithValue(user.Mention).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("User Number").WithValue(user.Guild.MemberCount + (!alreadyJoined ? " (New Member)" : "")).WithIsInline(true))
-                .AddField(new EmbedFieldBuilder().WithName("Database Number").WithValue(guildDb.Users.Count + (alreadyJoined ? " (Previous Member)" : "" )).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("Database Number").WithValue(guildDb.Users.Count + (alreadyJoined ? " (Previous Member)" : "")).WithIsInline(true))
                 .WithFooter($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
 
             if ((DateTimeOffset.Now - user.CreatedAt).TotalDays < 7)
@@ -104,7 +104,7 @@ namespace GenericBot
                 if (!usr.Warnings.Empty())
                 {
                     string warns = "";
-                    for(int i = 0; i < usr.Warnings.Count; i++)
+                    for (int i = 0; i < usr.Warnings.Count; i++)
                     {
                         warns += $"{i + 1}: {usr.Warnings.ElementAt(i)}\n";
                     }
@@ -130,13 +130,13 @@ namespace GenericBot
             if (guildConfig.UserLogChannelId == 0) return;
 
             EmbedBuilder log = new EmbedBuilder()
-				.WithAuthor(new EmbedAuthorBuilder().WithName("User Left")
+                .WithAuthor(new EmbedAuthorBuilder().WithName("User Left")
                     .WithIconUrl(user.GetAvatarUrl()).WithUrl(user.GetAvatarUrl()))
                 .WithColor(156, 39, 176)
-				.AddField(new EmbedFieldBuilder().WithName("Username").WithValue(user.ToString()).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("Username").WithValue(user.ToString()).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("UserId").WithValue(user.Id).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("Mention").WithValue(user.Mention).WithIsInline(true))
-				.WithFooter($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                .WithFooter($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
 
             await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
 

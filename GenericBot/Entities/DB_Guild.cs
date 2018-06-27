@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Discord.WebSocket;
-using Hammock.Retries;
 using Newtonsoft.Json;
 
 namespace GenericBot.Entities
@@ -57,7 +55,7 @@ namespace GenericBot.Entities
             }
             else
             {
-                Users.Add(new DBUser(){ID = id});
+                Users.Add(new DBUser() { ID = id });
                 return Users.First(u => u.ID == id);
             };
         }
@@ -87,7 +85,7 @@ namespace GenericBot.Entities
             {
                 if (Quotes == null || Quotes.Count == 0)
                 {
-                    return new Quote {Content = "This server has no quotes", Id = -1};
+                    return new Quote { Content = "This server has no quotes", Id = -1 };
                 }
 
                 if (string.IsNullOrEmpty(identifer))
@@ -109,12 +107,12 @@ namespace GenericBot.Entities
                             }
                             else
                             {
-                                return new Quote {Content = "Quote deleted", Id = id};
+                                return new Quote { Content = "Quote deleted", Id = id };
                             }
                         }
                         else
                         {
-                            return new Quote {Content = "Could not find quote", Id = -2};
+                            return new Quote { Content = "Could not find quote", Id = -2 };
                         }
                     }
                     else
@@ -123,7 +121,7 @@ namespace GenericBot.Entities
                             .Where(q => q.Content.ToLower().Contains(identifer.ToLower()));
                         if (ql.Count() == 0)
                         {
-                            return new Quote {Content = "Could not find quote", Id = -1};
+                            return new Quote { Content = "Could not find quote", Id = -1 };
                         }
 
                         int max = ql.Count();
@@ -134,7 +132,7 @@ namespace GenericBot.Entities
             catch (Exception ex)
             {
                 Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
-                return new Quote {Content = "Could not find quote", Id = -0};
+                return new Quote { Content = "Could not find quote", Id = -0 };
             }
         }
 

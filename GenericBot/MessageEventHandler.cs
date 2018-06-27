@@ -105,7 +105,7 @@ namespace GenericBot
             pointThread.IsBackground = true;
             pointThread.Start();
 
-            
+
             GenericBot.QuickWatch.Restart();
             try
             {

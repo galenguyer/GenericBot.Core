@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Discord;
-using Discord.Rest;
 using GenericBot.Entities;
 using MarkVSharp;
-using Newtonsoft.Json;
 
 namespace GenericBot.CommandModules
 {
@@ -33,7 +30,7 @@ namespace GenericBot.CommandModules
             markov.Usage = "markov";
             markov.ToExecute += async (client, msg, parameters) =>
             {
-                var messages = msg.Channel.GetMessagesAsync().FlattenAsync().Result.Reverse().Select(m =>m.Content).ToList();
+                var messages = msg.Channel.GetMessagesAsync().FlattenAsync().Result.Reverse().Select(m => m.Content).ToList();
                 messages.ToList().AddRange(messages.TakeLast(50));
                 messages.ToList().AddRange(messages.TakeLast(25));
                 messages.ToList().AddRange(messages.TakeLast(10));
@@ -57,7 +54,7 @@ namespace GenericBot.CommandModules
                 uint count = 1;
                 uint sides = 20;
                 int add = 0;
-                if(!parameters.Empty())
+                if (!parameters.Empty())
                 {
                     string param = parameters.reJoin("").ToLower();
                     if (!param.Contains("d"))
@@ -96,7 +93,7 @@ namespace GenericBot.CommandModules
                                 a = second.Replace(s, "");
                             }
 
-                            if(!(uint.TryParse(c, out count) && uint.TryParse(s, out sides) && int.TryParse(a, out add)))
+                            if (!(uint.TryParse(c, out count) && uint.TryParse(s, out sides) && int.TryParse(a, out add)))
                             {
                                 await msg.ReplyAsync("Input improperly formatted");
                                 return;
@@ -122,18 +119,18 @@ namespace GenericBot.CommandModules
                 }
                 RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider();
                 List<int> results = new List<int>();
-                while(results.Count < count)
+                while (results.Count < count)
                 {
                     byte[] bytes = new byte[4];
                     crypto.GetNonZeroBytes(bytes);
                     long rand = Math.Abs(BitConverter.ToInt32(bytes, 0)) % sides;
-                    results.Add((int) rand + 1 + add);
+                    results.Add((int)rand + 1 + add);
                 }
 
                 string res = $"{msg.Author.Mention}, you rolled ";
                 results.Sort();
                 res += results.SumAnd();
-                if(count > 1) res += $" with a total of {results.Sum()}";
+                if (count > 1) res += $" with a total of {results.Sum()}";
                 await msg.ReplyAsync(res);
             };
 
@@ -255,7 +252,7 @@ namespace GenericBot.CommandModules
                     rcont++;
                 }
 
-                await msg.ReplyAsync(resp.ToString().Replace("  "," "));
+                await msg.ReplyAsync(resp.ToString().Replace("  ", " "));
             };
 
             FunCommands.Add(redact);

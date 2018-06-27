@@ -29,7 +29,7 @@ namespace GenericBot
         {
             int wc = message.Length;
 
-            int sPos = new Random().Next((wc/2), wc);
+            int sPos = new Random().Next((wc / 2), wc);
             for (int i = sPos; i < wc; i++)
             {
                 if (message[i].Equals(' '))

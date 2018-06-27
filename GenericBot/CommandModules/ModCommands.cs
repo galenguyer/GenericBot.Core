@@ -107,22 +107,28 @@ namespace GenericBot.CommandModules
                 }
 
                 string nicks = "", usernames = "";
-                if(!dbUser.Usernames.Empty()){foreach (var str in dbUser.Usernames.Distinct().ToList())
+                if (!dbUser.Usernames.Empty())
                 {
-                    usernames += $"`{str.Replace('`', '\'')}`, ";
-                }}
-                if(!dbUser.Nicknames.Empty()){ foreach (var str in dbUser.Nicknames.Distinct().ToList())
+                    foreach (var str in dbUser.Usernames.Distinct().ToList())
+                    {
+                        usernames += $"`{str.Replace('`', '\'')}`, ";
+                    }
+                }
+                if (!dbUser.Nicknames.Empty())
                 {
-                    nicks += $"`{str.Replace('`', '\'')}`, ";
-                }}
+                    foreach (var str in dbUser.Nicknames.Distinct().ToList())
+                    {
+                        nicks += $"`{str.Replace('`', '\'')}`, ";
+                    }
+                }
                 nicks = nicks.Trim(',', ' ');
                 usernames = usernames.Trim(',', ' ');
 
-                string info =  $"User Id:  `{user.Id}`\n";
+                string info = $"User Id:  `{user.Id}`\n";
                 info += $"Username: `{user.ToString()}`\n";
                 info += $"Past Usernames: {usernames}\n";
                 info += $"Nickname: `{nickname}`\n";
-                if(!dbUser.Nicknames.Empty())
+                if (!dbUser.Nicknames.Empty())
                     info += $"Past Nicknames: {nicks}\n";
                 info += $"Created At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.CreatedAt.LocalDateTime)}GMT` " +
                         $"(about {(DateTime.UtcNow - user.CreatedAt).Days} days ago)\n";
@@ -131,7 +137,7 @@ namespace GenericBot.CommandModules
                         $"Joined At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.JoinedAt.Value.LocalDateTime)}GMT`" +
                         $"(about {(DateTime.UtcNow - user.JoinedAt.Value).Days} days ago)\n";
                 info += $"Roles: {roles.Trim(' ', ',')}\n";
-                if(dbUser.Warnings.Any())
+                if (dbUser.Warnings.Any())
                     info += $"`{dbUser.Warnings.Count}` Warnings: {dbUser.Warnings.reJoin(" | ")}";
 
 
@@ -300,7 +306,7 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
-                        guildDb.Users.Add(new DBUser{ID = uid, Warnings = new List<string>{warning}});
+                        guildDb.Users.Add(new DBUser { ID = uid, Warnings = new List<string> { warning } });
                     }
                     guildDb.Save();
 
@@ -308,7 +314,8 @@ namespace GenericBot.CommandModules
                         .WithTitle("Warning Added")
                         .WithDescription(warning)
                         .WithColor(new Color(0xFFFF00))
-                        .WithFooter(footer => {
+                        .WithFooter(footer =>
+                        {
                             footer
                                 .WithText($"By {msg.Author} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
                         });
@@ -327,7 +334,7 @@ namespace GenericBot.CommandModules
                     await msg.Channel.SendMessageAsync("", embed: builder.Build());
                     if (GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId != 0)
                     {
-                        await ((SocketTextChannel) client.GetChannel(GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId))
+                        await ((SocketTextChannel)client.GetChannel(GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }
                 }
@@ -369,7 +376,7 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
-                        guildDb.Users.Add(new DBUser{ID = user.Id, Warnings = new List<string>{warning}});
+                        guildDb.Users.Add(new DBUser { ID = user.Id, Warnings = new List<string> { warning } });
                     }
                     guildDb.Save();
                     try
@@ -386,7 +393,8 @@ namespace GenericBot.CommandModules
                         .WithTitle("Warning Issued")
                         .WithDescription(warning)
                         .WithColor(new Color(0xFFFF00))
-                        .WithFooter(footer => {
+                        .WithFooter(footer =>
+                        {
                             footer
                                 .WithText($"By {msg.Author} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
                         });
@@ -395,7 +403,7 @@ namespace GenericBot.CommandModules
                     await msg.Channel.SendMessageAsync("", embed: builder.Build());
                     if (GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId != 0)
                     {
-                        await ((SocketTextChannel) client.GetChannel(GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId))
+                        await ((SocketTextChannel)client.GetChannel(GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }
                 }
@@ -461,12 +469,12 @@ namespace GenericBot.CommandModules
                     return;
                 }
                 var mutedRole = msg.GetGuild().Roles.First(r => r.Id == gc.MutedRoleId);
-                List<IUser> mutedUsers= new List<IUser>();
+                List<IUser> mutedUsers = new List<IUser>();
                 foreach (var user in msg.GetMentionedUsers().Select(u => u.Id))
                 {
                     try
                     {
-                        (msg.GetGuild().GetUser(user)).AddRolesAsync(new List<IRole> {mutedRole});
+                        (msg.GetGuild().GetUser(user)).AddRolesAsync(new List<IRole> { mutedRole });
                         gc.ProbablyMutedUsers.Add(user);
                         gc.Save();
                         mutedUsers.Add(msg.GetGuild().GetUser(user));
@@ -503,7 +511,7 @@ namespace GenericBot.CommandModules
                     return;
                 }
                 var mutedRole = msg.GetGuild().Roles.First(r => r.Id == gc.MutedRoleId);
-                List<IUser> mutedUsers= new List<IUser>();
+                List<IUser> mutedUsers = new List<IUser>();
                 foreach (var user in msg.GetMentionedUsers().Select(u => u.Id))
                 {
                     try
@@ -543,7 +551,7 @@ namespace GenericBot.CommandModules
                 var msgs = (msg.Channel as SocketTextChannel).GetManyMessages(50000).Result;
 
                 var channel = msg.Channel;
-                string str = $"{((IGuildChannel) channel).Guild.Name} | {((IGuildChannel) channel).Guild.Id}\n";
+                string str = $"{((IGuildChannel)channel).Guild.Name} | {((IGuildChannel)channel).Guild.Id}\n";
                 str += $"#{channel.Name} | {channel.Id}\n";
                 str += $"{DateTime.Now}\n\n";
 
@@ -553,7 +561,7 @@ namespace GenericBot.CommandModules
                 foreach (var m in msgs)
                 {
                     string msgstr = "";
-                    if(lastMsg != null && m.Author.Id != lastMsg.Author.Id) msgstr += $"{m.Author} | {m.Author.Id}\n{m.Timestamp}\n";
+                    if (lastMsg != null && m.Author.Id != lastMsg.Author.Id) msgstr += $"{m.Author} | {m.Author.Id}\n{m.Timestamp}\n";
                     msgstr += $"{m.Content}\n";
                     foreach (var a in m.Attachments)
                     {
