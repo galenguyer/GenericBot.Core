@@ -9,97 +9,82 @@ namespace GenericBot
     {
         public static string EncryptText(string input, string password)
         {
-            byte[] bytesToBeEncrypted = Encoding.UTF8.GetBytes(input);
-            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-
-            // Hash the password with SHA256
-            passwordBytes = SHA256.Create().ComputeHash(passwordBytes);
-
-            byte[] bytesEncrypted = AES_Encrypt(bytesToBeEncrypted, passwordBytes);
-
-            string result = Convert.ToBase64String(bytesEncrypted);
-
-            return result;
+            return Convert.ToBase64String(AES.AES_Encrypt(Encoding.UTF8.GetBytes(input), SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(password))));
         }
 
         public static string DecryptText(string input, string password)
         {
-            // Get the bytes of the string
-            byte[] bytesToBeDecrypted = Convert.FromBase64String(input);
-            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-            passwordBytes = SHA256.Create().ComputeHash(passwordBytes);
-
-            byte[] bytesDecrypted = AES_Decrypt(bytesToBeDecrypted, passwordBytes);
-
-            string result = Encoding.UTF8.GetString(bytesDecrypted);
-
-            return result;
+            return Encoding.UTF8.GetString(AES.AES_Decrypt(Convert.FromBase64String(input), SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(password))));
         }
 
         private static byte[] AES_Encrypt(byte[] bytesToBeEncrypted, byte[] passwordBytes)
         {
-            byte[] encryptedBytes = null;
-
-            // Set your salt here, change it to meet your flavor:
-            // The salt bytes must be at least 8 bytes.
-            byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
-
-            using (MemoryStream ms = new MemoryStream())
+            byte[] numArray = (byte[])null;
+            byte[] salt = new byte[8]
             {
-                using (RijndaelManaged aes = new RijndaelManaged())
+                (byte) 1,
+                (byte) 2,
+                (byte) 3,
+                (byte) 4,
+                (byte) 5,
+                (byte) 6,
+                (byte) 7,
+                (byte) 8
+            };
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (RijndaelManaged rijndaelManaged = new RijndaelManaged())
                 {
-                    aes.KeySize = 256;
-                    aes.BlockSize = 128;
-
-                    var key = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 1000);
-                    aes.Key = key.GetBytes(aes.KeySize / 8);
-                    aes.IV = key.GetBytes(aes.BlockSize / 8);
-
-                    aes.Mode = CipherMode.CBC;
-
-                    using (var cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                    rijndaelManaged.KeySize = 256;
+                    rijndaelManaged.BlockSize = 128;
+                    Rfc2898DeriveBytes rfc2898DeriveBytes = new Rfc2898DeriveBytes(passwordBytes, salt, 1000);
+                    rijndaelManaged.Key = rfc2898DeriveBytes.GetBytes(rijndaelManaged.KeySize / 8);
+                    rijndaelManaged.IV = rfc2898DeriveBytes.GetBytes(rijndaelManaged.BlockSize / 8);
+                    rijndaelManaged.Mode = CipherMode.CBC;
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, rijndaelManaged.CreateEncryptor(), CryptoStreamMode.Write))
                     {
-                        cs.Write(bytesToBeEncrypted, 0, bytesToBeEncrypted.Length);
-                        cs.Close();
+                        cryptoStream.Write(bytesToBeEncrypted, 0, bytesToBeEncrypted.Length);
+                        cryptoStream.Close();
                     }
-                    encryptedBytes = ms.ToArray();
+                    numArray = memoryStream.ToArray();
                 }
             }
-
-            return encryptedBytes;
+            return numArray;
         }
 
         private static byte[] AES_Decrypt(byte[] bytesToBeDecrypted, byte[] passwordBytes)
         {
-            byte[] decryptedBytes = null;
-
-            // Set your salt here, change it to meet your flavor:
-            // The salt bytes must be at least 8 bytes.
-            byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
-
-            using (MemoryStream ms = new MemoryStream())
+            byte[] numArray = (byte[])null;
+            byte[] salt = new byte[8]
             {
-                using (RijndaelManaged aes = new RijndaelManaged())
+                (byte) 1,
+                (byte) 2,
+                (byte) 3,
+                (byte) 4,
+                (byte) 5,
+                (byte) 6,
+                (byte) 7,
+                (byte) 8
+            };
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (RijndaelManaged rijndaelManaged = new RijndaelManaged())
                 {
-                    aes.KeySize = 256;
-                    aes.BlockSize = 128;
-
-                    var key = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 1000);
-                    aes.Key = key.GetBytes(aes.KeySize / 8);
-                    aes.IV = key.GetBytes(aes.BlockSize / 8);
-
-                    aes.Mode = CipherMode.CBC;
-
-                    using (var cs = new CryptoStream(ms, aes.CreateDecryptor(), CryptoStreamMode.Write))
+                    rijndaelManaged.KeySize = 256;
+                    rijndaelManaged.BlockSize = 128;
+                    Rfc2898DeriveBytes rfc2898DeriveBytes = new Rfc2898DeriveBytes(passwordBytes, salt, 1000);
+                    rijndaelManaged.Key = rfc2898DeriveBytes.GetBytes(rijndaelManaged.KeySize / 8);
+                    rijndaelManaged.IV = rfc2898DeriveBytes.GetBytes(rijndaelManaged.BlockSize / 8);
+                    rijndaelManaged.Mode = CipherMode.CBC;
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, rijndaelManaged.CreateDecryptor(), CryptoStreamMode.Write))
                     {
-                        cs.Write(bytesToBeDecrypted, 0, bytesToBeDecrypted.Length);
-                        cs.Close();
+                        cryptoStream.Write(bytesToBeDecrypted, 0, bytesToBeDecrypted.Length);
+                        cryptoStream.Close();
                     }
-                    decryptedBytes = ms.ToArray();
+                    numArray = memoryStream.ToArray();
                 }
             }
-
-            return decryptedBytes;
+            return numArray;
         }
     }
 }
