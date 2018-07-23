@@ -27,29 +27,40 @@ namespace GenericBot.Entities
                     this.Users = GenericBot.LoadedGuilds[this.ID].Users;
                     this.Quotes = GenericBot.LoadedGuilds[this.ID].Quotes;
                 }
-                else if (File.Exists($"files/guildDbs/{ID}.json"))
+                else
                 {
-                    if (!File.ReadAllText($"files/guildDbs/{ID}.json").StartsWith("{"))
+                    var col = GenericBot.GlobalDatabase.GetCollection<DBGuild>("userDatabase");
+                    DBGuild tempdb;
+                    col.EnsureIndex(c => c.ID, true);
+                    if (col.Exists(c => c.ID.Equals(guildId)))
                     {
-                        var db = JsonConvert.DeserializeObject<DBGuild>(AES.DecryptText(
-                           File.ReadAllText($"files/guildDbs/{ID}.json"), GenericBot.DBPassword));
-                        this.Users = db.Users;
-                        this.Quotes = db.Quotes;
-                        GenericBot.LoadedGuilds.TryAdd(ID, this);
+                        Console.WriteLine("DB loaded from LITEDB");
+                        tempdb = col.FindOne(c => c.ID.Equals(guildId));
+                    }
+                    else if (File.Exists($"files/guildDbs/{ID}.json"))
+                    {
+                        if (!File.ReadAllText($"files/guildDbs/{ID}.json").StartsWith("{"))
+                        {
+                            Console.WriteLine("DB loaded from ENCRYPTED JSON");
+                            tempdb = JsonConvert.DeserializeObject<DBGuild>(AES.DecryptText(File.ReadAllText($"files/guildDbs/{ID}.json"), GenericBot.DBPassword));
+                        }
+                        else
+                        {
+                            Console.WriteLine("DB loaded from RAW JSON");
+                            tempdb = JsonConvert.DeserializeObject<DBGuild>(File.ReadAllText($"files/guildDbs/{ID}.json"));
+                        }
                     }
                     else
                     {
-                        var db = JsonConvert.DeserializeObject<DBGuild>(File.ReadAllText($"files/guildDbs/{ID}.json"));
-                        this.Users = db.Users;
-                        this.Quotes = db.Quotes;
-                        GenericBot.LoadedGuilds.TryAdd(ID, this);
+                        tempdb = new DBGuild() { ID = guildId, Users = new List<DBUser>() };
                     }
+                    this.Users = tempdb.Users;
+                    this.Quotes = tempdb.Quotes;
                 }
-
             }
             catch (Exception ex)
             {
-                GenericBot.Logger.LogErrorMessage($"Load DB for {guildId} Failed: {ex.Message}");
+                GenericBot.Logger.LogErrorMessage($"Load DB for {guildId} Failed: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
@@ -59,9 +70,9 @@ namespace GenericBot.Entities
             {
                 if (JsonConvert.SerializeObject(this).Length < 8) return;
                 GenericBot.LoadedGuilds[this.ID] = this;
-                Directory.CreateDirectory("files");
-                Directory.CreateDirectory("files/guildDbs");
-                File.WriteAllText($"files/guildDbs/{ID}.json", AES.EncryptText(JsonConvert.SerializeObject(this), GenericBot.DBPassword));
+                var col = GenericBot.GlobalDatabase.GetCollection<DBGuild>("userDatabase");
+                col.EnsureIndex(c => c.ID, true);
+                col.Upsert(this);
             }
             catch(Exception ex)
             {

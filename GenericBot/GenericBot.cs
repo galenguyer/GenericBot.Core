@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Timers;
@@ -32,6 +30,7 @@ namespace GenericBot
         public static string DBPassword = "PASSWORD";
 
         public static ConcurrentDictionary<ulong, DBGuild> LoadedGuilds = new ConcurrentDictionary<ulong, DBGuild>();
+        public static LiteDB.LiteDatabase GlobalDatabase = new LiteDB.LiteDatabase(@"Filename=files\guildDatabase.db; Password=" + DBPassword);
 
         public static TwitterService Twitter = new TwitterService("AfaD74ulbQQmjb1yDuGKWtVY9", "WAuRJS6Z4RUDgignHmsDzudbIx2YP4PgnAcz3tp7G7nd1ZHs2z");
         public static List<GenericTweet> TweetStore;
