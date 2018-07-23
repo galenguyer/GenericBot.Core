@@ -11,7 +11,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Color = System.Drawing.Color;
 using Image = System.Drawing.Image;
-using org.mariuszgromada.math.mxparser;
 
 namespace GenericBot.CommandModules
 {
@@ -283,21 +282,6 @@ namespace GenericBot.CommandModules
 
             SocialCommands.Add(checkinvite);
 
-            Command calc = new Command("calc");
-            calc.Description = "Do some math";
-            calc.SendTyping = false;
-            calc.ToExecute += async (client, msg, parameters) =>
-            {
-                string input = parameters.reJoin();
-
-                var exp = new Expression(input);
-                var emb = new EmbedBuilder()
-                .AddField("Input", $"```\n{input}\n```")
-                .AddField("Output", $"```\n{exp.calculate()}\n```");
-                await msg.Channel.SendMessageAsync("", embed: emb.Build());
-            };
-
-            SocialCommands.Add(calc);
             return SocialCommands;
         }
     }
