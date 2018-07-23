@@ -16,9 +16,6 @@
     <PackageReference Include="TweetMoaSharp" Version="4.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MarkVSharp\MarkVSharp.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="files\guildConfigs" />
   </ItemGroup>
 </Project>
