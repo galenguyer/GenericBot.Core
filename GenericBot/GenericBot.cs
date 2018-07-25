@@ -50,6 +50,7 @@ namespace GenericBot
         {
             Logger = new Logger(GetStringSha256Hash(DateTime.UtcNow.ToString()));
             GlobalConfiguration = new GlobalConfiguration().Load();
+            DBPassword = GlobalConfiguration.DatabasePassword;
             GlobalDatabase = new LiteDB.LiteDatabase(@"Filename=files\guildDatabase.db; Password=" + DBPassword);
             GuildConfigs = new Dictionary<ulong, GuildConfig>();
             TweetStore = JsonConvert.DeserializeObject<List<GenericTweet>>(File.ReadAllText("files/tweetStore.json"));
