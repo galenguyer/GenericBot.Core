@@ -9,6 +9,8 @@ namespace GenericBot.Entities
     {
         //Bot Token
         public string Token { get; set; }
+        //Database Password
+        public string DatabasePassword { get; set; }
         //Default Prefix to be used
         public string DefaultPrefix { get; set; }
         //Default value for executing edited commands

@@ -27,10 +27,10 @@ namespace GenericBot
         public static string SessionId;
         public static bool DebugMode = false;
         public static Animols Animols = new Animols();
-        public static string DBPassword = "PASSWORD";
+        private static string DBPassword;
 
         public static ConcurrentDictionary<ulong, DBGuild> LoadedGuilds = new ConcurrentDictionary<ulong, DBGuild>();
-        public static LiteDB.LiteDatabase GlobalDatabase = new LiteDB.LiteDatabase(@"Filename=files\guildDatabase.db; Password=" + DBPassword);
+        public static LiteDB.LiteDatabase GlobalDatabase;
 
         public static TwitterService Twitter = new TwitterService("AfaD74ulbQQmjb1yDuGKWtVY9", "WAuRJS6Z4RUDgignHmsDzudbIx2YP4PgnAcz3tp7G7nd1ZHs2z");
         public static List<GenericTweet> TweetStore;
@@ -50,6 +50,7 @@ namespace GenericBot
         {
             Logger = new Logger(GetStringSha256Hash(DateTime.UtcNow.ToString()));
             GlobalConfiguration = new GlobalConfiguration().Load();
+            GlobalDatabase = new LiteDB.LiteDatabase(@"Filename=files\guildDatabase.db; Password=" + DBPassword);
             GuildConfigs = new Dictionary<ulong, GuildConfig>();
             TweetStore = JsonConvert.DeserializeObject<List<GenericTweet>>(File.ReadAllText("files/tweetStore.json"));
             Twitter.AuthenticateWith("924464831813398529-pi51h6UB3iitJB2UQwGrHukYjD1Pz7F", "3R0vFFQLCGe9vuGvn00Avduq1K8NHjmRBUFJVuo9nRYXJ");
