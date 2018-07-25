@@ -27,7 +27,7 @@ namespace GenericBot
         public static string SessionId;
         public static bool DebugMode = false;
         public static Animols Animols = new Animols();
-        private static string DBPassword;
+        public static string DBPassword;
 
         public static ConcurrentDictionary<ulong, DBGuild> LoadedGuilds = new ConcurrentDictionary<ulong, DBGuild>();
         public static LiteDB.LiteDatabase GlobalDatabase;
