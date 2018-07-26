@@ -62,8 +62,6 @@ namespace GenericBot
                 .WithColor(243, 110, 33)
                 .WithCurrentTimestamp();
 
-
-            Console.WriteLine(arg2.Author.GetAvatarUrl());
             if (string.IsNullOrEmpty(arg2.Author.GetAvatarUrl()))
             {
                 log = log.WithAuthor(new EmbedAuthorBuilder().WithName($"{arg2.Author} ({arg2.Author.Id})")
@@ -83,8 +81,6 @@ namespace GenericBot
 
             await arg2.GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
         }
-
-
 
         public static ParsedCommand ParseMessage(SocketMessage msg)
         {
