@@ -49,6 +49,10 @@ namespace GenericBot
         static void Main(string[] args)
         {
             Logger = new Logger(GetStringSha256Hash(DateTime.UtcNow.ToString()));
+            if (File.Exists("version.txt"))
+            {
+                Logger.LogGenericMessage($"Build {File.ReadAllText("version.txt").Trim()}");
+            }
             GlobalConfiguration = new GlobalConfiguration().Load();
             DBPassword = GlobalConfiguration.DatabasePassword;
             GlobalDatabase = new LiteDB.LiteDatabase(@"Filename=files\guildDatabase.db; Password=" + DBPassword);
