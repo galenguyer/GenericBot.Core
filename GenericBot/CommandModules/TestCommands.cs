@@ -295,7 +295,7 @@ namespace GenericBot.CommandModules
             TestCommands.Add(verify);
 
             Command cmdp = new Command("cmd");
-            cmdp.RequiredPermission = Command.PermissionLevels.BotOwner;
+            cmdp.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             cmdp.ToExecute += async (client, msg, parameters) =>
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
