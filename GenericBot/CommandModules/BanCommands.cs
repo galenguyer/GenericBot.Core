@@ -124,7 +124,7 @@ namespace GenericBot.CommandModules
 
                         try
                         {
-                            await msg.GetGuild().AddBanAsync(uid);
+                            await msg.GetGuild().AddBanAsync(uid, reason: reason.Replace("\"", "'"));
                         }
                         catch
                         {
@@ -239,7 +239,7 @@ namespace GenericBot.CommandModules
 
                         try
                         {
-                            await msg.GetGuild().AddBanAsync(uid, 1);
+                            await msg.GetGuild().AddBanAsync(uid, 1, reason: reason.Replace("\"", "'"));
                         }
                         catch
                         {
