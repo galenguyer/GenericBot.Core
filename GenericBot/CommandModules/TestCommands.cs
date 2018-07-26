@@ -285,7 +285,11 @@ namespace GenericBot.CommandModules
                     }
                 }
 
-                string reply = $"I've sent {success.Select(u => u.Username).ToList().SumAnd()} instructions!";
+                string reply = "";
+                if (success.Any()) 
+                {
+                    reply += $"I've sent {success.Select(u => u.Username).ToList().SumAnd()} instructions!";
+                }
                 if (failed.Any())
                 {
                     reply += $" {failed.Select(u => u.Username).ToList().SumAnd()} could not be messaged.";
