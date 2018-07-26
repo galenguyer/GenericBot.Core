@@ -48,7 +48,8 @@ namespace GenericBot.CommandModules
             global.ToExecute += async (client, msg, paramList) =>
             {
                 string stats = $"**Global Stats:** `{DateTime.Now}`\n" +
-                               $"SessionID: `{GenericBot.Logger.SessionId}`\n\n" +
+                               $"SessionID: `{GenericBot.Logger.SessionId}`\n" +
+                               $"Build Number: `{GenericBot.BuildNumber}`\n\n" +
                                $"Servers: `{client.Guilds.Count}`\n" +
                                $"Users: `{client.Guilds.Sum(g => g.Users.Count)}`\n" +
                                $"Shards: `{client.Shards.Count}`\n" +
@@ -61,8 +62,6 @@ namespace GenericBot.CommandModules
                 {
                     stats += $"Shard `{shard.ShardId}`: `{shard.Guilds.Count}` Guilds (`{shard.Guilds.Sum(g => g.Users.Count)}` Users)\n";
                 }
-
-                stats += $"\n_\\*For some more live stats, check https://mastrchef.rocks/programs/genericbot/status/*_";
 
                 await msg.Channel.SendMessageAsync(stats);
             };

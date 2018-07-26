@@ -25,6 +25,7 @@ namespace GenericBot
         public static Dictionary<ulong, GuildConfig> GuildConfigs;
         public static List<Command> Commands = new List<Command>();
         public static string SessionId;
+        public static string BuildNumber = "Unknown";
         public static bool DebugMode = false;
         public static Animols Animols = new Animols();
         public static string DBPassword;
@@ -52,6 +53,7 @@ namespace GenericBot
             if (File.Exists("version.txt"))
             {
                 Logger.LogGenericMessage($"Build {File.ReadAllText("version.txt").Trim()}");
+                BuildNumber = File.ReadAllText("version.txt").Trim();
             }
             GlobalConfiguration = new GlobalConfiguration().Load();
             DBPassword = GlobalConfiguration.DatabasePassword;
