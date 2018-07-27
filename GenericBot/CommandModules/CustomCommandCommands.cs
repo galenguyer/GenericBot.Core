@@ -117,10 +117,10 @@ namespace GenericBot.CommandModules
                         await msg.ReplyAsync("This server has no aliases set!");
                         return;
                     }
-                    string als = $"Aliases for {msg.GetGuild().Name}\n*Format: `command -> alias`*\n";
+                    string als = $"Aliases for {msg.GetGuild().Name}\n*Format: `alias -> command`*\n";
                     foreach(var a in GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases)
                     {
-                        als += $"{a.Command} -> {a.Alias}\n";
+                        als += $"{a.Alias} -> {a.Command}\n";
                     }
                     foreach(var m in als.SplitSafe('\n'))
                     {
