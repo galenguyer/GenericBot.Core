@@ -48,8 +48,12 @@ namespace GenericBot.CommandModules
                 string message = $"You can use `{prefix}iam` and `{prefix}iamnot` with any of these roles:\n";
                 foreach (var role in msg.GetGuild().Roles
                     .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id))
-                    .OrderByDescending(r => r.Position))
+                    .OrderBy(r => r.Name))
                 {
+                    if ((msg.Author as SocketGuildUser).Roles.Contains(role))
+                        message += "\\✔ ";
+                    else
+                        message += "✘";
                     message += $"`{role.Name}`, ";
                 }
                 message = message.Trim(' ', ',');
