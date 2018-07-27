@@ -81,7 +81,17 @@ namespace GenericBot.CommandModules
             jeff.ToExecute += async (client, msg, parameters) =>
             {
                 string filename = "";
-                if (Uri.IsWellFormedUriString(parameters[0], UriKind.RelativeOrAbsolute) &&
+                if (parameters.Empty())
+                {
+                    var user = msg.Author;
+                    using (WebClient webClient = new WebClient())
+                    {
+                        await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl().Replace("size=128", "size=512")),
+                            $"files/img/{user.AvatarId}.png");
+                    }
+                    filename = $"files/img/{user.AvatarId}.png";
+                }
+                else if (Uri.IsWellFormedUriString(parameters[0], UriKind.RelativeOrAbsolute) &&
                                          (parameters[0].EndsWith(".png") || parameters[0].EndsWith(".jpg") ||
                                           parameters[0].EndsWith("jpeg") || parameters[0].EndsWith(".gif")))
                 {
@@ -102,15 +112,6 @@ namespace GenericBot.CommandModules
                     filename = $"files/img/{user.AvatarId}.png";
                 }
                 else
-                {
-                    var user = msg.Author;
-                    using (WebClient webClient = new WebClient())
-                    {
-                        await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl().Replace("size=128", "size=512")),
-                            $"files/img/{user.AvatarId}.png");
-                    }
-                    filename = $"files/img/{user.AvatarId}.png";
-                }
 
                 {
                     int targetWidth = 1278;
