@@ -101,6 +101,16 @@ namespace GenericBot.CommandModules
                     }
                     filename = $"files/img/{user.AvatarId}.png";
                 }
+                else
+                {
+                    var user = msg.Author;
+                    using (WebClient webClient = new WebClient())
+                    {
+                        await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl().Replace("size=128", "size=512")),
+                            $"files/img/{user.AvatarId}.png");
+                    }
+                    filename = $"files/img/{user.AvatarId}.png";
+                }
 
                 {
                     int targetWidth = 1278;
