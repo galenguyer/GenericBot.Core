@@ -110,9 +110,23 @@ namespace GenericBot.CommandModules
             alias.Usage = "alias <add|remove> command alias";
             alias.ToExecute += async (client, msg, parameters) =>
             {
-                if (parameters.Empty())
+                if (parameters.Empty() || parameters[0].ToLower().Equals("list"))
                 {
-                    await msg.ReplyAsync("You need to have some options");
+                    if (!GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Any())
+                    {
+                        await msg.ReplyAsync("This server has no aliases set!");
+                        return;
+                    }
+                    string als = $"Aliases for {msg.GetGuild().Name}\n*Format: `command -> alias`*\n";
+                    foreach(var a in GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases)
+                    {
+                        als += $"{a.Command} -> {a.Alias}\n";
+                    }
+                    foreach(var m in als.SplitSafe('\n'))
+                    {
+                        await msg.ReplyAsync(m);
+                    }
+                    return;
                 }
 
                 if (string.IsNullOrEmpty(parameters[1]) ||
