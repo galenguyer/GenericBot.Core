@@ -124,7 +124,12 @@ namespace GenericBot.CommandModules
 
                         try
                         {
-                            await msg.GetGuild().AddBanAsync(uid, reason: reason.Replace("\"", "'"));
+                            string areason = reason.Replace("\"", "'");
+                            if (areason.Length > 256)
+                            {
+                                areason = areason.Substring(0, 250) + "...";
+                            }
+                            await msg.GetGuild().AddBanAsync(uid, reason: areason);
                         }
                         catch
                         {
@@ -239,7 +244,12 @@ namespace GenericBot.CommandModules
 
                         try
                         {
-                            await msg.GetGuild().AddBanAsync(uid, 1, reason: reason.Replace("\"", "'"));
+                            string areason = reason.Replace("\"", "'");
+                            if (areason.Length > 256)
+                            {
+                                areason = areason.Substring(0, 250) + "...";
+                            }
+                            await msg.GetGuild().AddBanAsync(uid, 1, reason: areason);
                         }
                         catch
                         {
