@@ -18,7 +18,7 @@ namespace GenericBot.CommandModules
             nopoly.Usage = "nopoly <enroll|unenroll>";
             nopoly.ToExecute += async (client, msg, parameters) =>
             {
-                var manifest = new Manifest();
+                var manifest = new Manifest(1);
                 if (parameters.Empty())
                 {
                     await msg.ReplyAsync("Parameters are missing");
@@ -89,7 +89,7 @@ namespace GenericBot.CommandModules
         public string Changelog;
         public List<ulong> EnrolledUsers;
 
-        public Manifest()
+        public Manifest(int val)
         {
             if (File.Exists("files/nopoly_manifest.json"))
             {
@@ -102,6 +102,10 @@ namespace GenericBot.CommandModules
                 Changelog = "No changelog";
                 EnrolledUsers = new List<ulong>();
             }
+        }
+        public Manifest()
+        {
+
         }
         public void Save()
         {
