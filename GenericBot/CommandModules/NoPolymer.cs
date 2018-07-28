@@ -52,7 +52,8 @@ namespace GenericBot.CommandModules
                             await msg.Author.GetOrCreateDMChannelAsync().Result.SendFileAsync("files/youtube_nopolymer.xpi", text: message);
                             manifest.EnrolledUsers.Add(msg.Author.Id);
                             manifest.Save();
-                            await msg.ReplyAsync("You're already enrolled! I've sent you the latest update");
+                            await msg.ReplyAsync("Thanks for enrolling! You've been sent install instructions along with a bit of background. You'll be sent updates automatically. " +
+                                "If your friends want to use this extension as well, please get them to enroll with the bot so they can get updates as well");
                         }
                         catch
                         {
