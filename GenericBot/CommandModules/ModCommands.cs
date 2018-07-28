@@ -137,7 +137,7 @@ namespace GenericBot.CommandModules
                         $"Joined At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.JoinedAt.Value.LocalDateTime)}GMT`" +
                         $"(about {(DateTime.UtcNow - user.JoinedAt.Value).Days} days ago)\n";
                 info += $"Roles: {roles.Trim(' ', ',')}\n";
-                if (dbUser.Warnings.Any())
+                if (!dbUser.Warnings.Empty())
                     info += $"`{dbUser.Warnings.Count}` Warnings: {dbUser.Warnings.reJoin(" | ")}";
 
 
