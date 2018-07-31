@@ -45,6 +45,8 @@ namespace GenericBot
         public static Stopwatch QuickWatch = new Stopwatch();
         public static ParsedCommand LastCommand;
 
+        public static List<string> LockedFiles = new List<string>();
+
         public static int Disconnects = 0;
 
         static void Main(string[] args)
