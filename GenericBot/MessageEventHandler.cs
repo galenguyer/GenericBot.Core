@@ -17,11 +17,6 @@ namespace GenericBot
             // Don't handle the command if it is a system message
             var message = parameterMessage;
 
-            if (!edited)
-            {
-                new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
-            }
-
             if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(message.Author.Id))
             {
                 return;
@@ -54,6 +49,11 @@ namespace GenericBot
                             m.Content = $"```\nDM from: {message.Author}({message.Author.Id})\nContent: {message.Content.SafeSubstring(1900)}\nVerified on {guild.Name}\n```");
                     }
                 }
+            }
+
+            if (!edited)
+            {
+                new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
             }
 
             if (parameterMessage.Author.Id != GenericBot.DiscordClient.CurrentUser.Id &&
