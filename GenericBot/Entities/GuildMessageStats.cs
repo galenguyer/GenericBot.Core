@@ -87,7 +87,6 @@ namespace GenericBot.Entities
             Directory.CreateDirectory("files");
             Directory.CreateDirectory("files/guildStats");
             File.WriteAllText($"files/guildStats/{this.GuildId}.json", JsonConvert.SerializeObject(this, Formatting.Indented));
-            Console.WriteLine("Logged");
             GenericBot.LockedFiles.Remove($"files/guildStats/{this.GuildId}.json");
         }
 
