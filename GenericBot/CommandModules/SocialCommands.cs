@@ -111,7 +111,6 @@ namespace GenericBot.CommandModules
                     }
                     filename = $"files/img/{user.AvatarId}.png";
                 }
-                else
 
                 {
                     int targetWidth = 1278;
