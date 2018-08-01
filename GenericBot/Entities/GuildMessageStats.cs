@@ -240,17 +240,19 @@ namespace GenericBot.Entities
                 var days = months.SelectMany(m => m.Days);
                 var users = days.SelectMany(d => d.Users);
                 var commands = users.SelectMany(u => u.Commands);
-                var mostActiveIdOverall = users.OrderByDescending(u => u.MessageCount).Take(3).Select(u => u.UserId);
+                var mostActiveIdOverall = users.OrderByDescending(u => u.MessageCount).Take(3);
                 string mostActiveUsersOverall = "";
                 foreach(var id in mostActiveIdOverall)
                 {
-                    if (msg.GetGuild().Users.HasElement(u => u.Id == id, out var us))
+                    if (msg.GetGuild().Users.HasElement(u => u.Id == id.UserId, out var us))
                     {
-                        mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`)\n";
+                        mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`) " +
+                        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
                     }
                     else
                     {
-                        mostActiveUsersOverall += $"    Unknown User (`{mostActiveIdOverall}`)\n";
+                        mostActiveUsersOverall += $"    Unknown User (`{mostActiveIdOverall}`) " +
+                        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
                     }
                 }
                 string info = $"Analytics for **{msg.GetGuild().Name}**\n\n" +
