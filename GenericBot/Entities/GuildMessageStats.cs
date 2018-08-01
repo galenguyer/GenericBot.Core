@@ -240,6 +240,7 @@ namespace GenericBot.Entities
                 var days = months.SelectMany(m => m.Days);
                 var users = days.SelectMany(d => d.Users);
                 var commands = users.SelectMany(u => u.Commands);
+
                 var mostActiveIdOverall = users.OrderByDescending(u => u.MessageCount).Take(3);
                 string mostActiveUsersOverall = "";
                 foreach(var id in mostActiveIdOverall)
@@ -255,10 +256,20 @@ namespace GenericBot.Entities
                         $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
                     }
                 }
+
+                var MostUsedCommandInfoOverall = commands.OrderByDescending(c => c.Value).Take(3);
+                string MostUsedCommandsOverall = "";
+                foreach(var cmd in MostUsedCommandInfoOverall)
+                {
+                    MostUsedCommandsOverall += $"    {cmd.Key} (`{cmd.Value}` uses)\n";
+                }
+
+
                 string info = $"Analytics for **{msg.GetGuild().Name}**\n\n" +
                 $"All Messages Logged: `{users.Sum(u => u.MessageCount)}`\n" +
                 $"All Commands Logged: `{commands.Sum(c => c.Value)}`\n" +
-                $"3 Most Active Users Overall: \n{mostActiveUsersOverall}\n";
+                $"Most Active Users Overall: \n{mostActiveUsersOverall}" +
+                $"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
 
                 await msg.ReplyAsync(info);
             };
