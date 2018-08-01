@@ -149,7 +149,6 @@ namespace GenericBot.Entities
                     {
                         if (day.Users.HasElement(u => u.UserId.Equals(uId), out var user))
                         {
-                            user.MessageCount++;
                             if (user.Commands.Any(k => k.Key.Equals(command)))
                             {
                                 user.Commands[command]++;
