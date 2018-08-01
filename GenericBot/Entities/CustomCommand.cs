@@ -17,7 +17,7 @@ namespace GenericBot.Entities
         {
             this.Name = name;
             this.Aliases = new List<string>();
-            this.Delete = true;
+            this.Delete = false;
             this.Response = response;
         }
     }
