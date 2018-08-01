@@ -46,11 +46,13 @@ namespace GenericBot.Entities
         {
             public ulong UserId;
             public int MessageCount;
+            public int CommandCount;
 
             public StatsUser(ulong userId)
             {
                 this.UserId = userId;
                 this.MessageCount = 1;
+                this.CommandCount = 0;
             }
         }
 
