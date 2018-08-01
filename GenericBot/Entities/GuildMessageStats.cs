@@ -221,6 +221,49 @@ namespace GenericBot.Entities
             }
             return this;
         }
+    }
 
+    class AnalyticsCommandLoader
+    {
+        public List<Command> GetAnalyticsCommand()
+        {
+            List<Command> cmds = new List<Command>();
+
+            Command analytics = new Command("analytics");
+            analytics.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            analytics.Description = "Get a ton of analytics information from the server";
+            analytics.ToExecute += async (client, msg, parameters) =>
+            {
+                var stats = new GuildMessageStats(msg.GetGuild().Id).DisposeLoader();
+                var years = stats.Years;
+                var months = years.SelectMany(y => y.Months);
+                var days = months.SelectMany(m => m.Days);
+                var users = days.SelectMany(d => d.Users);
+                var commands = users.SelectMany(u => u.Commands);
+                var mostActiveIdOverall = users.OrderByDescending(u => u.MessageCount).Take(3).Select(u => u.UserId);
+                string mostActiveUsersOverall = "";
+                foreach(var id in mostActiveIdOverall)
+                {
+                    if (msg.GetGuild().Users.HasElement(u => u.Id == id, out var us))
+                    {
+                        mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`)\n";
+                    }
+                    else
+                    {
+                        mostActiveUsersOverall += $"    Unknown User (`{mostActiveIdOverall}`)\n";
+                    }
+                }
+                string info = $"Analytics for **{msg.GetGuild().Name}**\n\n" +
+                $"All Messages Logged: `{users.Sum(u => u.MessageCount)}`\n" +
+                $"All Commands Logged: `{commands.Sum(c => c.Value)}`\n" +
+                $"3 Most Active Users Overall: \n{mostActiveUsersOverall}\n";
+
+                await msg.ReplyAsync(info);
+            };
+
+            cmds.Add(analytics);
+
+            return cmds;
+        }
     }
 }
