@@ -93,7 +93,7 @@ namespace GenericBot.CommandModules
         {
             if (File.Exists("files/nopoly_manifest.json"))
             {
-                var tmp = JsonConvert.DeserializeObject<Manifest>("files/nopoly_manifest.json");
+                var tmp = JsonConvert.DeserializeObject<Manifest>(File.ReadAllText("files/nopoly_manifest.json"));
                 this.Changelog = tmp.Changelog;
                 this.EnrolledUsers = tmp.EnrolledUsers;
             }
