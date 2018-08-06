@@ -292,6 +292,23 @@ namespace GenericBot.CommandModules
 
             SocialCommands.Add(checkinvite);
 
+            Command hug = new Command("hug");
+            hug.Delete = true;
+            hug.Usage = "hug <?user>";
+            hug.ToExecute += async (client, msg, parameters) =>
+            {
+                if (msg.MentionedUsers.Any())
+                {
+                    await msg.ReplyAsync($"_\\*{msg.Author.Mention} hugs {msg.MentionedUsers.Select(u => u.Mention).ToList().SumAnd()}*_");
+                }
+                else
+                {
+                    await msg.ReplyAsync($"_\\*hugs {msg.Author.Mention}*_");
+                }
+            };
+
+            SocialCommands.Add(hug);
+
             return SocialCommands;
         }
     }
