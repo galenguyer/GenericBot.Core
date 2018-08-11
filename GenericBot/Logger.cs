@@ -29,6 +29,10 @@ namespace GenericBot
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine(message);
+                if (message.ToLower().Contains("disconnecting apiclient"))
+                {
+                    Environment.Exit(1);
+                }
             }
             File.AppendAllText($"files/sessions/{SessionId.Substring(0, 8)}.log", message + "\n");
             return Task.FromResult(1);
