@@ -87,7 +87,7 @@ namespace GenericBot
         {
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
             {
-                LogLevel = LogSeverity.Verbose,
+                LogLevel = LogSeverity.Debug,
                 AlwaysDownloadUsers = true,
                 MessageCacheSize = 100,
             });

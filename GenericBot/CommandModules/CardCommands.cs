@@ -117,7 +117,7 @@ namespace GenericBot.CommandModules
                     resp += invite.MaxUses == 0 ? "  Infinite uses\n" : $"  `{invite.MaxUses.Value}` max uses (`{invite.MaxUses.Value - invite.Uses}` remaining)\n";
                     resp += !invite.MaxAge.HasValue ? "  Never expires\n" : $"  Expires in {(TimeSpan.FromSeconds(invite.MaxAge.Value).Nice())}\n";
                     resp += $"  Created by `{invite.Inviter}` (`{invite.Inviter.Id}`)";
-                    resp += $"  Created {(DateTime.Now - (invite.CreatedAt)).Value.Nice()} ago\n";
+                    resp += $"  Created {(DateTime.Now - (invite.CreatedAt)).Nice()} ago\n";
                 }
 
                 foreach (var r in resp.SplitSafe())

@@ -180,8 +180,7 @@ namespace GenericBot
 
             if (string.IsNullOrEmpty(arg.Value.Author.GetAvatarUrl()))
             {
-                log = log.WithAuthor(new EmbedAuthorBuilder().WithName($"{arg.Value.Author} ({arg.Value.Author.Id})")
-                    .WithIconUrl(arg.Value.Author.GetDefaultAvatarUrl() + " "));
+                log = log.WithAuthor(new EmbedAuthorBuilder().WithName($"{arg.Value.Author} ({arg.Value.Author.Id})"));
             }
             else
             {

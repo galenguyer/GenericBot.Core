@@ -66,8 +66,7 @@ namespace GenericBot
 
             if (string.IsNullOrEmpty(arg2.Author.GetAvatarUrl()))
             {
-                log = log.WithAuthor(new EmbedAuthorBuilder().WithName($"{arg2.Author} ({arg2.Author.Id})")
-                    .WithIconUrl(arg2.Author.GetDefaultAvatarUrl() + " "));
+                log = log.WithAuthor(new EmbedAuthorBuilder().WithName($"{arg2.Author} ({arg2.Author.Id})"));
             }
             else
             {

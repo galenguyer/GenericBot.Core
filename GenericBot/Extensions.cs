@@ -115,13 +115,13 @@ namespace GenericBot
         public static async Task<List<IMessage>> GetManyMessages(this SocketTextChannel channel, int count)
         {
             count++;
-            var msgs = (channel as IMessageChannel).GetMessagesAsync().FlattenAsync().Result;
+            var msgs = (channel as IMessageChannel).GetMessagesAsync().Flatten().Result;
             await Task.Yield();
 
             while (true)
             {
                 var newmsgs = (channel as IMessageChannel).GetMessagesAsync(msgs.Last(), Direction.Before)
-                    .FlattenAsync().Result;
+                    .Flatten().Result;
                 msgs = msgs.Concat(newmsgs);
                 await Task.Yield();
                 if (newmsgs.Count() < 100 || msgs.Count() > count) break;
