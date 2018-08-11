@@ -274,7 +274,7 @@ namespace GenericBot.Entities
                 await msg.ReplyAsync(info);
             };
 
-            cmds.Add(analytics);
+            //cmds.Add(analytics);
 
             return cmds;
         }

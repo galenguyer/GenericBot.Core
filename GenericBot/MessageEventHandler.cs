@@ -53,7 +53,7 @@ namespace GenericBot
 
             if (!edited)
             {
-                new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
+                //new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
             }
 
             if (parameterMessage.Author.Id != GenericBot.DiscordClient.CurrentUser.Id &&
@@ -139,14 +139,14 @@ namespace GenericBot
                         await parameterMessage.DeleteAsync();
                     }
                     await parameterMessage.ReplyAsync(custom.Response);
-                    new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, custom.Name).Save();
+                   //new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, custom.Name).Save();
                 }
 
             DMChannel:
                 GenericBot.LastCommand = commandInfo;
                 commandInfo.Command.ExecuteCommand(GenericBot.DiscordClient, message, commandInfo.Parameters).FireAndForget();
                 GenericBot.Logger.LogGenericMessage($"Guild: {parameterMessage.GetGuild().Name} ({parameterMessage.GetGuild().Id}) Channel: {parameterMessage.Channel.Name} ({parameterMessage.Channel.Id}) User: {parameterMessage.Author} ({parameterMessage.Author.Id}) Command: {commandInfo.Command.Name} Parameters {JsonConvert.SerializeObject(commandInfo.Parameters)}");
-                new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, commandInfo.Command.Name).Save();
+                //new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, commandInfo.Command.Name).Save();
 
             }
             catch (NullReferenceException nullRefEx)
