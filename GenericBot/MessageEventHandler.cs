@@ -51,6 +51,9 @@ namespace GenericBot
                 }
             }
 
+            new DBGuild(message.GetGuild().Id).Users.Find(u => u.ID.Equals(message.Author.Id)).AddUsername(message.Author.Username);
+            new DBGuild(message.GetGuild().Id).Users.Find(u => u.ID.Equals(message.Author.Id)).AddNickname(message.Author as SocketGuildUser);
+
             if (!edited)
             {
                 //new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
