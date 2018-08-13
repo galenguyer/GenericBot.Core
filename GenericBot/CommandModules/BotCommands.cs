@@ -73,9 +73,16 @@ namespace GenericBot.CommandModules
             say.Description = "Say something a contributor said";
             say.SendTyping = true;
             say.Usage = "say <phrase>";
-            say.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             say.ToExecute += async (client, msg, paramList) =>
             {
+                if (!File.Exists("files/contributors.json"))
+                {
+                    File.WriteAllText("files/contributors.json", "{}");
+                }
+                var Contributors = JsonConvert.DeserializeObject<List<ulong>>(File.ReadAllText("files/contributors.json"));
+                if (!(Contributors.Contains(msg.Author.Id) || say.GetPermissions(msg.Author, msg.GetGuild().Id) >= Command.PermissionLevels.GlobalAdmin))
+                    return;
+
                 ulong channelid = msg.Channel.Id;
                 if (ulong.TryParse(paramList[0], out channelid))
                 {
