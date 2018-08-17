@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using Discord;
@@ -141,11 +142,14 @@ namespace GenericBot.CommandModules
             {
                 try
                 {
-                    using (var wc = new System.Net.WebClient())
+                    HttpClientHandler httpClientHandler = new HttpClientHandler();
+                    httpClientHandler.AllowAutoRedirect = true;
+                    using (var wc = new HttpClient(httpClientHandler))
                     {
-                        string imgname = wc.DownloadString("https://random.birb.pw/tweet");
+                        
+                        string imgname = wc.GetStringAsync("https://random.birb.pw/tweet").Result;
                         var type = imgname.Split('.').Last();
-                        File.WriteAllText($"files/birb.{type}", wc.DownloadString("http://random.birb.pw/img/" + imgname));
+                        File.WriteAllText($"files/birb.{type}", wc.GetStringAsync("http://random.birb.pw/img/" + imgname).Result);
                         await msg.Channel.SendFileAsync($"files/birb.{type}");
                     }
                 }
