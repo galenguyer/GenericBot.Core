@@ -143,8 +143,10 @@ namespace GenericBot.CommandModules
                 {
                     using (var wc = new System.Net.WebClient())
                     {
-                        File.WriteAllText("files/birb.jpg", wc.DownloadString("https://random.birb.pw/tweet/random"));
-                        await msg.Channel.SendFileAsync("files/birb.jpg");
+                        string imgname = wc.DownloadString("https://random.birb.pw/tweet");
+                        var type = imgname.Split('.')[1];
+                        File.WriteAllText($"files/birb.{type}", wc.DownloadString("http://random.birb.pw/img/" + imgname));
+                        await msg.Channel.SendFileAsync($"files/birb.{type}");
                     }
                 }
                 catch (Exception ex)
