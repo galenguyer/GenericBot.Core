@@ -134,33 +134,6 @@ namespace GenericBot.CommandModules
             };
             FunCommands.Add(cat);
 
-            Command bird = new Command("bird");
-            bird.Description = "Send a birb pic";
-            bird.Aliases = new List<string> { "birb" };
-            bird.SendTyping = false;
-            bird.ToExecute += async (client, msg, parameters) =>
-            {
-                try
-                {
-                    HttpClientHandler httpClientHandler = new HttpClientHandler();
-                    httpClientHandler.AllowAutoRedirect = true;
-                    using (var wc = new HttpClient(httpClientHandler))
-                    {
-                        
-                        string imgname = await wc.GetStringAsync("http://random.birb.pw/tweet");
-                        var type = imgname.Split('.').Last();
-                        File.WriteAllText($"files/birb.{type}", (await wc.GetStringAsync("http://random.birb.pw/img/" + imgname)));
-                        await msg.Channel.SendFileAsync($"files/birb.{type}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace);
-                    await msg.ReplyAsync("Uh oh, something borked a bit. Wait a sec and try again.");
-                }
-            };
-            FunCommands.Add(bird);
-
             Command dog = new Command("dog");
             dog.Description = "Link a dog pic";
             dog.SendTyping = false;
