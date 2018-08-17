@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -131,6 +132,27 @@ namespace GenericBot.CommandModules
                 }
             };
             FunCommands.Add(cat);
+
+            Command bird = new Command("bird");
+            bird.Description = "Send a birb pic";
+            bird.Aliases = new List<string> { "birb" };
+            bird.SendTyping = false;
+            bird.ToExecute += async (client, msg, parameters) =>
+            {
+                try
+                {
+                    using (var wc = new System.Net.WebClient())
+                    {
+                        File.WriteAllText("files/birb.jpg", wc.DownloadString("https://random.birb.pw/tweet/random"));
+                        await msg.Channel.SendFileAsync("files/birb.jpg");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await msg.ReplyAsync("Uh oh, something borked a bit. Wait a sec and try again.");
+                }
+            };
+            FunCommands.Add(bird);
 
             Command dog = new Command("dog");
             dog.Description = "Link a dog pic";
