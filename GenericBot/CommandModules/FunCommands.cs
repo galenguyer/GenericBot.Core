@@ -144,13 +144,14 @@ namespace GenericBot.CommandModules
                     using (var wc = new System.Net.WebClient())
                     {
                         string imgname = wc.DownloadString("https://random.birb.pw/tweet");
-                        var type = imgname.Split('.')[1];
+                        var type = imgname.Split('.').Last();
                         File.WriteAllText($"files/birb.{type}", wc.DownloadString("http://random.birb.pw/img/" + imgname));
                         await msg.Channel.SendFileAsync($"files/birb.{type}");
                     }
                 }
                 catch (Exception ex)
                 {
+                    await GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace);
                     await msg.ReplyAsync("Uh oh, something borked a bit. Wait a sec and try again.");
                 }
             };
