@@ -147,9 +147,9 @@ namespace GenericBot.CommandModules
                     using (var wc = new HttpClient(httpClientHandler))
                     {
                         
-                        string imgname = wc.GetStringAsync("https://random.birb.pw/tweet").Result;
+                        string imgname = await wc.GetStringAsync("http://random.birb.pw/tweet");
                         var type = imgname.Split('.').Last();
-                        File.WriteAllText($"files/birb.{type}", wc.GetStringAsync("http://random.birb.pw/img/" + imgname).Result);
+                        File.WriteAllText($"files/birb.{type}", (await wc.GetStringAsync("http://random.birb.pw/img/" + imgname)));
                         await msg.Channel.SendFileAsync($"files/birb.{type}");
                     }
                 }
