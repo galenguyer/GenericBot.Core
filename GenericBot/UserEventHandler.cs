@@ -84,7 +84,7 @@ namespace GenericBot
                 .WithAuthor(new EmbedAuthorBuilder().WithName("User Joined")
                     .WithIconUrl(user.GetAvatarUrl()).WithUrl(user.GetAvatarUrl()))
                 .WithColor(114, 137, 218)
-                .AddField(new EmbedFieldBuilder().WithName("Username").WithValue(user.ToString()).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("Username").WithValue(user.ToString().Escape()).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("UserId").WithValue(user.Id).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("Mention").WithValue(user.Mention).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("User Number").WithValue(user.Guild.MemberCount + (!alreadyJoined ? " (New Member)" : "")).WithIsInline(true))
@@ -133,7 +133,7 @@ namespace GenericBot
                 .WithAuthor(new EmbedAuthorBuilder().WithName("User Left")
                     .WithIconUrl(user.GetAvatarUrl()).WithUrl(user.GetAvatarUrl()))
                 .WithColor(156, 39, 176)
-                .AddField(new EmbedFieldBuilder().WithName("Username").WithValue(user.ToString()).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("Username").WithValue(user.ToString().Escape()).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("UserId").WithValue(user.Id).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("Mention").WithValue(user.Mention).WithIsInline(true))
                 .WithFooter($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
