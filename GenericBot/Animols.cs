@@ -19,8 +19,13 @@ namespace GenericBot
             {
                 while (cats.Count < 5)
                 {
-                    var url = webclient.GetAsync("https://thecatapi.com/api/images/get?api_key=MzE0MDUx").Result.Headers.GetValues("original_image").First();
-                    cats.Add(url);
+                    try
+                    {
+                        var url = webclient.GetAsync("https://thecatapi.com/api/images/get?api_key=MzE0MDUx").Result.Headers.GetValues("original_image").First();
+                        cats.Add(url);
+                    }
+
+                    catch { cats.Add("Something broke here"); }
                 }
                 while (dogs.Count < 5)
                 {
