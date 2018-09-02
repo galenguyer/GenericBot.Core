@@ -210,6 +210,8 @@ namespace GenericBot
                     $"File: {a.Filename}").Aggregate((a, b) => a + "\n" + b)));
             }
 
+            log.Footer = new EmbedFooterBuilder().WithText(arg.Value.Id.ToString());
+
             await (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
         }
 
