@@ -77,6 +77,20 @@ namespace GenericBot
                 try { user.AddRoleAsync(user.Guild.GetRole(guildConfig.MutedRoleId)); }
                 catch { }
             }
+            if(guildConfig.AutoRoleIds != null && guildConfig.AutoRoleIds.Any())
+            {
+                foreach(var role in guildConfig.AutoRoleIds)
+                {
+                    try
+                    {
+                        await user.AddRoleAsync(user.Guild.GetRole(role));
+                    }
+                    catch
+                    {
+                        // Supress
+                    }
+                }
+            }
 
             if (guildConfig.UserLogChannelId == 0) return;
 
