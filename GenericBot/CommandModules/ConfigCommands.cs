@@ -458,6 +458,59 @@ namespace GenericBot.CommandModules
 
                 #endregion GlobalBanOptOut
 
+                #region AutoRole
+
+                else if (paramList[0].ToLower().Equals("autoroles"))
+                {
+                    if (paramList.Count == 2)
+                    {
+                        await msg.ReplyAsync($"Please enter a roleId");
+                        return;
+                    }
+                    if (ulong.TryParse(paramList[2], out ulong id))
+                    {
+                        if (paramList[1].ToLower().Equals("add"))
+                        {
+                            if (msg.GetGuild().Roles.Select(r => r.Id).Any(u => u.Equals(id)))
+                            {
+                                if (!GenericBot.GuildConfigs[msg.GetGuild().Id].AutoRoleIds.Contains(id))
+                                {
+                                    GenericBot.GuildConfigs[msg.GetGuild().Id].AutoRoleIds.Add(id);
+                                    await msg.ReplyAsync($"Added {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name} to autoroles");
+                                }
+                                else
+                                {
+                                    await msg.ReplyAsync($"Autoroles already contains {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name}");
+                                }
+                            }
+                            else
+                            {
+                                await msg.ReplyAsync("Invalid RoleId (Not a role)");
+                            }
+                        }
+                        else if (paramList[1].ToLower().Equals("remove"))
+                        {
+                            if (GenericBot.GuildConfigs[msg.GetGuild().Id].AutoRoleIds.Contains(id))
+                            {
+                                {
+                                    GenericBot.GuildConfigs[msg.GetGuild().Id].AutoRoleIds.Remove(id);
+                                    await msg.ReplyAsync(
+                                        $"Removed `{id}` from autoroles");
+                                }
+                            }
+                            else
+                            {
+                                await msg.ReplyAsync(
+                                    $"The autoroles don't contain `{id}`");
+                            }
+                        }
+                        else { await msg.ReplyAsync($"Unknown property `{paramList[1]}`."); }
+                    }
+                    else { await msg.ReplyAsync($"That is not a valid roleId"); }
+                }
+
+                #endregion AutoRole
+
                 else await msg.ReplyAsync($"Unknown property `{paramList[0]}`.");
 
                 GenericBot.GuildConfigs[msg.GetGuild().Id].Save();

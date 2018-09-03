@@ -12,6 +12,7 @@ namespace GenericBot.Entities
         public List<ulong> AdminRoleIds;
         public List<ulong> ModRoleIds;
         public List<ulong> UserRoleIds;
+        public List<ulong> AutoRoleIds;
         public ulong UserLogChannelId;
         public List<ulong> MessageLoggingIgnoreChannels = new List<ulong>();
         public ulong VerifiedRole = 0;
@@ -43,6 +44,7 @@ namespace GenericBot.Entities
             AdminRoleIds = new List<ulong>();
             ModRoleIds = new List<ulong>();
             UserRoleIds = new List<ulong>();
+            AutoRoleIds = new List<ulong>();
             CustomCommands = new List<CustomCommand>();
             CustomAliases = new List<CustomAlias>();
             Bans = new List<GenericBan>();
