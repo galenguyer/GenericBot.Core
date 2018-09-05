@@ -12,6 +12,8 @@ namespace GenericBot
         private List<string> dogs = new List<string>();
         private List<string> cats = new List<string>();
 
+        private class Cat { public string file; public Cat() { } }
+
         public Animols()
         {
             webclient = new HttpClient(new HttpClientHandler() { AllowAutoRedirect = false });
@@ -21,7 +23,7 @@ namespace GenericBot
                 {
                     try
                     {
-                        var url = JsonConvert.DeserializeObject<KeyValuePair<string, string>>(webclient.GetStringAsync("https://aws.random.cat/meow").Result).Value;
+                        var url = JsonConvert.DeserializeObject<Cat>(webclient.GetStringAsync("https://aws.random.cat/meow").Result).file;
                         cats.Add(url);
                     }
 
@@ -53,8 +55,8 @@ namespace GenericBot
 
         public void RenewCats()
         {
-            var url = webclient.GetAsync("https://thecatapi.com/api/images/get?api_key=MzE0MDUx").Result.Headers.GetValues("original_image").First();
-            lock ("cats")
+            var url = JsonConvert.DeserializeObject<Cat>(webclient.GetStringAsync("https://aws.random.cat/meow").Result).file;
+            cats.Add(url); lock ("cats")
                 cats.Add(url);
         }
 
