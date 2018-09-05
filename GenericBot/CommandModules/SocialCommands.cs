@@ -309,6 +309,42 @@ namespace GenericBot.CommandModules
 
             SocialCommands.Add(hug);
 
+            Command findGroup = new Command("findgroup");
+            findGroup.Description = "Find everyone who's Playing status is a certain game";
+            findGroup.Usage = "findgroup <game>";
+            findGroup.ToExecute += async (client, msg, parameters) =>
+            {
+                await msg.GetGuild().DownloadUsersAsync();
+                string gameToSearch = parameters.reJoin().ToLower();
+                if (parameters.Empty())
+                {
+                    await msg.ReplyAsync("Please specify a game to search for");
+                    return;
+                }
+                if(parameters.reJoin("").Length < 3)
+                {
+                    await msg.ReplyAsync("Sorry, that's too short to search for");
+                    return;
+                }
+                string users = "";
+                int count = 0;
+
+                foreach(var member in msg.GetGuild().Users.Where(m => m.Game.HasValue && m.Game.Value.Name.ToLower().Contains(gameToSearch)))
+                {
+                    users += $"{member.GetDisplayName().Escape()} (`{member}`)\n";
+                    count++;
+                }
+
+                users = $"{count} users playing {parameters.reJoin()}\n{users}";
+
+                foreach (var str in users.SplitSafe('\n'))
+                {
+                    await msg.ReplyAsync(str);
+                }
+            };
+
+            SocialCommands.Add(findGroup);
+
             return SocialCommands;
         }
     }
