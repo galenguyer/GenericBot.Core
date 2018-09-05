@@ -21,7 +21,7 @@ namespace GenericBot
                 {
                     try
                     {
-                        var url = webclient.GetAsync("https://thecatapi.com/api/images/get?api_key=MzE0MDUx").Result.Headers.GetValues("original_image").First();
+                        var url = JsonConvert.DeserializeObject<KeyValuePair<string, string>>(webclient.GetStringAsync("https://aws.random.cat/meow").Result).Value;
                         cats.Add(url);
                     }
 
