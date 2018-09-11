@@ -132,6 +132,16 @@ namespace GenericBot
 
                 if (parameterMessage.Channel is IDMChannel) goto DMChannel;
 
+                if(parameterMessage.MentionedUsers.Contains(GenericBot.DiscordClient.CurrentUser) && parameterMessage.Content.ToLower().Contains("prefix"))
+                {
+                    string pref = GenericBot.GlobalConfiguration.DefaultPrefix;
+
+                    if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[(parameterMessage.Channel as SocketGuildChannel).Guild.Id].Prefix))
+                        pref = GenericBot.GuildConfigs[(parameterMessage.Channel as SocketGuildChannel).Guild.Id].Prefix;
+
+                    await parameterMessage.ReplyAsync($"Try `{pref}`!");
+                }
+
                 if (GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
                         .HasElement(c => c.Name == commandInfo.Name, out custom) ||
                     GenericBot.GuildConfigs[parameterMessage.GetGuild().Id].CustomCommands
