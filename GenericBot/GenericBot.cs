@@ -172,7 +172,13 @@ namespace GenericBot
 
         private async Task OnGuildConnected(SocketGuild guild)
         {
-            Logger.LogGenericMessage($"Connected to {guild.Name} ({guild.Id})");
+
+            string pref = GenericBot.GlobalConfiguration.DefaultPrefix;
+
+            if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[guild.Id].Prefix))
+                pref = GenericBot.GuildConfigs[guild.Id].Prefix;
+
+            Logger.LogGenericMessage($"Connected to {guild.Name} ({guild.Id}) \"{pref}\"");
             bool f = LoadedGuilds.TryAdd(guild.Id, new DBGuild(guild.Id));
             Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}");
             if (!File.Exists($"files/guildConfigs/{guild.Id}.json"))
