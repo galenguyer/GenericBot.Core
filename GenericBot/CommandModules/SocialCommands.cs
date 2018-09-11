@@ -236,7 +236,9 @@ namespace GenericBot.CommandModules
                             resMessge = msg.ReplyAsync($"You're in, {msg.Author.Mention}. Good luck!").Result;
                         }
                     }
-                    GenericBot.QueueMessagesForDelete(new List<IMessage> { msg, resMessge });
+                    await Task.Delay(15000);
+                    await msg.DeleteAsync();
+                    await resMessge.DeleteAsync();
                 }
                 guildConfig.Save();
             };

@@ -76,7 +76,9 @@ namespace GenericBot.CommandModules
                 if (paramList.Empty())
                 {
                     rep = msg.ReplyAsync($"Please select a role to join").Result;
-                    GenericBot.QueueMessagesForDelete(new List<IMessage> { msg, rep });
+                    await Task.Delay(15000);
+                    await msg.DeleteAsync();
+                    await rep.DeleteAsync();
                 }
                 string input = paramList.Aggregate((i, j) => i + " " + j);
 
@@ -86,7 +88,9 @@ namespace GenericBot.CommandModules
                 if (!roles.Any())
                 {
                     rep = msg.ReplyAsync($"Could not find any user roles matching `{input}`").Result;
-                    GenericBot.QueueMessagesForDelete(new List<IMessage> { msg, rep });
+                    await Task.Delay(15000);
+                    await msg.DeleteAsync();
+                    await rep.DeleteAsync();
                 }
                 else if (roles.Count() == 1)
                 {
@@ -103,7 +107,7 @@ namespace GenericBot.CommandModules
                             message = await msg.ReplyAsync("Done!");
                         }
 
-                        await Task.Delay(5000);
+                        await Task.Delay(15000);
                         await msg.DeleteAsync();
                         await message.DeleteAsync();
                     }
@@ -131,7 +135,7 @@ namespace GenericBot.CommandModules
                             message = await msg.ReplyAsync($"I've assigned you `{role.Name}`");
                         }
 
-                        await Task.Delay(5000);
+                        await Task.Delay(15000);
                         await msg.DeleteAsync();
                         await message.DeleteAsync();
                     }
@@ -155,7 +159,9 @@ namespace GenericBot.CommandModules
                 if (paramList.Empty())
                 {
                     rep = msg.ReplyAsync($"Please select a role to leave").Result;
-                    GenericBot.QueueMessagesForDelete(new List<IMessage> { msg, rep });
+                    await Task.Delay(15000);
+                    await msg.DeleteAsync();
+                    await rep.DeleteAsync();
                 }
                 string input = paramList.Aggregate((i, j) => i + " " + j);
 
@@ -165,7 +171,9 @@ namespace GenericBot.CommandModules
                 if (!roles.Any())
                 {
                     rep = msg.ReplyAsync($"Could not find any user roles matching `{input}`").Result;
-                    GenericBot.QueueMessagesForDelete(new List<IMessage> { msg, rep });
+                    await Task.Delay(15000);
+                    await msg.DeleteAsync();
+                    await rep.DeleteAsync();
                 }
                 else if (roles.Count() == 1)
                 {
@@ -182,7 +190,7 @@ namespace GenericBot.CommandModules
                             message = await msg.ReplyAsync("Done!");
                         }
 
-                        await Task.Delay(5000);
+                        await Task.Delay(15000);
                         await msg.DeleteAsync();
                         await message.DeleteAsync();
                     }
@@ -207,7 +215,7 @@ namespace GenericBot.CommandModules
                             message = await msg.ReplyAsync($"Removed `{roles.First()}`");
                         }
 
-                        await Task.Delay(5000);
+                        await Task.Delay(15000);
                         await msg.DeleteAsync();
                         await message.DeleteAsync();
                     }
