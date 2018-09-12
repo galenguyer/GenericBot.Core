@@ -85,7 +85,7 @@ namespace GenericBot.CommandModules
                     .WithFooter(footer =>
                     {
                         footer
-                            .WithText($"Made by {GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.ToString()}")
+                            .WithText($"Made by {GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.ToString()} | Hosted by {GenericBot.DiscordClient.GetUser(152905790959779840).ToString()}")
                             .WithIconUrl(GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.GetAvatarUrl());
                     })
                     .WithThumbnailUrl(GenericBot.DiscordClient.CurrentUser.GetAvatarUrl().Replace("size=128", "size=2048"))
