@@ -236,7 +236,7 @@ namespace GenericBot.CommandModules
             getrole.ToExecute += async (client, msg, paramList) =>
             {
                 string message = $"Roles matching `{paramList.reJoin()}`:\n";
-                foreach (var role in msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(paramList.reJoin())))
+                foreach (var role in msg.GetGuild().Roles.Where(r => Regex.IsMatch(r.Name, paramList.reJoin(), RegexOptions.IgnoreCase)))
                 {
                     message += $"{role.Name} (`{role.Id}`)\n";
                 }
