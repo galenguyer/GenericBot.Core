@@ -460,7 +460,7 @@ namespace GenericBot.CommandModules
 
                 #region AutoRole
 
-                else if (paramList[0].ToLower().Equals("autoroles"))
+                else if (paramList[0].ToLower().Equals("autoroles") || paramList[0].ToLower().Equals("autorole"))
                 {
                     if (paramList.Count == 2)
                     {
