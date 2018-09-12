@@ -51,8 +51,17 @@ namespace GenericBot
                 }
             }
 
-            new DBGuild(message.GetGuild().Id).Users.Find(u => u.ID.Equals(message.Author.Id)).AddUsername(message.Author.Username);
-            new DBGuild(message.GetGuild().Id).Users.Find(u => u.ID.Equals(message.Author.Id)).AddNickname(message.Author as SocketGuildUser);
+            var guildDb = new DBGuild(message.GetGuild().Id);
+            if (guildDb.Users.Any(u => u.ID.Equals(message.Author.Id))) // if already exists
+            {
+                guildDb.Users.Find(u => u.ID.Equals(message.Author.Id)).AddUsername(message.Author.Username);
+                guildDb.Users.Find(u => u.ID.Equals(message.Author.Id)).AddNickname(message.Author as SocketGuildUser);
+            }
+            else
+            {
+                guildDb.Users.Add(new DBUser(message.Author as SocketGuildUser));
+            }
+            guildDb.Save();
 
             if (!edited)
             {
