@@ -39,6 +39,7 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new CardCommands().GetCardCommands());
             GenericBot.Commands.AddRange(new QuickCommands().GetQuickCommands());
             GenericBot.Commands.AddRange(new PointsCommands().GetPointsCommands());
+            GenericBot.Commands.AddRange(new InfoCommands().GetInfoCommands());
             GenericBot.Commands.AddRange(new AnalyticsCommandLoader().GetAnalyticsCommand());
             GenericBot.Commands.AddRange(new NoPolymer().GetPolyCommands());
 
