@@ -164,7 +164,8 @@ namespace GenericBot
             foreach (var guild in DiscordClient.Guilds)
             {
                 var config = JsonConvert.DeserializeObject<GuildConfig>(File.ReadAllText($"files/guildConfigs/{guild.Id}.json"));
-                GuildConfigs.Add(guild.Id, config);
+                GuildConfigs.Add(guild.Id, config); 
+                Logger.LogGenericMessage($"Loaded config for {guild.Name} ({guild.Id}) Prefix: \"{config.Prefix}\"");
             }
             await Task.Delay(100);
             await Logger.LogGenericMessage($"Loaded {GuildConfigs.Count} Configs on Startup");
