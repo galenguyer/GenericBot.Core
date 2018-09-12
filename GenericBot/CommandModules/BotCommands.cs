@@ -112,7 +112,7 @@ namespace GenericBot.CommandModules
 
                 var builder = new EmbedBuilder()
                     .WithTitle("GenericBot: Config Information")
-                    .WithDescription("The `{prefix}config` command is huge and confusing. This aims to make it a bit simpler (For more general assistance, try `{prefix}info`)")
+                    .WithDescription($"The `{prefix}config` command is huge and confusing. This aims to make it a bit simpler (For more general assistance, try `{prefix}info`)")
                     .WithUrl("https://github.com/MasterChief-John-117/GenericBot")
                     .WithColor(new Color(0xEF4347))
                     .WithFooter(footer =>
