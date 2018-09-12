@@ -75,7 +75,7 @@ namespace GenericBot.CommandModules
                 if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix))
                     prefix = GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix;
 
-                string config = info.GetPermissions(msg.Author, msg.GetGuild().Id) >= Command.PermissionLevels.Admin ? $" ~~Admins can also run `{prefix}confighelp` to see everything you can set up.~~ (Soon:tm:)" : "";
+                string config = info.GetPermissions(msg.Author, msg.GetGuild().Id) >= Command.PermissionLevels.Admin ? $" Admins can also run `{prefix}confighelp` to see everything you can set up" : "";
 
                 var builder = new EmbedBuilder()
                     .WithTitle("GenericBot: An All-Purpose Almost-Decent Bot")
@@ -100,6 +100,44 @@ namespace GenericBot.CommandModules
             };
 
             botCommands.Add(info);
+
+            Command confighelp = new Command("confighelp");
+            confighelp.RequiredPermission = Command.PermissionLevels.Admin;
+            confighelp.Description = "Show all the options to configure with syntax for each";
+            confighelp.ToExecute += async (client, msg, parameters) =>
+            {
+                string prefix = GenericBot.GlobalConfiguration.DefaultPrefix;
+                if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix))
+                    prefix = GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix;
+
+                var builder = new EmbedBuilder()
+                    .WithTitle("GenericBot: Config Information")
+                    .WithDescription("The `{prefix}config` command is huge and confusing. This aims to make it a bit simpler (For more general assistance, try `{prefix}info`)")
+                    .WithUrl("https://github.com/MasterChief-John-117/GenericBot")
+                    .WithColor(new Color(0xEF4347))
+                    .WithFooter(footer =>
+                    {
+                        footer
+                            .WithText($"If you have questions or notice any errors, please contact {GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.ToString()}");
+                    })
+                    .WithThumbnailUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Gear_1.svg/1000px-Gear_1.svg.png")
+                    .AddField("AdminRoles", $"Add or remove Admin Roles by ID\nSyntax: `{prefix}config adminroles <add/remove> [roleId]`")
+                    .AddField("ModeratorRoles (ModRoles)", $"Add or remove Moderator Roles by ID\nSyntax: `{prefix}config modroles <add/remove> [roleId]`")
+                    .AddField("UserRoles", $"Add or remove User-Assignable Roles by ID\nSyntax: `{prefix}config userroles <add/remove> [roleId]`")
+                    .AddField("Twitter", $"Enable or Disable tweeting from the server through the bot\nSyntax: `{prefix}config twitter <true/false>`")
+                    .AddField("Prefix", $"Set the prefix to a given string. If [prefixString] is empty it gets set to the default of `{GenericBot.GlobalConfiguration.DefaultPrefix}`\nSyntax: `{prefix}config prefix [prefixString]`")
+                    .AddField("Logging", $"Set the channel for logging by Id\nSyntax: `{prefix}config logging channelId [channelId]`\n\nToggle ignoring channels for logging by Id. Lists all ignored channels if channelId is empty\nSyntax`{prefix}config logging ignoreChannel [channelId]`")
+                    .AddField("MutedRoleId", $"Set the role assigned by the `{prefix}mute` command. Set [roleId] to `0` to disable muting\nSyntax: `{prefix}config mutedRoleId [roleId]`")
+                    .AddField("Verification", $"Get or Set the RoleId assigned for verification. Leave [roleId] empty to get the current role. Use `0` for the [roleId] to disable verification\nSyntax: `{prefix}config verification roleId [roleId]`\n\nGet or set the message sent for verification. Leave [message] empty to get the current message\nSyntax: `{prefix}config verification message [message]`")
+                    .AddField("Points", $"Toggle whether points are enabled on the server\nSyntax: `{prefix}config points enabled`")
+                    .AddField("GlobalBanOptOut", $"If a user has been proved to be engaging in illegal acts such as distributing underage porn, sometimes the bot owner will ban them from all servers the bot is in. You can opt out of this if you want\nSyntax: `{prefix}config globalbanoptout <true/false>`")
+                    .AddField("AutoRole", $"Add or remove a role to be automatically granted by Id\nSyntax: `{prefix}config autorole <add/remove> [roleId]`");
+                var embed = builder.Build();
+
+                await msg.Channel.SendMessageAsync("", embed: embed);
+            };
+
+            botCommands.Add(confighelp);
 
             Command say = new Command("say");
             say.Delete = true;
