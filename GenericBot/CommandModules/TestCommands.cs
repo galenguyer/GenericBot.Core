@@ -232,6 +232,7 @@ namespace GenericBot.CommandModules
                     if ((msg.Author as SocketGuildUser).Roles.Any(r => r.Id == guildConfig.VerifiedRole))
                     {
                         await msg.ReplyAsync("You're already verified");
+                        return;
                     }
                     users.Add(msg.Author);
                 }
