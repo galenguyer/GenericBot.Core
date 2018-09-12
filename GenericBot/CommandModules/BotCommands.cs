@@ -97,6 +97,8 @@ namespace GenericBot.CommandModules
                 await msg.Channel.SendMessageAsync("", embed: embed);
             };
 
+            botCommands.Add(info);
+
             Command say = new Command("say");
             say.Delete = true;
             say.Aliases = new List<string>{"echo"};
