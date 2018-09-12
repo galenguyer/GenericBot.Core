@@ -67,6 +67,36 @@ namespace GenericBot.CommandModules
             };
             botCommands.Add(global);
 
+            Command info = new Command("info");
+            info.Description = "Send an informational card about the bot";
+            info.ToExecute += async (client, msg, parameters) =>
+            {
+                string prefix = GenericBot.GlobalConfiguration.DefaultPrefix;
+                if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix))
+                    prefix = GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix;
+
+                var builder = new EmbedBuilder()
+                    .WithTitle("GenericBot: An All-Purpose Almost-Decent Bot")
+                    .WithDescription("GenericBot aims to provide an almost full featured moderation and fun box experience in one convenient package")
+                    .WithUrl("https://github.com/MasterChief-John-117/GenericBot")
+                    .WithColor(new Color(0xFF))
+                    .WithFooter(footer =>
+                    {
+                        footer
+                            .WithText($"Made by {GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.ToString()}")
+                            .WithIconUrl(GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.GetAvatarUrl());
+                    })
+                    .WithThumbnailUrl(GenericBot.DiscordClient.CurrentUser.GetAvatarUrl().Replace("size=128", "size=2048"))
+                    .AddField($"Links", $"Click [here](https://discordapp.com/oauth2/authorize?client_id=295329346590343168&scope=bot&permissions=491121759) to invite me!\nAlso, the source code is public on [github](https://github.com/MasterChief-John-117/GenericBot). You can also open bug reports on GitHub ")
+                    .AddField($"Getting Started", $"See everything you can make me do with `{prefix}help`. ~~Admins can also run `{prefix}confighelp` to see everything you can set up.~~ (Soon:tm:)")
+                    .AddField($"Self Assignable Roles", $"One of the most common public features GenericBot is used for is roles a user can assign to themself. To see all the avaible roles, do `{prefix}userroles`. You can join a role with `{prefix}iam [rolename]` or leave a role with `{prefix}iamnot [rolename]`.")
+                    .AddField($"Moderation", $"GenericBot provides a wide range of tools for moderators to track users and infractions. It keeps track of all of a user's usernames, nicknames, and logged infractions, including kicks and timed or permanent bans. Users can be searched for either by ID, or by username or nickname, whether it be current or an old name. (All data is stored in an encrypted database, and data from one server is completely inaccessible by another server)")
+                    .AddField($"Fun!", $"In addition to being a highly effective moderator toolkit, GenericBot has some fun commands, such as `{prefix}dog`, `{prefix}cat`, or `{prefix}jeff`. You can also create your own custom commands for rapid-fire memery or whatever else tickles your fancy");
+                var embed = builder.Build();
+
+                await msg.Channel.SendMessageAsync("", embed: embed);
+            };
+
             Command say = new Command("say");
             say.Delete = true;
             say.Aliases = new List<string>{"echo"};
