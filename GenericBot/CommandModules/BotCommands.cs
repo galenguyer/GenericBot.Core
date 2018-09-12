@@ -85,8 +85,8 @@ namespace GenericBot.CommandModules
                     .WithFooter(footer =>
                     {
                         footer
-                            .WithText($"Made by {GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.ToString()} | Hosted by {GenericBot.DiscordClient.GetUser(152905790959779840).ToString()}")
-                            .WithIconUrl(GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.GetAvatarUrl());
+                            .WithText($"Made by {GenericBot.DiscordClient.GetUser(169918990313848832).ToString()} | Hosted by {GenericBot.DiscordClient.GetUser(152905790959779840).ToString()}")
+                            .WithIconUrl(GenericBot.DiscordClient.GetUser(169918990313848832).GetAvatarUrl());
                     })
                     .WithThumbnailUrl(GenericBot.DiscordClient.CurrentUser.GetAvatarUrl().Replace("size=128", "size=2048"))
                     .AddField($"Links", $"GenericBot is currently in a closed state, however if you wish to use it in your own server please get in contact with the developer, whose username is in the footer\nAlso, the source code is public on [github](https://github.com/MasterChief-John-117/GenericBot). You can also open bug reports on GitHub ")
@@ -118,7 +118,7 @@ namespace GenericBot.CommandModules
                     .WithFooter(footer =>
                     {
                         footer
-                            .WithText($"If you have questions or notice any errors, please contact {GenericBot.DiscordClient.GetApplicationInfoAsync().Result.Owner.ToString()}");
+                            .WithText($"If you have questions or notice any errors, please contact {GenericBot.DiscordClient.GetUser(169918990313848832).ToString()}");
                     })
                     .WithThumbnailUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Gear_1.svg/1000px-Gear_1.svg.png")
                     .AddField("AdminRoles", $"Add or remove Admin Roles by ID\nSyntax: `{prefix}config adminroles <add/remove> [roleId]`")
