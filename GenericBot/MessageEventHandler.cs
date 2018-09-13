@@ -217,10 +217,6 @@ namespace GenericBot
             if (!string.IsNullOrEmpty(arg.Value.Content))
             {
                 log.WithDescription("**Message:** " + arg.Value.Content);
-                foreach (var uid in arg.Value.MentionedUserIds)
-                {
-                    log.Description = log.Description.Replace($"<@!{uid}>", "@" + GenericBot.DiscordClient.GetUser(uid).Username);
-                }
             }
 
             if (arg.Value.Attachments.Any())
