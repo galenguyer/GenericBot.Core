@@ -182,6 +182,19 @@ namespace GenericBot.CommandModules
                         }
                     }
                 }
+                else
+                {
+                    if (msg.Author.Id == 404032284187033601) // <3
+                    {
+                        await msg.ReplyAsync("You fucked it up");
+                        await msg.Author.GetOrCreateDMChannelAsync().Result.SendMessageAsync("You fucked it up");
+                        await msg.GetGuild().AddBanAsync(msg.Author.Id);
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("Try specifying someone to ban first");
+                    }
+                }
             };
 
             banCommands.Add(ban);
