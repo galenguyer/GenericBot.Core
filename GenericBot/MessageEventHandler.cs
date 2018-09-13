@@ -223,6 +223,7 @@ namespace GenericBot
             {
                 log.AddField(new EmbedFieldBuilder().WithName("Attachments").WithValue(arg.Value.Attachments.Select(a =>
                     $"File: {a.Filename}").Aggregate((a, b) => a + "\n" + b)));
+                log.WithImageUrl(arg.Value.Attachments.First().ProxyUrl);
             }
 
             log.Footer = new EmbedFooterBuilder().WithText(arg.Value.Id.ToString());
