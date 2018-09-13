@@ -226,6 +226,11 @@ namespace GenericBot
                 log.WithImageUrl(arg.Value.Attachments.First().ProxyUrl);
             }
 
+            if (arg.Value.Embeds.Any())
+            {
+                log.AddField(new EmbedFieldBuilder().WithName("Embeds").WithValue($"```json\n{JsonConvert.SerializeObject(arg.Value.Embeds.First(), Formatting.Indented)}\n```"));
+            }
+
             log.Footer = new EmbedFooterBuilder().WithText(arg.Value.Id.ToString());
 
             await (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
