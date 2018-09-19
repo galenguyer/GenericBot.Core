@@ -524,6 +524,7 @@ namespace GenericBot.CommandModules
                     {
                     }
                 }
+                gc.Save();
 
                 string res = "Succesfully unmuted ";
                 for (int i = 0; i < mutedUsers.Count; i++)
