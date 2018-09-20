@@ -561,7 +561,7 @@ namespace GenericBot.CommandModules
                 msgs.Remove(msg);
                 foreach (var m in msgs)
                 {
-                    string msgstr = "";
+                    string msgstr = $"{m.Id}\n";
                     if (lastMsg != null && m.Author.Id != lastMsg.Author.Id) msgstr += $"{m.Author} | {m.Author.Id}\n{m.Timestamp}\n";
                     msgstr += $"{m.Content}\n";
                     foreach (var a in m.Attachments)
