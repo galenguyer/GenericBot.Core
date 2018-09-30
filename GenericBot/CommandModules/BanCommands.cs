@@ -66,6 +66,53 @@ namespace GenericBot.CommandModules
 
             banCommands.Add(globalBan);
 
+            Command unban = new Command("unban");
+            unban.Description = "Unban a user given their ID";
+            unban.RequiredPermission = Command.PermissionLevels.Moderator;
+            unban.Usage = "unban <userId";
+            unban.ToExecute += async (client, msg, parameters) =>
+            {
+                if (parameters.Empty())
+                {
+
+                }
+                GuildConfig gc = new GuildConfig(msg.GetGuild().Id);
+                if(ulong.TryParse(parameters[0], out ulong bannedUId) && gc.Bans.HasElement(b => b.Id == bannedUId, out GenericBan banToRemove))
+                {
+                    gc.Bans.Remove(banToRemove);
+                    gc.Save();
+                    try
+                    {
+                        var user = msg.GetGuild().GetBansAsync().Result.First(b => b.User.Id == bannedUId).User;
+                        await msg.GetGuild().RemoveBanAsync(bannedUId);
+                        await msg.ReplyAsync($"Succesfully unbanned `{user}` (`{user.Id}`)");
+
+                        var builder = new EmbedBuilder()
+                            .WithTitle("User Unbanned")
+                            .WithDescription($"Banned for: {banToRemove.Reason}")
+                            .WithColor(new Color(0xFFFF00))
+                            .WithFooter(footer => {
+                                footer
+                                    .WithText($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                            })
+                            .WithAuthor(author => {
+                                author
+                                    .WithName(user.ToString())
+                                    .WithIconUrl(user.GetAvatarUrl());
+                            })
+                            .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
+                                new DBGuild(msg.GetGuild().Id).GetUser(user.Id).Warnings.SumAnd()));
+
+                        ((SocketTextChannel)GenericBot.DiscordClient.GetChannel(gc.UserLogChannelId))
+                            .SendMessageAsync("", embed: builder.Build());
+                    }
+                    catch (Discord.Net.HttpException httpException)
+                    {
+                        await msg.ReplyAsync("Could not unban that user. Either I don't have the permissions or they weren't banned");
+                    }
+                }
+            };
+
             Command ban = new Command("ban");
             ban.Description = "Ban a user from the server, whether or not they're on it";
             ban.Delete = false;
