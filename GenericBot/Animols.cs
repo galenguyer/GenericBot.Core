@@ -56,7 +56,7 @@ namespace GenericBot
         public void RenewCats()
         {
             var url = JsonConvert.DeserializeObject<Cat>(webclient.GetStringAsync("https://aws.random.cat/meow").Result).file;
-            cats.Add(url); lock ("cats")
+            lock ("cats")
                 cats.Add(url);
         }
 
