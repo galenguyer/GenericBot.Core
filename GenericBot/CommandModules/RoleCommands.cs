@@ -108,7 +108,7 @@ namespace GenericBot.CommandModules
                         }
 
                         await Task.Delay(15000);
-                        await msg.DeleteAsync();
+                        try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
                         await message.DeleteAsync();
                     }
                     catch (Exception e)
@@ -136,7 +136,7 @@ namespace GenericBot.CommandModules
                         }
 
                         await Task.Delay(15000);
-                        await msg.DeleteAsync();
+                        try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
                         await message.DeleteAsync();
                     }
                     catch (Exception e)
@@ -191,7 +191,7 @@ namespace GenericBot.CommandModules
                         }
 
                         await Task.Delay(15000);
-                        await msg.DeleteAsync();
+                        try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
                         await message.DeleteAsync();
                     }
                     catch (Exception e)
@@ -216,7 +216,7 @@ namespace GenericBot.CommandModules
                         }
 
                         await Task.Delay(15000);
-                        await msg.DeleteAsync();
+                        try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
                         await message.DeleteAsync();
                     }
                     catch (Exception e)
