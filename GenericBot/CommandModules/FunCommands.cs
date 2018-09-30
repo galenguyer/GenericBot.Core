@@ -124,13 +124,12 @@ namespace GenericBot.CommandModules
                 try
                 {
                     await msg.ReplyAsync(GenericBot.Animols.GetCat());
-                    GenericBot.Animols.RenewCats();
                 }
                 catch (Exception ex)
                 {
                     await msg.ReplyAsync("Uh oh, something borked a bit. Wait a sec and try again.");
-                    GenericBot.Animols.RenewCats();
                 }
+                GenericBot.Animols.RenewCats();
             };
             FunCommands.Add(cat);
 
