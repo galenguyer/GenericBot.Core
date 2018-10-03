@@ -37,7 +37,14 @@ namespace GenericBot.CommandModules
                     {
                         emotes += "\n";
                     }
-                    emotes += $"<:{emote.Name}:{emote.Id}> `:{emote.Name}:`";
+                    if (emote.Url.Contains("gif"))
+                    {
+                        emotes += $"<a:{emote.Name}:{emote.Id}> `:{emote.Name}:`";
+                    }
+                    else
+                    {
+                        emotes += $"<:{emote.Name}:{emote.Id}> `:{emote.Name}:`";
+                    }
                     for (int c = emote.Name.Length + 2; c < 16; c++)
                     {
                         emotes += " ";
