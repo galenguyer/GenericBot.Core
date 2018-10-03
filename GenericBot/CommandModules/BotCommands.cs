@@ -26,7 +26,6 @@ namespace GenericBot.CommandModules
             Command ping = new Command("ping");
             ping.Description = $"Get the ping time to the bot";
             ping.Usage = $"ping <verbose>";
-            ping.RequiredPermission = Command.PermissionLevels.Moderator;
             ping.ToExecute += async (client, msg, paramList) =>
             {
                 var stop = new Stopwatch();
