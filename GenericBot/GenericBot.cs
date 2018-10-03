@@ -116,25 +116,6 @@ namespace GenericBot
             {
                 shard.Ready += OnReady;
                 shard.SetGameAsync(GlobalConfiguration.PlayingStatus).FireAndForget();
-
-                shard.Disconnected += async (exception) =>
-                {
-                    Console.WriteLine($"{exception.Message}\n{exception.StackTrace}");
-                    string dcInfo = $"`{DateTime.Now}`: Disconnected\n";
-                    if (LastCommand.Message.CreatedAt - DateTimeOffset.Now < TimeSpan.FromSeconds(15))
-                    {
-                        dcInfo += $"**(Possibly Related)**\n";
-                    }
-                    var msg = LastCommand.Message as SocketMessage;
-                    dcInfo += $"Last Message: \n" +
-                              $"Time: `{msg.CreatedAt}`\n" +
-                              $"Author: {msg.Author} (`{msg.Author.Id}`)\n" +
-                              $"Guild: {msg.GetGuild().Name} (`{msg.GetGuild().Id}`)\n" +
-                              $"Channel: #{msg.Channel.Name} (`{msg.Channel.Id}`)\n" +
-                              $"Content: `{msg.Content}`\n";
-                    shard.GetApplicationInfoAsync().Result.Owner.SendMessageAsync(dcInfo);
-                    Disconnects++;
-                };
             }
 
             DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
