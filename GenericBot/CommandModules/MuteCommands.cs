@@ -111,22 +111,39 @@ namespace GenericBot.CommandModules
                 }
                 else // Channel is already muted
                 {
-                    if(GenericBot.GuildConfigs[msg.GetGuild().Id].ChannelOverrideDefaults
-                    .HasElement(e => e.Key.Equals(msg.Channel.Id), out KeyValuePair<ulong, Discord.OverwritePermissions> over))
-                    {
-                        await (msg.Channel as SocketGuildChannel).AddPermissionOverwriteAsync(msg.GetGuild().EveryoneRole,
-                        over.Value);
-                    }
-                    else
-                    {
-                        await (msg.Channel as SocketGuildChannel).AddPermissionOverwriteAsync(msg.GetGuild().EveryoneRole,
-                        new OverwritePermissions());
-                    }
-                    await msg.ReplyAsync("Sending messages to this channel has been restored :loud_sound:");
+                    await msg.ReplyAsync("This channel is already muted");
                 }
             };
 
             MuteCommands.Add(mutechannel);
+
+            Command unmutechannel = new Command("unmutechannel");
+            unmutechannel.Description = "Reallow @-everyone to sending messages in a channel";
+            unmutechannel.RequiredPermission = Command.PermissionLevels.Moderator;
+            unmutechannel.ToExecute += async (client, msg, parameters) => 
+            {
+                var currentState = (msg.Channel as SocketGuildChannel).PermissionOverwrites
+                .First(po => po.TargetId.Equals(msg.GetGuild().EveryoneRole.Id)).Permissions;
+
+                if (currentState.SendMessages == PermValue.Deny)
+                {
+                    if (GenericBot.GuildConfigs[msg.GetGuild().Id].ChannelOverrideDefaults
+                        .HasElement(e => e.Key.Equals(msg.Channel.Id), out KeyValuePair<ulong, Discord.OverwritePermissions> over))
+                    {
+                        await (msg.Channel as SocketGuildChannel).AddPermissionOverwriteAsync(msg.GetGuild().EveryoneRole,
+                        over.Value);
+                        await msg.ReplyAsync("Sending messages to this channel has been restored :loud_sound:");
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("This channel wasn't muted by the bot, so it can't be unmuted");
+                    }
+                }
+                else
+                {
+                    await msg.ReplyAsync("This channel isn't muted");
+                }
+            };
 
             return MuteCommands;
         }
