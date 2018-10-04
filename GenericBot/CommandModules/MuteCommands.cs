@@ -97,30 +97,30 @@ namespace GenericBot.CommandModules
             mutechannel.ToExecute += async (client, msg, parameters) =>
             {
                 var currentState = (msg.Channel as SocketGuildChannel).PermissionOverwrites
-                .First(po => po.TargetId.Equals(msg.GetGuild().EveryoneRole.Id)).Permissions.SendMessages;
+                .First(po => po.TargetId.Equals(msg.GetGuild().EveryoneRole.Id)).Permissions;
 
-                if(currentState != PermValue.Deny) // If the channel isn't already muted
+                if(currentState.SendMessages != PermValue.Deny) // If the channel isn't already muted
                 {
                     GenericBot.GuildConfigs[msg.GetGuild().Id].ChannelOverrideDefaults.Override(msg.Channel.Id, currentState);
                     GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
 
                     await (msg.Channel as SocketGuildChannel).AddPermissionOverwriteAsync(msg.GetGuild().EveryoneRole,
-                        new OverwritePermissions().Modify(sendMessages: PermValue.Deny));
+                        currentState.Modify(sendMessages: PermValue.Deny));
 
                     await msg.ReplyAsync("Sending messages to this channel has been temporarily disabled :mute:");
                 }
                 else // Channel is already muted
                 {
                     if(GenericBot.GuildConfigs[msg.GetGuild().Id].ChannelOverrideDefaults
-                    .HasElement(e => e.Key.Equals(msg.Channel.Id), out KeyValuePair<ulong, Discord.PermValue> over))
+                    .HasElement(e => e.Key.Equals(msg.Channel.Id), out KeyValuePair<ulong, Discord.OverwritePermissions> over))
                     {
                         await (msg.Channel as SocketGuildChannel).AddPermissionOverwriteAsync(msg.GetGuild().EveryoneRole,
-                        new OverwritePermissions().Modify(sendMessages: over.Value));
+                        over.Value);
                     }
                     else
                     {
                         await (msg.Channel as SocketGuildChannel).AddPermissionOverwriteAsync(msg.GetGuild().EveryoneRole,
-                        new OverwritePermissions().Modify(sendMessages: PermValue.Inherit));
+                        new OverwritePermissions());
                     }
                     await msg.ReplyAsync("Sending messages to this channel has been restored :loud_sound:");
                 }

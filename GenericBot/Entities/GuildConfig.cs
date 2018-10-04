@@ -38,7 +38,7 @@ namespace GenericBot.Entities
         public ulong MutedRoleId = 0;
         public List<GenericBan> Bans = new List<GenericBan>();
 
-        public Dictionary<ulong, Discord.PermValue> ChannelOverrideDefaults = new Dictionary<ulong, Discord.PermValue>();
+        public Dictionary<ulong, Discord.OverwritePermissions> ChannelOverrideDefaults = new Dictionary<ulong, Discord.OverwritePermissions>();
 
         public GuildConfig(ulong id)
         {
