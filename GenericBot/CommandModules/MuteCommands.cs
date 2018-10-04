@@ -161,6 +161,7 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
+                        await (msg.Channel as SocketTextChannel).ModifyAsync(x => x.SlowModeInterval = 60);
                         await msg.ReplyAsync("SlowMode is enabled! Interval is set to `60` seconds per message");
                     }
                 }
