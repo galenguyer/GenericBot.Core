@@ -147,6 +147,42 @@ namespace GenericBot.CommandModules
 
             MuteCommands.Add(unmutechannel);
 
+            Command slowmode = new Command("slowmode");
+            slowmode.Description = "Enable the slowmode for the channel";
+            slowmode.RequiredPermission = Command.PermissionLevels.Moderator;
+            slowmode.ToExecute += async (client, msg, parameters) =>
+            {
+                if(parameters.Empty() || parameters[0].ToLower() == "off")
+                {
+                    if ((msg.Channel as SocketTextChannel).SlowModeInterval != 0) // Slowmode already enabled
+                    {
+                        await (msg.Channel as SocketTextChannel).ModifyAsync(x => x.SlowModeInterval = 0);
+                        await msg.ReplyAsync("SlowMode has been turned off in this channel");
+                    }
+                    else
+                    {
+                        await msg.ReplyAsync("SlowMode is enabled! Interval is set to `60` seconds per message");
+                    }
+                }
+                else if(int.TryParse(parameters[0].TrimEnd('s'), out int time))
+                {
+                    if(time <= 0 || time > 120)
+                    {
+                        await msg.ReplyAsync($"Time `{time}s` is not between 1 and 120");
+                    }
+                    else
+                    {
+                        await (msg.Channel as SocketTextChannel).ModifyAsync(x => x.SlowModeInterval = time);
+                        await msg.ReplyAsync($"SlowMode is enabled! Interval is set to `{time}` seconds per message");
+                    }
+                }
+                else
+                {
+                    await msg.ReplyAsync("Time parameter not recognized. Please format it as `[number]s`");
+                }
+
+            };
+
             return MuteCommands;
         }
     }
