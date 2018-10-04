@@ -331,7 +331,7 @@ namespace GenericBot.CommandModules
                 string users = "";
                 int count = 0;
 
-                foreach(var member in msg.GetGuild().Users.Where(m => m.Game.HasValue && m.Game.Value.Name.ToLower().Contains(gameToSearch)))
+                foreach(var member in msg.GetGuild().Users.Where(m => m.Activity != null && m.Activity.Type == ActivityType.Playing && m.Activity.Name.ToLower().Contains(gameToSearch)))
                 {
                     users += $"{member.GetDisplayName().Escape()} (`{member}`)\n";
                     count++;

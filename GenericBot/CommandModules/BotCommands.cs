@@ -105,7 +105,7 @@ namespace GenericBot.CommandModules
 
                 if (paramList.Count == 1)
                 {
-                    var messages = channel.GetMessagesAsync().Flatten().Result.Reverse();
+                    var messages = channel.GetMessagesAsync().Flatten().ToEnumerable().Reverse().ToList();
                     string str = messages.Select(m => $"{m.Author}: {m.Content} {m.Attachments.Select(a => a.Url).ToList().SumAnd()}").Aggregate((a, b) => a + "\n" + b);
                     File.WriteAllText("file.txt", str);
                     await msg.Channel.SendFileAsync("file.txt");
