@@ -145,6 +145,8 @@ namespace GenericBot.CommandModules
                 }
             };
 
+            MuteCommands.Add(unmutechannel);
+
             return MuteCommands;
         }
     }
