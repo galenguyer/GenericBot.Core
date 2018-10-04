@@ -183,6 +183,8 @@ namespace GenericBot.CommandModules
 
             };
 
+            MuteCommands.Add(slowmode);
+
             return MuteCommands;
         }
     }
