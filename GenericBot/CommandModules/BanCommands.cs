@@ -74,9 +74,10 @@ namespace GenericBot.CommandModules
             {
                 if (parameters.Empty())
                 {
-
+                    await msg.ReplyAsync("Please specify a userid to unban");
+                    return;
                 }
-                GuildConfig gc = new GuildConfig(msg.GetGuild().Id);
+                GuildConfig gc = GenericBot.GuildConfigs[msg.GetGuild().Id];
                 if(ulong.TryParse(parameters[0], out ulong bannedUId) && gc.Bans.HasElement(b => b.Id == bannedUId, out GenericBan banToRemove))
                 {
                     gc.Bans.Remove(banToRemove);
