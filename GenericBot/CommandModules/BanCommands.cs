@@ -113,6 +113,8 @@ namespace GenericBot.CommandModules
                 }
             };
 
+            banCommands.Add(unban);
+
             Command ban = new Command("ban");
             ban.Description = "Ban a user from the server, whether or not they're on it";
             ban.Delete = false;
