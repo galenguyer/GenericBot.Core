@@ -294,6 +294,28 @@ namespace GenericBot.CommandModules
 
             SocialCommands.Add(checkinvite);
 
+            Command generateInvite = new Command("generateInvite");
+            generateInvite.Description = "Generate a new invite with 1 use that lasts 24 hours";
+            generateInvite.ToExecute += async (client, msg, parameters) =>
+            {                                                              /*24h  uses temp  unique */
+                var invite = msg.GetGuild().DefaultChannel.CreateInviteAsync(86400, 1, false, true).Result;
+                await msg.ReplyAsync($"Here's your invite! It will last `24 hours` and has `1` use: {invite.Url}");
+                if(msg.GetGuild().TextChannels.HasElement(c => c.Id == GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId, out var channel))
+                {
+                    var emb = new EmbedBuilder()
+                    .WithAuthor(new EmbedAuthorBuilder().WithName($"{msg.Author} ({msg.Author.Id})"))
+                    .WithTitle("Created Invite")
+                    .AddField(new EmbedFieldBuilder().WithName("channel").WithValue(invite.ChannelName))
+                    .AddField(new EmbedFieldBuilder().WithName("invite").WithValue(invite.Url))
+                    .WithCurrentTimestamp()
+                    .WithColor(5126509);
+
+                    await channel.SendMessageAsync("", embed: emb.Build());
+                }
+            };
+
+            SocialCommands.Add(generateInvite);
+
             Command hug = new Command("hug");
             hug.Delete = true;
             hug.Usage = "hug <?user>";
