@@ -240,7 +240,7 @@ namespace GenericBot.CommandModules
             clap.Usage = "Put the clap emoji between each word";
             clap.ToExecute += async (client, msg, parameters) =>
             {
-                await msg.ReplyAsync(parameters.reJoin(" :clap: "));
+                await msg.ReplyAsync(parameters.reJoin(" :clap: ") + " :clap:");
             };
 
             FunCommands.Add(clap);
