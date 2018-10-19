@@ -3,17 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Threading;
 using Discord;
-using Discord.Commands;
-using Discord.Net.Queue;
 using Discord.WebSocket;
 using GenericBot.Entities;
-using Hammock.Web;
 using Newtonsoft.Json;
 using TweetSharp;
-using ThreadState = System.Diagnostics.ThreadState;
 
 namespace GenericBot.CommandModules
 {
@@ -365,6 +359,46 @@ namespace GenericBot.CommandModules
             };
 
             botCommands.Add(blacklist);
+
+            Command notifyGlobal = new Command("notifyGlobal");
+            notifyGlobal.RequiredPermission = Command.PermissionLevels.BotOwner;
+            notifyGlobal.Description = "Notify all servers with the bot of something very very important";
+            notifyGlobal.ToExecute += async (client, msg, parameters) =>
+            {
+                string message = msg.Content;
+                string pref = GenericBot.GlobalConfiguration.DefaultPrefix;
+                if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix))
+                    pref = GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix;
+                
+                string param = message.Substring(pref.Length).Substring(message.Split(' ')[0].Length);
+
+                int servers = 0;
+                int owners = 0;
+                foreach (var guild in client.Guilds)
+                {
+                    if (guild.TextChannels.HasElement(c => c.Id == GenericBot.GuildConfigs[guild.Id].UserLogChannelId, out var channel))
+                    {
+                        string notif = $"Hello, valued {guild.GetUser(client.CurrentUser.Id).GetDisplayName()}:tm: user! " +
+                        $"A high-priority, global notification has been sent out to all servers using me:\n\n{param}";
+                        await channel.SendMessageAsync(notif);
+                        GenericBot.Logger.LogGenericMessage($"Sent {notif} to {guild.Name}");
+                        servers++;
+                    }
+                    else
+                    {
+                        string notif = $"Hello, valued {guild.GetUser(client.CurrentUser.Id).GetDisplayName()}:tm: user! " +
+                        $"A high-priority, global notification has been sent out to all servers using me (Because I couldn't " +
+                        $"find a logging channel on {guild.Name}, I've sent it to you directly):\n\n{param}";
+                        await guild.Owner.GetOrCreateDMChannelAsync().Result.SendMessageAsync(notif);
+                        GenericBot.Logger.LogGenericMessage($"Sent {notif} to {guild.Name}'s owner, {guild.Owner.GetDisplayName()}");
+                        owners++;
+                    }
+                }
+
+                await msg.ReplyAsync($"Succesfully notified {servers} servers and {owners} owners!");
+            };
+
+            botCommands.Add(notifyGlobal);
 
             return botCommands;
         }
