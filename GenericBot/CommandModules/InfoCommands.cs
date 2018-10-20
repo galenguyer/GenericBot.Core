@@ -77,7 +77,7 @@ namespace GenericBot.CommandModules
                     .AddField("Verification", $"Get or Set the RoleId assigned for verification. Leave [roleId] empty to get the current role. Use `0` for the [roleId] to disable verification\nSyntax: `{prefix}config verification roleId [roleId]`\n\nGet or set the message sent for verification. Leave [message] empty to get the current message\nSyntax: `{prefix}config verification message [message]`")
                     .AddField("Points", $"Toggle whether points are enabled on the server\nSyntax: `{prefix}config points enabled`")
                     .AddField("GlobalBanOptOut", $"If a user has been proved to be engaging in illegal acts such as distributing underage porn, sometimes the bot owner will ban them from all servers the bot is in. You can opt out of this if you want\nSyntax: `{prefix}config globalbanoptout <true/false>`")
-                    .AddField("AutoRole", $"Add or remove a role to be automatically granted by Id\nSyntax: `{prefix}config autorole <add/remove> [roleId]`");
+                    .AddField("AutoRole", $"Add or remove a role to be automatically granted by Id\nSyntax: `{prefix}config autorole <add/remove> [roleId]`")
                     .AddField("Antispam", $"Set the antispam level for the server. Options: None, Basic, Advanced, Aggressive, ActiveRaid\nSyntax: `{prefix}config antispam <level>`");
                 var embed = builder.Build();
 
