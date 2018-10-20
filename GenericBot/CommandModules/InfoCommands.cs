@@ -78,6 +78,7 @@ namespace GenericBot.CommandModules
                     .AddField("Points", $"Toggle whether points are enabled on the server\nSyntax: `{prefix}config points enabled`")
                     .AddField("GlobalBanOptOut", $"If a user has been proved to be engaging in illegal acts such as distributing underage porn, sometimes the bot owner will ban them from all servers the bot is in. You can opt out of this if you want\nSyntax: `{prefix}config globalbanoptout <true/false>`")
                     .AddField("AutoRole", $"Add or remove a role to be automatically granted by Id\nSyntax: `{prefix}config autorole <add/remove> [roleId]`");
+                    .AddField("Antispam", $"Set the antispam level for the server. Options: None, Basic, Advanced, Aggressive, ActiveRaid\nSyntax: `{prefix}config antispam <level>`");
                 var embed = builder.Build();
 
                 await msg.Channel.SendMessageAsync("", embed: embed);
