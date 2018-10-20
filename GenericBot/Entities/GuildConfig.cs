@@ -8,6 +8,15 @@ namespace GenericBot.Entities
 {
     public class GuildConfig
     {
+        [Flags]
+        public enum AntiSpamLevel
+        {
+            None = 1,
+            Basic = 2, 
+            Advanced = 4, /* Username filtering */
+            Aggressive = 8,
+            ActiveRaid = 16
+        }
         public ulong GuildId;
         public List<ulong> AdminRoleIds;
         public List<ulong> ModRoleIds;
@@ -17,6 +26,7 @@ namespace GenericBot.Entities
         public List<ulong> MessageLoggingIgnoreChannels = new List<ulong>();
         public ulong VerifiedRole = 0;
         public string VerifiedMessage;
+        public AntiSpamLevel AntispamLevel = GuildConfig.AntiSpamLevel.None;
 
         public string PointsName = "point";
         public string PointsVerb = "used";
