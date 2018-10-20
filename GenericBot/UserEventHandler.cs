@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -133,6 +134,79 @@ namespace GenericBot
             await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
 
             #endregion Logging
+
+            #region Antispam
+
+            if (guildConfig.AntispamLevel >= GuildConfig.AntiSpamLevel.Advanced)
+            {
+                //var inviteLink = new Regex(@"(?:https?:\/\/)?(?:www\.)?(discord\.gg|discord\.io|discord\.me|discordapp\.com\/invite)\/(\S+)");
+                //if (inviteLink.IsMatch(user.Username))
+                if (user.Username.ToLower().Contains("discord.gg"))
+                {
+                    if(guildConfig.AntispamLevel == GuildConfig.AntiSpamLevel.Advanced)
+                    {
+                        await user.KickAsync("Username Contains Discord Spam Invite");
+                        var builder = new EmbedBuilder()
+                        .WithTitle("User Kicked")
+                        .WithDescription("Discord Invite in Username (Antispam)")
+                        .WithColor(new Color(0xFFFF00))
+                        .WithFooter(footer => {
+                            footer
+                                .WithText($"By {GenericBot.DiscordClient.CurrentUser} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                        })
+                        .WithAuthor(author => {
+                            author
+                                .WithName(user.ToString())
+                                .WithIconUrl(user.GetAvatarUrl());
+                        });
+
+                        var guilddb = new DBGuild(user.Guild.Id);
+                        var guildconfig = GenericBot.GuildConfigs[user.Guild.Id];
+                        guilddb.GetUser(user.Id)
+                            .AddWarning(
+                                $"Kicked for `Username Contains Discord Spam Invite` (By `{GenericBot.DiscordClient.CurrentUser}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
+                        guilddb.Save();
+
+                        if (guildconfig.UserLogChannelId != 0)
+                        {
+                            await (GenericBot.DiscordClient.GetChannel(guildconfig.UserLogChannelId) as SocketTextChannel)
+                                .SendMessageAsync("", embed: builder.Build());
+                        }
+                    }
+                    else if(guildConfig.AntispamLevel >= GuildConfig.AntiSpamLevel.Aggressive)
+                    {
+                        await user.BanAsync(0, "Username Contains Discord Spam Invite");
+                        var builder = new EmbedBuilder()
+                        .WithTitle("User Banned")
+                        .WithDescription("Discord Invite in Username (Antispam)")
+                        .WithColor(new Color(0xFFFF00))
+                        .WithFooter(footer => {
+                            footer
+                                .WithText($"By {GenericBot.DiscordClient.CurrentUser} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                        })
+                        .WithAuthor(author => {
+                            author
+                                .WithName(user.ToString())
+                                .WithIconUrl(user.GetAvatarUrl());
+                        });
+
+                        var guilddb = new DBGuild(user.Guild.Id);
+                        var guildconfig = GenericBot.GuildConfigs[user.Guild.Id];
+                        guilddb.GetUser(user.Id)
+                            .AddWarning(
+                                $"Banned for `Username Contains Discord Spam Invite` (By `{GenericBot.DiscordClient.CurrentUser}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
+                        guilddb.Save();
+
+                        if (guildconfig.UserLogChannelId != 0)
+                        {
+                            await (GenericBot.DiscordClient.GetChannel(guildconfig.UserLogChannelId) as SocketTextChannel)
+                                .SendMessageAsync("", embed: builder.Build());
+                        }
+                    }
+                }
+            }
+
+            #endregion Antispam
         }
 
         public static async Task UserLeft(SocketGuildUser user)
