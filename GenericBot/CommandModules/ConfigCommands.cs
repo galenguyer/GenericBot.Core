@@ -511,6 +511,47 @@ namespace GenericBot.CommandModules
 
                 #endregion AutoRole
 
+                #region Antispam
+
+                else if (paramList[0].ToLower().Equals("antispam"))
+                {
+                    if(paramList.Count != 2)
+                    {
+                        await msg.ReplyAsync("Please a single-word option");
+                    }
+                    else
+                    {
+                        switch (paramList[1].ToLower())
+                        {
+                            case "none":
+                                GenericBot.GuildConfigs[msg.GetGuild().Id].AntispamLevel = GuildConfig.AntiSpamLevel.None;
+                                await msg.ReplyAsync("Antispam Level **None** has been selected! The following options are enabled: None");
+                                break;
+                            case "basic":
+                                GenericBot.GuildConfigs[msg.GetGuild().Id].AntispamLevel = GuildConfig.AntiSpamLevel.Basic;
+                                await msg.ReplyAsync("Antispam Level **Basic** has been selected! The following options are enabled: None (yet)");
+                                break;
+                            case "advanced":
+                                GenericBot.GuildConfigs[msg.GetGuild().Id].AntispamLevel = GuildConfig.AntiSpamLevel.Advanced;
+                                await msg.ReplyAsync("Antispam Level **Advanced** has been selected! The following options are enabled: Username Link Kicking");
+                                break;
+                            case "aggressive":
+                                GenericBot.GuildConfigs[msg.GetGuild().Id].AntispamLevel = GuildConfig.AntiSpamLevel.Aggressive;
+                                await msg.ReplyAsync("Antispam Level **Aggressive** has been selected! The following options are enabled: Username Link Banning");
+                                break;
+                            case "activeraid":
+                                GenericBot.GuildConfigs[msg.GetGuild().Id].AntispamLevel = GuildConfig.AntiSpamLevel.ActiveRaid;
+                                await msg.ReplyAsync("Antispam Level **ActiveRaid** has been selected! The following options are enabled: Username Link Banning");
+                                break;
+                            default:
+                                await msg.ReplyAsync("That is not an available option. You can select: `None`, `Basic`, `Advanced`, `Aggressive`, and `ActiveRaid`");
+                                break;
+                        }
+                    }
+                }
+
+                #endregion Antispam
+
                 else await msg.ReplyAsync($"Unknown property `{paramList[0]}`.");
 
                 GenericBot.GuildConfigs[msg.GetGuild().Id].Save();
