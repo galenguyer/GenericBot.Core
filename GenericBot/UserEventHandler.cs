@@ -139,9 +139,8 @@ namespace GenericBot
 
             if (guildConfig.AntispamLevel >= GuildConfig.AntiSpamLevel.Advanced)
             {
-                //var inviteLink = new Regex(@"(?:https?:\/\/)?(?:www\.)?(discord\.gg|discord\.io|discord\.me|discordapp\.com\/invite)\/(\S+)");
-                //if (inviteLink.IsMatch(user.Username))
-                if (user.Username.ToLower().Contains("discord.gg"))
+                var inviteLink = new Regex(@"(?:https?:\/\/)?(?:www\.)?(discord\.gg|discord\.io|discord\.me|discordapp\.com\/invite|paypal\.me|twitter\.com|youtube\.com|bit\.ly|twitch\.tv|)\/(\S+)");
+                if (inviteLink.Matches(user.Username).Any())
                 {
                     if(guildConfig.AntispamLevel == GuildConfig.AntiSpamLevel.Advanced)
                     {
