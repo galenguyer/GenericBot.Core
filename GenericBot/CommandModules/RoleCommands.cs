@@ -81,17 +81,17 @@ namespace GenericBot.CommandModules
                     await rep.DeleteAsync();
                 }
                 string input = paramList.Aggregate((i, j) => i + " " + j);
+                List<IMessage> messagesToDelete = new List<IMessage>();     
 
-                foreach(var roleName in input.Split(',')) {
-
+                foreach(var roleName in input.Split(','))
+                {
                     var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower()))
                         .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id));
                     if (!roles.Any())
                     {
                         rep = msg.ReplyAsync($"Could not find any user roles matching `{roleName}`").Result;
-                        await Task.Delay(15000);
-                        await msg.DeleteAsync();
-                        await rep.DeleteAsync();
+                        messagesToDelete.Add(msg);
+                        messagesToDelete.Add(rep);
                     }
                     else if (roles.Count() == 1)
                     {
@@ -108,9 +108,8 @@ namespace GenericBot.CommandModules
                                 message = await msg.ReplyAsync("Done!");
                             }
 
-                            await Task.Delay(15000);
-                            try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
-                            await message.DeleteAsync();
+                            messagesToDelete.Add(msg);
+                            messagesToDelete.Add(message);
                         }
                         catch (Exception e)
                         {
@@ -135,10 +134,8 @@ namespace GenericBot.CommandModules
                                 await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(role);
                                 message = await msg.ReplyAsync($"I've assigned you `{role.Name}`");
                             }
-
-                            await Task.Delay(15000);
-                            try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
-                            await message.DeleteAsync();
+                            messagesToDelete.Add(msg);
+                            messagesToDelete.Add(message);
                         }
                         catch (Exception e)
                         {
@@ -147,6 +144,9 @@ namespace GenericBot.CommandModules
                         }
                     }
                 }
+
+                await Task.Delay(15* 1000);
+                await (msg.Channel as ITextChannel).DeleteMessagesAsync(messagesToDelete);
             };
 
             RoleCommands.Add(iam);
