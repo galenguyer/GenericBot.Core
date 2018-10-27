@@ -73,19 +73,19 @@ namespace GenericBot.CommandModules
             iam.ToExecute += async (client, msg, paramList) =>
             {
                 IMessage rep;
+                List<IMessage> messagesToDelete = new List<IMessage>();
+
                 if (paramList.Empty())
                 {
                     rep = msg.ReplyAsync($"Please select a role to join").Result;
-                    await Task.Delay(15000);
-                    await msg.DeleteAsync();
-                    await rep.DeleteAsync();
+                    messagesToDelete.Add(msg);
+                    messagesToDelete.Add(rep);
                 }
                 string input = paramList.Aggregate((i, j) => i + " " + j);
-                List<IMessage> messagesToDelete = new List<IMessage>();     
 
                 foreach(var roleName in input.Split(','))
                 {
-                    var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower()))
+                    var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower().Trim()))
                         .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id));
                     if (!roles.Any())
                     {
@@ -100,12 +100,12 @@ namespace GenericBot.CommandModules
                             RestUserMessage message;
                             if (msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
                             {
-                                message = await msg.ReplyAsync("You already have that role!");
+                                message = msg.ReplyAsync("You already have that role!").Result;
                             }
                             else
                             {
                                 await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(roles.First());
-                                message = await msg.ReplyAsync("Done!");
+                                message = msg.ReplyAsync("Done!").Result;
                             }
 
                             messagesToDelete.Add(msg);
@@ -124,15 +124,15 @@ namespace GenericBot.CommandModules
                             var role = roles.Any(r => r.Name.ToLower() == roleName.ToLower())
                                 ? roles.First(r => r.Name.ToLower() == roleName.ToLower())
                                 : roles.First();
-                            RestUserMessage message;
+                            IMessage message;
                             if (msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
                             {
-                                message = await msg.ReplyAsync("You already have that role!");
+                                message = msg.ReplyAsync("You already have that role!").Result;
                             }
                             else
                             {
                                 await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(role);
-                                message = await msg.ReplyAsync($"I've assigned you `{role.Name}`");
+                                message = msg.ReplyAsync($"I've assigned you `{role.Name}`").Result;
                             }
                             messagesToDelete.Add(msg);
                             messagesToDelete.Add(message);
