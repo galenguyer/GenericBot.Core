@@ -82,67 +82,69 @@ namespace GenericBot.CommandModules
                 }
                 string input = paramList.Aggregate((i, j) => i + " " + j);
 
-                var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(input.ToLower()))
-                    .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id));
+                foreach(var roleName in input.Split(',')) {
 
-                if (!roles.Any())
-                {
-                    rep = msg.ReplyAsync($"Could not find any user roles matching `{input}`").Result;
-                    await Task.Delay(15000);
-                    await msg.DeleteAsync();
-                    await rep.DeleteAsync();
-                }
-                else if (roles.Count() == 1)
-                {
-                    try
+                    var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower()))
+                        .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id));
+                    if (!roles.Any())
                     {
-                        RestUserMessage message;
-                        if (msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
-                        {
-                            message = await msg.ReplyAsync("You already have that role!");
-                        }
-                        else
-                        {
-                            await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(roles.First());
-                            message = await msg.ReplyAsync("Done!");
-                        }
-
+                        rep = msg.ReplyAsync($"Could not find any user roles matching `{roleName}`").Result;
                         await Task.Delay(15000);
-                        try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
-                        await message.DeleteAsync();
+                        await msg.DeleteAsync();
+                        await rep.DeleteAsync();
                     }
-                    catch (Exception e)
+                    else if (roles.Count() == 1)
                     {
-                        await GenericBot.Logger.LogErrorMessage(e.Message);
-                        await msg.ReplyAsync($"I may not have permissions to do that!");
-                    }
-                }
-                else if (roles.Count() > 1)
-                {
-                    try
-                    {
-                        var role = roles.Any(r => r.Name.ToLower() == input.ToLower())
-                            ? roles.First(r => r.Name.ToLower() == input.ToLower())
-                            : roles.First();
-                        RestUserMessage message;
-                        if (msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                        try
                         {
-                            message = await msg.ReplyAsync("You already have that role!");
-                        }
-                        else
-                        {
-                            await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(role);
-                            message = await msg.ReplyAsync($"I've assigned you `{role.Name}`");
-                        }
+                            RestUserMessage message;
+                            if (msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                            {
+                                message = await msg.ReplyAsync("You already have that role!");
+                            }
+                            else
+                            {
+                                await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(roles.First());
+                                message = await msg.ReplyAsync("Done!");
+                            }
 
-                        await Task.Delay(15000);
-                        try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
-                        await message.DeleteAsync();
+                            await Task.Delay(15000);
+                            try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
+                            await message.DeleteAsync();
+                        }
+                        catch (Exception e)
+                        {
+                            await GenericBot.Logger.LogErrorMessage(e.Message);
+                            await msg.ReplyAsync($"I may not have permissions to do that!");
+                        }
                     }
-                    catch (Exception e)
+                    else if (roles.Count() > 1)
                     {
-                        await GenericBot.Logger.LogErrorMessage(e.Message);
-                        await msg.ReplyAsync($"I may not have permissions to do that!");
+                        try
+                        {
+                            var role = roles.Any(r => r.Name.ToLower() == roleName.ToLower())
+                                ? roles.First(r => r.Name.ToLower() == roleName.ToLower())
+                                : roles.First();
+                            RestUserMessage message;
+                            if (msg.GetGuild().GetUser(msg.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                            {
+                                message = await msg.ReplyAsync("You already have that role!");
+                            }
+                            else
+                            {
+                                await msg.GetGuild().GetUser(msg.Author.Id).AddRoleAsync(role);
+                                message = await msg.ReplyAsync($"I've assigned you `{role.Name}`");
+                            }
+
+                            await Task.Delay(15000);
+                            try { await msg.DeleteAsync(); } catch { } // Catch the message being deleted
+                            await message.DeleteAsync();
+                        }
+                        catch (Exception e)
+                        {
+                            await GenericBot.Logger.LogErrorMessage(e.Message);
+                            await msg.ReplyAsync($"I may not have permissions to do that!");
+                        }
                     }
                 }
             };
