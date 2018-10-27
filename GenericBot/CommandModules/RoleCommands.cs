@@ -146,7 +146,21 @@ namespace GenericBot.CommandModules
                 }
 
                 await Task.Delay(15* 1000);
-                await (msg.Channel as ITextChannel).DeleteMessagesAsync(messagesToDelete);
+                try
+                {
+                    await (msg.Channel as ITextChannel).DeleteMessagesAsync(messagesToDelete);
+                }
+                catch
+                {
+                    try
+                    {
+                        foreach(var m in messagesToDelete)
+                        {
+                            m.DeleteAsync();
+                        }
+                    }
+                    catch { }
+                }
             };
 
             RoleCommands.Add(iam);
