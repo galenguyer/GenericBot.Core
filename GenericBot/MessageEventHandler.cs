@@ -228,7 +228,7 @@ namespace GenericBot
 
             if(string.IsNullOrEmpty(arg.Value.Content) && !arg.Value.Attachments.Any() && arg.Value.Embeds.Any())
             {
-                log.WithDescription("**Embed:** " + JsonConvert.SerializeObject(arg.Value.Embeds.First(), Formatting.Indented));
+                log.WithDescription("**Embed:**\n```json\n" + JsonConvert.SerializeObject(arg.Value.Embeds.First(), Formatting.Indented) + "\n```");
             }
 
             log.Footer = new EmbedFooterBuilder().WithText(arg.Value.Id.ToString());
