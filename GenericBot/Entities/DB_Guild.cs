@@ -22,10 +22,10 @@ namespace GenericBot.Entities
             this.ID = guildId;
             try
             {
-                if (GenericBot.LoadedGuilds.ContainsKey(this.ID))
+                if (GenericBot.LoadedGuildDbs.ContainsKey(this.ID))
                 {
-                    this.Users = GenericBot.LoadedGuilds[this.ID].Users;
-                    this.Quotes = GenericBot.LoadedGuilds[this.ID].Quotes;
+                    this.Users = GenericBot.LoadedGuildDbs[this.ID].Users;
+                    this.Quotes = GenericBot.LoadedGuildDbs[this.ID].Quotes;
                 }
                 else
                 {
@@ -55,7 +55,7 @@ namespace GenericBot.Entities
         {
             try
             {
-                GenericBot.LoadedGuilds[this.ID] = this;
+                GenericBot.LoadedGuildDbs[this.ID] = this;
                 var col = GenericBot.GlobalDatabase.GetCollection<DBGuild>("userDatabase");
                 col.EnsureIndex(c => c.ID, true);
                 col.Upsert(this);

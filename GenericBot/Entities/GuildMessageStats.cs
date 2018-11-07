@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LiteDB;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,15 +10,26 @@ namespace GenericBot.Entities
 {
     class GuildMessageStats
     {
+        public class StatsUser
+        {
+            public ulong Id;
+            public List<StatsYear> Years = new List<StatsYear>();
+
+            public StatsUser(ulong userId, int year, int month, int day)
+            {
+                this.Id = userId;
+                this.Years = new List<StatsYear> { new StatsYear(year, month, day) };
+            }
+        }
         public class StatsYear
         {
             public int Year;
             public List<StatsMonth> Months = new List<StatsMonth>();
 
-            public StatsYear(int year, int month, int day, ulong userId)
+            public StatsYear(int year, int month, int day)
             {
                 this.Year = year;
-                this.Months = new List<StatsMonth> { new StatsMonth(month, day, userId) };
+                this.Months = new List<StatsMonth> { new StatsMonth(month, day) };
             }
         }
         public class StatsMonth
@@ -25,39 +37,27 @@ namespace GenericBot.Entities
             public int Month;
             public List<StatsDay> Days = new List<StatsDay>();
 
-            public StatsMonth(int month, int day, ulong userId)
+            public StatsMonth(int month, int day)
             {
                 this.Month = month;
-                this.Days = new List<StatsDay> { new StatsDay(day, userId) };
+                this.Days = new List<StatsDay> { new StatsDay(day) };
             }
         }
         public class StatsDay
         {
             public int Day;
-            public List<StatsUser> Users = new List<StatsUser>();
+            public int MessageCount;
+            public Dictionary<string, int> Commands = new Dictionary<string, int>();
 
-            public StatsDay(int day, ulong userId)
+            public StatsDay(int day)
             {
                 this.Day = day;
-                this.Users = new List<StatsUser> { new StatsUser(userId) };
-            }
-        }
-        public class StatsUser
-        {
-            public ulong UserId;
-            public int MessageCount;
-            public Dictionary<string, int> Commands;
-
-            public StatsUser(ulong userId)
-            {
-                this.UserId = userId;
-                this.MessageCount = 1;
-                this.Commands = new Dictionary<string, int>();
+                MessageCount = 1;
             }
         }
 
-        public List<StatsYear> Years = new List<StatsYear>();
-        public ulong GuildId;
+        public List<StatsUser> Users = new List<StatsUser>();
+        [BsonId] public ulong ID { get; set; }
 
         public GuildMessageStats()
         {
@@ -65,74 +65,84 @@ namespace GenericBot.Entities
         }
         public GuildMessageStats(ulong guildId)
         {
-            while (GenericBot.LockedFiles.Contains($"files/guildStats/{guildId}.json"))
+            this.ID = guildId;
+            try
             {
-                //wait
+                if (GenericBot.LoadedGuildMessageStats.ContainsKey(this.ID))
+                {
+                    this.Users = GenericBot.LoadedGuildMessageStats[this.ID].Users;
+                }
+                else
+                {
+                    var col = GenericBot.GlobalDatabase.GetCollection<GuildMessageStats>("messageStats");
+                    GuildMessageStats tempdb;
+                    col.EnsureIndex(c => c.ID, true);
+                    if (col.Exists(c => c.ID.Equals(guildId)))
+                    {
+                        tempdb = col.FindOne(c => c.ID.Equals(guildId));
+                    }
+                    else
+                    {
+                        tempdb = new GuildMessageStats() { ID = guildId, Users = new List<StatsUser>() };
+                    }
+                    this.Users = tempdb.Users;
+                }
             }
-            GenericBot.LockedFiles.Add($"files/guildStats/{guildId}.json");
-
-            if (File.Exists($"files/guildStats/{guildId}.json"))
+            catch (Exception ex)
             {
-                var tmp = JsonConvert.DeserializeObject<GuildMessageStats>(File.ReadAllText($"files/guildStats/{guildId}.json"));
-                this.GuildId = tmp.GuildId;
-                this.Years = tmp.Years;
-            }
-            else
-            {
-                this.GuildId = guildId;
-                this.Years = new List<StatsYear>(); 
+                GenericBot.Logger.LogErrorMessage($"Load Stats for {guildId} Failed: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
         public void Save()
         {
-            Directory.CreateDirectory("files");
-            Directory.CreateDirectory("files/guildStats");
-            File.WriteAllText($"files/guildStats/{this.GuildId}.json", JsonConvert.SerializeObject(this, Formatting.Indented));
-            GenericBot.LockedFiles.Remove($"files/guildStats/{this.GuildId}.json");
+            try
+            {
+                GenericBot.LoadedGuildMessageStats[this.ID] = this;
+                var col = GenericBot.GlobalDatabase.GetCollection<GuildMessageStats>("messageStats");
+                col.EnsureIndex(c => c.ID, true);
+                col.Upsert(this);
+            }
+            catch (Exception ex)
+            {
+                GenericBot.Logger.LogErrorMessage($"GuildID: {this.ID}\n{ex.Message}\n{ex.StackTrace}");
+                this.Save();
+            }
+
         }
 
-        /// <summary>
-        /// This is a promise not to modify the returned object. Doing so strongly risks a race condition
-        /// </summary>
-        /// <returns></returns>
-        public GuildMessageStats DisposeLoader()
-        {
-            GenericBot.LockedFiles.Remove($"files/guildStats/{this.GuildId}.json");
-            return this;
-        }
 
         public GuildMessageStats AddMessage(ulong uId)
         {
             var now = DateTimeOffset.UtcNow;
-            if(Years.HasElement(y=> y.Year.Equals(now.Year), out var year))
+            if (Users.HasElement(u => u.Id.Equals(uId), out var user))
             {
-                if (year.Months.HasElement(m => m.Month.Equals(now.Month), out var month))
+                if (user.Years.HasElement(y => y.Year.Equals(now.Year), out var year))
                 {
-                    if(month.Days.HasElement(d => d.Day.Equals(now.Day), out var day))
+                    if (year.Months.HasElement(m => m.Month.Equals(now.Month), out var month))
                     {
-                        if (day.Users.HasElement(u => u.UserId.Equals(uId), out var user))
+                        if (month.Days.HasElement(d => d.Day.Equals(now.Day), out var day))
                         {
-                            user.MessageCount++;
+                            day.MessageCount++;
                         }
                         else
                         {
-                            day.Users.Add(new StatsUser(uId));
+                            month.Days.Add(new StatsDay(now.Day));
                         }
                     }
                     else
                     {
-                        month.Days.Add(new StatsDay(now.Day, uId));
+                        year.Months.Add(new StatsMonth(now.Month, now.Day));
                     }
                 }
                 else
                 {
-                    year.Months.Add(new StatsMonth(now.Month, now.Day, uId));
+                    user.Years.Add(new StatsYear(now.Year, now.Month, now.Day));
                 }
             }
             else
             {
-                this.Years.Add(new StatsYear(now.Year, now.Month, now.Day, uId));
+                this.Users.Add(new StatsUser(uId, now.Year, now.Month, now.Day));
             }
             return this;
         }
@@ -141,82 +151,82 @@ namespace GenericBot.Entities
         {
             command = command.ToLower();
             var now = DateTimeOffset.UtcNow;
-            if (Years.HasElement(y => y.Year.Equals(now.Year), out var year))
+            if (Users.HasElement(u => u.Id.Equals(uId), out var user))
             {
-                if (year.Months.HasElement(m => m.Month.Equals(now.Month), out var month))
+                if (user.Years.HasElement(y => y.Year.Equals(now.Year), out var year))
                 {
-                    if (month.Days.HasElement(d => d.Day.Equals(now.Day), out var day))
+                    if (year.Months.HasElement(m => m.Month.Equals(now.Month), out var month))
                     {
-                        if (day.Users.HasElement(u => u.UserId.Equals(uId), out var user))
+                        if (month.Days.HasElement(d => d.Day.Equals(now.Day), out var day))
                         {
-                            if (user.Commands.Any(k => k.Key.Equals(command)))
+                            if (day.Commands.Any(k => k.Key.Equals(command)))
                             {
-                                user.Commands[command]++;
+                                day.Commands[command]++;
                             }
                             else
                             {
-                                user.Commands.Add(command, 1);
+                                day.Commands.Add(command, 1);
                             }
                         }
                         else
                         {
-                            day.Users.Add(new StatsUser(uId));
-                            var u = day.Users.First(us => us.UserId == uId);
-                            if (u.Commands.Any(k => k.Key.Equals(command)))
+                            month.Days.Add(new StatsDay(now.Day));
+                            var _day = month.Days.First(d => d.Day == now.Day);
+                            if (_day.Commands.Any(k => k.Key.Equals(command)))
                             {
-                                u.Commands[command]++;
+                                _day.Commands[command]++;
                             }
                             else
                             {
-                                u.Commands.Add(command, 1);
+                                _day.Commands.Add(command, 1);
                             }
                         }
                     }
                     else
                     {
-                        month.Days.Add(new StatsDay(now.Day, uId));
-                        var user = month.Days.First(d => d.Day == now.Day)
-                            .Users.First(u => u.UserId == uId);
-                        if (user.Commands.Any(k => k.Key.Equals(command)))
+                        year.Months.Add(new StatsMonth(now.Month, now.Day));
+                        var day = year.Months.First(m => m.Month == now.Month)
+                            .Days.First(d => d.Day == now.Day);
+                        if (day.Commands.Any(k => k.Key.Equals(command)))
                         {
-                            user.Commands[command]++;
+                            day.Commands[command]++;
                         }
                         else
                         {
-                            user.Commands.Add(command, 1);
+                            day.Commands.Add(command, 1);
                         }
                     }
                 }
                 else
                 {
-                    year.Months.Add(new StatsMonth(now.Month, now.Day, uId));
-                    var user = year.Months.First(m => m.Month == now.Month)
-                        .Days.First(d => d.Day == now.Day)
-                        .Users.First(u => u.UserId == uId);
-                    if (user.Commands.Any(k => k.Key.Equals(command)))
+                    user.Years.Add(new StatsYear(now.Year, now.Month, now.Day));
+                    var day = user.Years.First(y => y.Year == now.Year)
+                        .Months.First(m => m.Month == now.Month)
+                        .Days.First(d => d.Day == now.Day);
+                    if (day.Commands.Any(k => k.Key.Equals(command)))
                     {
-                        user.Commands[command]++;
+                        day.Commands[command]++;
                     }
                     else
                     {
-                        user.Commands.Add(command, 1);
+                        day.Commands.Add(command, 1);
                     }
                 }
             }
             else
             {
-                this.Years.Add(new StatsYear(now.Year, now.Month, now.Day, uId));
-                var user = this.Years.First(y => y.Year == now.Year)
+                this.Users.Add(new StatsUser(uId, now.Year, now.Month, now.Day));
+                var day = this.Users.First(u => u.Id == uId)
+                    .Years.First(y => y.Year == now.Year)
                     .Months.First(m => m.Month == now.Month)
-                    .Days.First(d => d.Day == now.Day)
-                    .Users.First(u => u.UserId == uId);
-                if (user.Commands.Any(k => k.Key.Equals(command)))
+                    .Days.First(d => d.Day == now.Day);
+                if (day.Commands.Any(k => k.Key.Equals(command)))
                 {
-                    user.Commands[command]++;
+                    day.Commands[command]++;
                 }
                 else
                 {
-                    user.Commands.Add(command, 1);
+                    day.Commands.Add(command, 1);
                 }
             }
             return this;
@@ -234,44 +244,44 @@ namespace GenericBot.Entities
             analytics.Description = "Get a ton of analytics information from the server";
             analytics.ToExecute += async (client, msg, parameters) =>
             {
-                var stats = new GuildMessageStats(msg.GetGuild().Id).DisposeLoader();
-                var years = stats.Years;
-                var months = years.SelectMany(y => y.Months);
-                var days = months.SelectMany(m => m.Days);
-                var users = days.SelectMany(d => d.Users);
-                var commands = users.SelectMany(u => u.Commands);
+                //var stats = new GuildMessageStats(msg.GetGuild().Id).DisposeLoader();
+                //var years = stats.Years;
+                //var months = years.SelectMany(y => y.Months);
+                //var days = months.SelectMany(m => m.Days);
+                //var users = days.SelectMany(d => d.Users);
+                //var commands = users.SelectMany(u => u.Commands);
 
-                var mostActiveIdOverall = users.OrderByDescending(u => u.MessageCount).Take(3);
-                string mostActiveUsersOverall = "";
-                foreach(var id in mostActiveIdOverall)
-                {
-                    if (msg.GetGuild().Users.HasElement(u => u.Id == id.UserId, out var us))
-                    {
-                        mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`) " +
-                        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
-                    }
-                    else
-                    {
-                        mostActiveUsersOverall += $"    Unknown User (`{mostActiveIdOverall}`) " +
-                        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
-                    }
-                }
+                //var mostActiveIdOverall = users.OrderByDescending(u => u.MessageCount).Take(3);
+                //string mostActiveUsersOverall = "";
+                //foreach(var id in mostActiveIdOverall)
+                //{
+                //    if (msg.GetGuild().Users.HasElement(u => u.Id == id.UserId, out var us))
+                //    {
+                //        mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`) " +
+                //        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
+                //    }
+                //    else
+                //    {
+                //        mostActiveUsersOverall += $"    Unknown User (`{mostActiveIdOverall}`) " +
+                //        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
+                //    }
+                //}
 
-                var MostUsedCommandInfoOverall = commands.OrderByDescending(c => c.Value).Take(3);
-                string MostUsedCommandsOverall = "";
-                foreach(var cmd in MostUsedCommandInfoOverall)
-                {
-                    MostUsedCommandsOverall += $"    {cmd.Key} (`{cmd.Value}` uses)\n";
-                }
+                //var MostUsedCommandInfoOverall = commands.OrderByDescending(c => c.Value).Take(3);
+                //string MostUsedCommandsOverall = "";
+                //foreach(var cmd in MostUsedCommandInfoOverall)
+                //{
+                //    MostUsedCommandsOverall += $"    {cmd.Key} (`{cmd.Value}` uses)\n";
+                //}
 
 
-                string info = $"Analytics for **{msg.GetGuild().Name}**\n\n" +
-                $"All Messages Logged: `{users.Sum(u => u.MessageCount)}`\n" +
-                $"All Commands Logged: `{commands.Sum(c => c.Value)}`\n" +
-                $"Most Active Users Overall: \n{mostActiveUsersOverall}" +
-                $"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
+                //string info = $"Analytics for **{msg.GetGuild().Name}**\n\n" +
+                //$"All Messages Logged: `{users.Sum(u => u.MessageCount)}`\n" +
+                //$"All Commands Logged: `{commands.Sum(c => c.Value)}`\n" +
+                //$"Most Active Users Overall: \n{mostActiveUsersOverall}" +
+                //$"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
 
-                await msg.ReplyAsync(info);
+                //await msg.ReplyAsync(info);
             };
 
             //cmds.Add(analytics);

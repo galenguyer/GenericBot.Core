@@ -30,7 +30,8 @@ namespace GenericBot
         public static Animols Animols = new Animols();
         public static string DBPassword;
 
-        public static ConcurrentDictionary<ulong, DBGuild> LoadedGuilds = new ConcurrentDictionary<ulong, DBGuild>();
+        public static ConcurrentDictionary<ulong, DBGuild> LoadedGuildDbs = new ConcurrentDictionary<ulong, DBGuild>();
+        public static ConcurrentDictionary<ulong, GuildMessageStats> LoadedGuildMessageStats = new ConcurrentDictionary<ulong, GuildMessageStats>();
         public static LiteDB.LiteDatabase GlobalDatabase;
 
         public static TwitterService Twitter = new TwitterService("AfaD74ulbQQmjb1yDuGKWtVY9", "WAuRJS6Z4RUDgignHmsDzudbIx2YP4PgnAcz3tp7G7nd1ZHs2z");
@@ -155,8 +156,9 @@ namespace GenericBot
         private async Task OnGuildConnected(SocketGuild guild)
         {
             Logger.LogGenericMessage($"Connected to {guild.Name} ({guild.Id})");
-            bool f = LoadedGuilds.TryAdd(guild.Id, new DBGuild(guild.Id));
-            Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}");
+            bool f = LoadedGuildDbs.TryAdd(guild.Id, new DBGuild(guild.Id));
+            bool t = LoadedGuildMessageStats.TryAdd(guild.Id, new GuildMessageStats(guild.Id));
+            Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}{t}");
             if (!File.Exists($"files/guildConfigs/{guild.Id}.json"))
             {
                 new GuildConfig(guild.Id).Save();
