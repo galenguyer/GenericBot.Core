@@ -12,56 +12,60 @@ namespace GenericBot.Entities
     {
         public class StatsUser
         {
-            public ulong Id;
-            public List<StatsYear> Years = new List<StatsYear>();
+            public ulong Id { get; set; }
+            public List<StatsYear> Years { get; set; }
 
             public StatsUser(ulong userId, int year, int month, int day)
             {
                 this.Id = userId;
                 this.Years = new List<StatsYear> { new StatsYear(year, month, day) };
             }
+            public StatsUser() { }
         }
         public class StatsYear
         {
-            public int Year;
-            public List<StatsMonth> Months = new List<StatsMonth>();
+            public int Year { get; set; }
+            public List<StatsMonth> Months { get; set; }
 
             public StatsYear(int year, int month, int day)
             {
                 this.Year = year;
                 this.Months = new List<StatsMonth> { new StatsMonth(month, day) };
             }
+            public StatsYear() { }
         }
         public class StatsMonth
         {
-            public int Month;
-            public List<StatsDay> Days = new List<StatsDay>();
+            public int Month { get; set; }
+            public List<StatsDay> Days { get; set; }
 
             public StatsMonth(int month, int day)
             {
                 this.Month = month;
                 this.Days = new List<StatsDay> { new StatsDay(day) };
             }
+            public StatsMonth() { }
         }
         public class StatsDay
         {
-            public int Day;
-            public int MessageCount;
-            public Dictionary<string, int> Commands = new Dictionary<string, int>();
+            public int Day { get; set; }
+            public int MessageCount { get; set; }
+            public Dictionary<string, int> Commands { get; set; }
 
             public StatsDay(int day)
             {
                 this.Day = day;
                 MessageCount = 1;
             }
+            public StatsDay() { }
         }
 
-        public List<StatsUser> Users = new List<StatsUser>();
+        public List<StatsUser> Users { get; set; }
         [BsonId] public ulong ID { get; set; }
 
         public GuildMessageStats()
         {
-
+            Users = new List<StatsUser>();
         }
         public GuildMessageStats(ulong guildId)
         {
@@ -98,7 +102,9 @@ namespace GenericBot.Entities
         {
             try
             {
-                GenericBot.LoadedGuildMessageStats[this.ID] = this;
+                if (!GenericBot.LoadedGuildMessageStats.TryAdd(this.ID, this))
+                    GenericBot.LoadedGuildMessageStats[this.ID] = this;
+
                 var col = GenericBot.GlobalDatabase.GetCollection<GuildMessageStats>("messageStats");
                 col.EnsureIndex(c => c.ID, true);
                 col.Upsert(this);
@@ -159,6 +165,10 @@ namespace GenericBot.Entities
                     {
                         if (month.Days.HasElement(d => d.Day.Equals(now.Day), out var day))
                         {
+                            if(day.Commands == null)
+                            {
+                                day.Commands = new Dictionary<string, int>();
+                            }
                             if (day.Commands.Any(k => k.Key.Equals(command)))
                             {
                                 day.Commands[command]++;
@@ -245,27 +255,28 @@ namespace GenericBot.Entities
             analytics.ToExecute += async (client, msg, parameters) =>
             {
                 var stats = new GuildMessageStats(msg.GetGuild().Id);
-                var users = stats.Users;
+                var users = stats.Users.Where(u => u.Id != 0);
                 var years = users.SelectMany(u => u.Years);
                 var months = years.SelectMany(y => y.Months);
                 var days = months.SelectMany(m => m.Days);
-                var commands = days.SelectMany(d => d.Commands);
+                var commands = days.Where(d => d.Commands != null).SelectMany(d => d.Commands);
 
                 var mostActiveIdOverall = users.OrderByDescending(u => u.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.MessageCount)))).Take(3);
                 string mostActiveUsersOverall = "";
                 foreach (var user in mostActiveIdOverall)
                 {
+                    var commandCount = user.Years.Any(y => y.Months.Any(m => m.Days.Any(d => d.Commands != null))) ? user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.Commands.Sum(c => c.Value)))) : 0;
                     if (msg.GetGuild().Users.HasElement(u => u.Id == user.Id, out var us))
                     {
                         mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`) " +
                         $"(`{user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.MessageCount)))}` messages, " +
-                        $"`{user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.Commands.Sum(c => c.Value))))}` commands)\n";
+                        $"`{commandCount}` commands)\n";
                     }
                     else
                     {
                         mostActiveUsersOverall += $"    Unknown User (`{user.Id}`) " +
                         $"(`{user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.MessageCount)))}` messages, " +
-                        $"`{user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.Commands.Sum(c => c.Value))))}` commands)\n";
+                        $"`{commandCount}` commands)\n";
                     }
                 }
 
@@ -277,11 +288,11 @@ namespace GenericBot.Entities
                 }
 
 
-                string info = $"Analytics for **{msg.GetGuild().Name}**\n\n" +
-                $"All Messages Logged: `{days.Sum(d => d.MessageCount)}`\n" +
-                $"All Commands Logged: `{commands.Sum(c => c.Value)}`\n" +
-                $"Most Active Users Overall: \n{mostActiveUsersOverall}" +
-                $"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
+                string info = $"Analytics for **{msg.GetGuild().Name}**\n\n";
+                info += $"All Messages Logged: `{days.Sum(d => d.MessageCount)}`\n";
+                info += $"All Commands Logged: `{commands.Sum(c => c.Value)}`\n";
+                info += $"Most Active Users Overall: \n{mostActiveUsersOverall}";
+                info += $"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
 
                 await msg.ReplyAsync(info);
             };

@@ -160,15 +160,15 @@ namespace GenericBot
                     {
                         await parameterMessage.DeleteAsync();
                     }
+                    new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, custom.Name).Save();
                     await parameterMessage.ReplyAsync(custom.Response);
-                   new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, custom.Name).Save();
                 }
 
             DMChannel:
                 GenericBot.LastCommand = commandInfo;
                 commandInfo.Command.ExecuteCommand(GenericBot.DiscordClient, message, commandInfo.Parameters).FireAndForget();
                 GenericBot.Logger.LogGenericMessage($"Guild: {parameterMessage.GetGuild().Name} ({parameterMessage.GetGuild().Id}) Channel: {parameterMessage.Channel.Name} ({parameterMessage.Channel.Id}) User: {parameterMessage.Author} ({parameterMessage.Author.Id}) Command: {commandInfo.Command.Name} Parameters {JsonConvert.SerializeObject(commandInfo.Parameters)}");
-                //new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, commandInfo.Command.Name).Save();
+                new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, commandInfo.Command.Name).Save();
 
             }
             catch (NullReferenceException nullRefEx)
@@ -183,7 +183,7 @@ namespace GenericBot
                                                       "\n```");
                 }
                 await GenericBot.Logger.LogErrorMessage(ex.Message);
-                //else Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+                Console.WriteLine($"{ex.StackTrace}");
             }
         }
 

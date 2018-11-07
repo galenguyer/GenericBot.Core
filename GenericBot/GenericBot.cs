@@ -157,8 +157,7 @@ namespace GenericBot
         {
             Logger.LogGenericMessage($"Connected to {guild.Name} ({guild.Id})");
             bool f = LoadedGuildDbs.TryAdd(guild.Id, new DBGuild(guild.Id));
-            bool t = LoadedGuildMessageStats.TryAdd(guild.Id, new GuildMessageStats(guild.Id));
-            Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}{t}");
+            Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}");
             if (!File.Exists($"files/guildConfigs/{guild.Id}.json"))
             {
                 new GuildConfig(guild.Id).Save();
