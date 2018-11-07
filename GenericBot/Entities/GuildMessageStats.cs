@@ -244,44 +244,44 @@ namespace GenericBot.Entities
             analytics.Description = "Get a ton of analytics information from the server";
             analytics.ToExecute += async (client, msg, parameters) =>
             {
-                //var stats = new GuildMessageStats(msg.GetGuild().Id).DisposeLoader();
-                //var years = stats.Years;
-                //var months = years.SelectMany(y => y.Months);
-                //var days = months.SelectMany(m => m.Days);
-                //var users = days.SelectMany(d => d.Users);
-                //var commands = users.SelectMany(u => u.Commands);
+                var stats = new GuildMessageStats(msg.GetGuild().Id).DisposeLoader();
+                var years = stats.Years;
+                var months = years.SelectMany(y => y.Months);
+                var days = months.SelectMany(m => m.Days);
+                var users = days.SelectMany(d => d.Users);
+                var commands = users.SelectMany(u => u.Commands);
 
-                //var mostActiveIdOverall = users.OrderByDescending(u => u.MessageCount).Take(3);
-                //string mostActiveUsersOverall = "";
-                //foreach(var id in mostActiveIdOverall)
-                //{
-                //    if (msg.GetGuild().Users.HasElement(u => u.Id == id.UserId, out var us))
-                //    {
-                //        mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`) " +
-                //        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
-                //    }
-                //    else
-                //    {
-                //        mostActiveUsersOverall += $"    Unknown User (`{mostActiveIdOverall}`) " +
-                //        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
-                //    }
-                //}
+                var mostActiveIdOverall = users.OrderByDescending(u => u.MessageCount).Take(3);
+                string mostActiveUsersOverall = "";
+                foreach (var id in mostActiveIdOverall)
+                {
+                    if (msg.GetGuild().Users.HasElement(u => u.Id == id.UserId, out var us))
+                    {
+                        mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`) " +
+                        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
+                    }
+                    else
+                    {
+                        mostActiveUsersOverall += $"    Unknown User (`{mostActiveIdOverall}`) " +
+                        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
+                    }
+                }
 
-                //var MostUsedCommandInfoOverall = commands.OrderByDescending(c => c.Value).Take(3);
-                //string MostUsedCommandsOverall = "";
-                //foreach(var cmd in MostUsedCommandInfoOverall)
-                //{
-                //    MostUsedCommandsOverall += $"    {cmd.Key} (`{cmd.Value}` uses)\n";
-                //}
+                var MostUsedCommandInfoOverall = commands.OrderByDescending(c => c.Value).Take(3);
+                string MostUsedCommandsOverall = "";
+                foreach (var cmd in MostUsedCommandInfoOverall)
+                {
+                    MostUsedCommandsOverall += $"    {cmd.Key} (`{cmd.Value}` uses)\n";
+                }
 
 
-                //string info = $"Analytics for **{msg.GetGuild().Name}**\n\n" +
-                //$"All Messages Logged: `{users.Sum(u => u.MessageCount)}`\n" +
-                //$"All Commands Logged: `{commands.Sum(c => c.Value)}`\n" +
-                //$"Most Active Users Overall: \n{mostActiveUsersOverall}" +
-                //$"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
+                string info = $"Analytics for **{msg.GetGuild().Name}**\n\n" +
+                $"All Messages Logged: `{users.Sum(u => u.MessageCount)}`\n" +
+                $"All Commands Logged: `{commands.Sum(c => c.Value)}`\n" +
+                $"Most Active Users Overall: \n{mostActiveUsersOverall}" +
+                $"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
 
-                //await msg.ReplyAsync(info);
+                await msg.ReplyAsync(info);
             };
 
             //cmds.Add(analytics);
