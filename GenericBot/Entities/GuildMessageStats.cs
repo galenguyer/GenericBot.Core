@@ -244,26 +244,28 @@ namespace GenericBot.Entities
             analytics.Description = "Get a ton of analytics information from the server";
             analytics.ToExecute += async (client, msg, parameters) =>
             {
-                var stats = new GuildMessageStats(msg.GetGuild().Id).DisposeLoader();
-                var years = stats.Years;
+                var stats = new GuildMessageStats(msg.GetGuild().Id);
+                var users = stats.Users;
+                var years = users.SelectMany(u => u.Years);
                 var months = years.SelectMany(y => y.Months);
                 var days = months.SelectMany(m => m.Days);
-                var users = days.SelectMany(d => d.Users);
-                var commands = users.SelectMany(u => u.Commands);
+                var commands = days.SelectMany(d => d.Commands);
 
-                var mostActiveIdOverall = users.OrderByDescending(u => u.MessageCount).Take(3);
+                var mostActiveIdOverall = users.OrderByDescending(u => u.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.MessageCount)))).Take(3);
                 string mostActiveUsersOverall = "";
-                foreach (var id in mostActiveIdOverall)
+                foreach (var user in mostActiveIdOverall)
                 {
-                    if (msg.GetGuild().Users.HasElement(u => u.Id == id.UserId, out var us))
+                    if (msg.GetGuild().Users.HasElement(u => u.Id == user.Id, out var us))
                     {
                         mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`) " +
-                        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
+                        $"(`{user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.MessageCount)))}` messages, " +
+                        $"`{user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.Commands.Sum(c => c.Value))))}` commands)\n";
                     }
                     else
                     {
-                        mostActiveUsersOverall += $"    Unknown User (`{mostActiveIdOverall}`) " +
-                        $"(`{id.MessageCount}` messages, `{id.Commands.Sum(c => c.Value)}` commands)\n";
+                        mostActiveUsersOverall += $"    Unknown User (`{user.Id}`) " +
+                        $"(`{user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.MessageCount)))}` messages, " +
+                        $"`{user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.Commands.Sum(c => c.Value))))}` commands)\n";
                     }
                 }
 
@@ -276,7 +278,7 @@ namespace GenericBot.Entities
 
 
                 string info = $"Analytics for **{msg.GetGuild().Name}**\n\n" +
-                $"All Messages Logged: `{users.Sum(u => u.MessageCount)}`\n" +
+                $"All Messages Logged: `{days.Sum(d => d.MessageCount)}`\n" +
                 $"All Commands Logged: `{commands.Sum(c => c.Value)}`\n" +
                 $"Most Active Users Overall: \n{mostActiveUsersOverall}" +
                 $"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
@@ -284,7 +286,7 @@ namespace GenericBot.Entities
                 await msg.ReplyAsync(info);
             };
 
-            //cmds.Add(analytics);
+            cmds.Add(analytics);
 
             return cmds;
         }
