@@ -65,7 +65,7 @@ namespace GenericBot
 
             if (!edited)
             {
-                //new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
+                new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
             }
 
             if (parameterMessage.Author.Id != GenericBot.DiscordClient.CurrentUser.Id &&
@@ -161,7 +161,7 @@ namespace GenericBot
                         await parameterMessage.DeleteAsync();
                     }
                     await parameterMessage.ReplyAsync(custom.Response);
-                   //new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, custom.Name).Save();
+                   new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, custom.Name).Save();
                 }
 
             DMChannel:
