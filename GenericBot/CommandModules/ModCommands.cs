@@ -139,7 +139,7 @@ namespace GenericBot.CommandModules
                 info += $"Roles: {roles.Trim(' ', ',')}\n";
                 if (!dbUser.Warnings.Empty())
                     info += $"`{dbUser.Warnings.Count}` Warnings: {dbUser.Warnings.reJoin(" | ")}";
-                info += $"\nAvatar: {user.GetAvatarUrl(size: 2048)}";
+                info += $"\nAvatar: {user.GetAvatarUrl(size: 256)}";
 
                 foreach (var str in info.SplitSafe(','))
                 {
