@@ -37,19 +37,6 @@ namespace GenericBot.Entities
                         Console.WriteLine("DB loaded from LITEDB");
                         tempdb = col.FindOne(c => c.ID.Equals(guildId));
                     }
-                    else if (File.Exists($"files/guildDbs/{ID}.json"))
-                    {
-                        if (!File.ReadAllText($"files/guildDbs/{ID}.json").StartsWith("{"))
-                        {
-                            Console.WriteLine("DB loaded from ENCRYPTED JSON");
-                            tempdb = JsonConvert.DeserializeObject<DBGuild>(AES.DecryptText(File.ReadAllText($"files/guildDbs/{ID}.json"), GenericBot.DBPassword));
-                        }
-                        else
-                        {
-                            Console.WriteLine("DB loaded from RAW JSON");
-                            tempdb = JsonConvert.DeserializeObject<DBGuild>(File.ReadAllText($"files/guildDbs/{ID}.json"));
-                        }
-                    }
                     else
                     {
                         tempdb = new DBGuild() { ID = guildId, Users = new List<DBUser>() };
@@ -68,7 +55,6 @@ namespace GenericBot.Entities
         {
             try
             {
-                if (JsonConvert.SerializeObject(this).Length < 8) return;
                 GenericBot.LoadedGuilds[this.ID] = this;
                 var col = GenericBot.GlobalDatabase.GetCollection<DBGuild>("userDatabase");
                 col.EnsureIndex(c => c.ID, true);
