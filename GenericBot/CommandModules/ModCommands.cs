@@ -220,15 +220,9 @@ namespace GenericBot.CommandModules
                 if (dbUsers.Count > 5)
                 {
                     string info =
-                        $"Found `{dbUsers.Count}` users. Their first stored usernames are:\n{dbUsers.Select(u => $"`{u.Usernames.First()}`").ToList().SumAnd()}" +
+                        $"Found `{dbUsers.Count}` users. Their first stored usernames are:\n{dbUsers.Select(u => $"{u.Usernames.First().Escape()} (`{user.ID}`)").ToList().SumAnd()}" +
                         $"\nTry using more precise search parameters";
-                    foreach (var user in dbUsers)
-                    {
-                        if (user.Usernames.First().ToLower().Equals(input.ToLower()))
-                        {
-                            info = info.Replace($"`{user.Usernames.First()}`", $"`{user.Usernames.First()}` (`{user.ID}`)");
-                        }
-                    }
+
                     foreach (var str in info.SplitSafe(','))
                     {
                         await msg.ReplyAsync(str.TrimStart(','));
