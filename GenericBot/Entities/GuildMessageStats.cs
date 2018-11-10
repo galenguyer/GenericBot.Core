@@ -265,7 +265,7 @@ namespace GenericBot.Entities
                 string mostActiveUsersOverall = "";
                 foreach (var user in mostActiveIdOverall)
                 {
-                    var commandCount = user.Years.Any(y => y.Months.Any(m => m.Days.Any(d => d.Commands != null))) ? user.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.Commands.Sum(c => c.Value)))) : 0;
+                    var commandCount = user.Years.Any(y => y.Months.Any(m => m.Days.Any(d => d.Commands != null))) ? user.Years.Sum(y => y.Months.Sum(m => m.Days.Where(d => d.Commands != null).Sum(d => d.Commands.Sum(c => c.Value)))) : 0;
                     if (msg.GetGuild().Users.HasElement(u => u.Id == user.Id, out var us))
                     {
                         mostActiveUsersOverall += $"    {us.GetDisplayName()} (`{us}`) " +
