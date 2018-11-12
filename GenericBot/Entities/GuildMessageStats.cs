@@ -259,7 +259,10 @@ namespace GenericBot.Entities
                 var years = users.SelectMany(u => u.Years);
                 var months = years.SelectMany(y => y.Months);
                 var days = months.SelectMany(m => m.Days);
-                var commands = days.Where(d => d.Commands != null).SelectMany(d => d.Commands);
+                var commands = days.Where(d => d.Commands != null).SelectMany(d => d.Commands)
+                    .GroupBy(kvp => kvp.Key, kvp => kvp.Value)
+                    .Select(g => new KeyValuePair<string, int>(g.Key, g.Sum()))
+                    .ToList();
 
                 var mostActiveIdOverall = users.OrderByDescending(u => u.Years.Sum(y => y.Months.Sum(m => m.Days.Sum(d => d.MessageCount)))).Take(3);
                 string mostActiveUsersOverall = "";
