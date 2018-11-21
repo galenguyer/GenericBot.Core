@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using Discord;
 using GenericBot.Entities;
 
@@ -25,6 +26,44 @@ namespace GenericBot.CommandModules
 
             FunCommands.Add(wat);
 
+            Command ud = new Command("ud");
+            ud.Aliases = new List<string> { "urbandictionary" };
+            ud.Description = "Define a word or phrase with UrbanDictionary";
+            ud.ToExecute += async (client, msg, parameters) => 
+            {
+                string word = parameters.reJoin();
+                var urbanclient = new UrbanDictionary.UrbanClient();
+                var urbanResponse = urbanclient.GetClientResponse(word);
+
+                var em = new EmbedBuilder();
+
+                em.WithThumbnailUrl("http://marcmarut.com/wp-content/uploads/2013/12/Urban-Dictionary-Icon3.png");
+                Regex rgx = new Regex(@"\[(\w|\s)*\]");
+                if (urbanResponse.List.Count == 0)
+                {
+                    em.WithTitle(word);
+                    em.WithDescription("No matches found");
+                    em.WithColor(new Color(250, 0, 0));
+                }
+                else
+                {
+                    var pos = new Random().Next(urbanResponse.List.Where(w => (w.ThumbsUp - w.ThumbsDown) > 0).ToList().Count);
+                    var wordToUse = urbanResponse.List.Where(w => (w.ThumbsUp - w.ThumbsDown) > 0).ToList()[pos];
+
+                    em.WithTitle(wordToUse.Word);
+                    em.WithUrl(wordToUse.Permalink);
+                    em.AddField("Definition", wordToUse.Definition.Replace("[", "").Replace("]", ""));
+                    em.AddField("Example", wordToUse.Example.Replace("[", "").Replace("]", ""));
+                    //em.AddField("Tags", wordToUse.Tags.Aggregate((i, j) => i + ", " + j));
+                    em.AddField("Author", wordToUse.Author, inline: true);
+                    em.AddField("Rating", wordToUse.ThumbsUp - wordToUse.ThumbsDown, inline: true);
+                    em.WithFooter(new EmbedFooterBuilder().WithText($" Definition {pos + 1}/{urbanResponse.List.Count} ({urbanResponse.List.Where(w => (w.ThumbsUp - w.ThumbsDown) > 0).ToList().Count})"));
+                    em.WithColor(new Color(19, 79, 230));
+                }
+
+                await msg.Channel.SendMessageAsync("", embed: em.Build());
+            };
+            FunCommands.Add(ud);
             Command roll = new Command("roll");
             roll.Aliases.Add("dice");
             roll.Description = "Roll a specified number of dices. Defaults to 1d20 if no parameters";
