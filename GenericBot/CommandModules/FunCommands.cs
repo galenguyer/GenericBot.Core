@@ -73,10 +73,10 @@ namespace GenericBot.CommandModules
                 uint count = 1;
                 uint sides = 20;
                 int add = 0;
-                if (!parameters.Empty())
+                if (!parameters.Empty()) // If there are any parameters
                 {
                     string param = parameters.reJoin("").ToLower();
-                    if (!param.Contains("d"))
+                    if (!param.Contains("d")) // it's just a number
                     {
                         if (!uint.TryParse(param, out count))
                         {
@@ -86,14 +86,15 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
-                        if (!(param.Contains("+") || param.Contains("-")))
+                        if (!(param.Contains("+") || param.Contains("-"))) // There's no modifier
                         {
                             var list = param.Split('d');
-                            if (!(uint.TryParse(list[0], out count) && uint.TryParse(list[1], out sides)))
+                            if (!uint.TryParse(list[1], out sides))
                             {
                                 await msg.ReplyAsync("Input improperly formatted");
                                 return;
                             }
+                            uint.TryParse(list[0], out count);
                         }
                         else
                         {
