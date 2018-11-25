@@ -95,6 +95,7 @@ namespace GenericBot.CommandModules
                                 return;
                             }
                             uint.TryParse(list[0], out count);
+                            count = (count <= 1 ? 1 : count);
                         }
                         else
                         {
