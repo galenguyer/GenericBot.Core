@@ -79,7 +79,7 @@ namespace GenericBot.CommandModules
                     messagesToDelete.Add(msg.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription("Please select a role to join").WithColor(new Color(0xFFFF00)).Build()).Result);
                 }
 
-                foreach (var roleName in paramList.Aggregate((i, j) => i + " " + j).Split(','))
+                foreach (var roleName in paramList.Aggregate((i, j) => i + " " + j).Trim(',').Split(','))
                 {
                     var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower().Trim()))
                         .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id));
