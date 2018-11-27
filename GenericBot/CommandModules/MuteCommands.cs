@@ -107,7 +107,7 @@ namespace GenericBot.CommandModules
                     await (msg.Channel as SocketGuildChannel).AddPermissionOverwriteAsync(msg.GetGuild().EveryoneRole,
                         currentState.Modify(sendMessages: PermValue.Deny));
 
-                    await msg.ReplyAsync("Sending messages to this channel has been temporarily disabled :mute:");
+                    await msg.ReplyAsync("Sending messages to this channel has been temporarily disabled :mute:\nhttps://files.mastrchef.rocks/images/noposting.png");
                 }
                 else // Channel is already muted
                 {
