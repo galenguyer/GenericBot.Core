@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -25,6 +26,15 @@ namespace GenericBot.CommandModules
             };
 
             FunCommands.Add(wat);
+
+            Command inspirobot = new Command("inspirobot");
+            inspirobot.Description = "Generate a new image from Inspirobot";
+            inspirobot.ToExecute += async (client, msg, parameters) =>
+            {
+                await msg.ReplyAsync(new WebClient().DownloadString("http://inspirobot.me/api?generate=true"));
+            };
+
+            FunCommands.Add(inspirobot);
 
             Command ud = new Command("ud");
             ud.Aliases = new List<string> { "urbandictionary" };
