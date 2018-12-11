@@ -81,6 +81,8 @@ namespace GenericBot.CommandModules
 
                 foreach (var roleName in paramList.Aggregate((i, j) => i + " " + j).Trim(',').Split(','))
                 {
+                    if (string.IsNullOrWhiteSpace(roleName))
+                        continue;
                     var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower().Trim()))
                         .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id));
                     if (!roles.Any())
@@ -148,6 +150,8 @@ namespace GenericBot.CommandModules
 
                 foreach (var roleName in paramList.Aggregate((i, j) => i + " " + j).Trim(',').Split(','))
                 {
+                    if (string.IsNullOrWhiteSpace(roleName))
+                        continue;
                     var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower().Trim()))
                         .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id));
                     if (!roles.Any())
