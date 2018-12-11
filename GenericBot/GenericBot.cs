@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Timers;
@@ -29,6 +31,11 @@ namespace GenericBot
         public static bool DebugMode = false;
         public static Animols Animols = new Animols();
         public static string DBPassword;
+
+        public static Timer StatusPollingTimer = new Timer();
+        public static int MessageCounter = 0;
+        public static int CommandCounter = 0;
+        public static int Latency = 0;
 
         public static ConcurrentDictionary<ulong, DBGuild> LoadedGuildDbs = new ConcurrentDictionary<ulong, DBGuild>();
         public static ConcurrentDictionary<ulong, GuildMessageStats> LoadedGuildMessageStats = new ConcurrentDictionary<ulong, GuildMessageStats>();
@@ -75,6 +82,14 @@ namespace GenericBot
             Updater.AutoReset = true;
             Updater.Interval = 5 * 1000;
             Updater.Elapsed += CheckMuteRemoval;
+
+            if (!string.IsNullOrEmpty(GlobalConfiguration.StatusAuthKey))
+            {
+                StatusPollingTimer.AutoReset = true;
+                StatusPollingTimer.Interval = 1 * 1000;
+                StatusPollingTimer.Elapsed += StatusPollingTimerOnElapsed;
+                StatusPollingTimer.Start();
+            }
 
             #endregion Timers
 
@@ -175,6 +190,24 @@ namespace GenericBot
                 .AddSingleton(DiscordClient);
             var provider = new DefaultServiceProviderFactory().CreateServiceProvider(services);
             return provider;
+        }
+
+        private static void StatusPollingTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                using (var httpClient = new WebClient())
+                {
+                    httpClient.Headers["Authorization"] = GlobalConfiguration.StatusAuthKey;
+                    httpClient.Headers[HttpRequestHeader.ContentType] = "application/json";
+                    var result = httpClient.UploadString("https://mastrchef.rocks/programs/genericbot/status/update/", JsonConvert.SerializeObject(new BotStatus()));
+                }
+                StatusPollingTimer.Interval = 5 * 1000;
+            }
+            catch (Exception ex)
+            {
+                StatusPollingTimer.Interval = 15 * 1000;
+            }
         }
 
         private static void CheckMuteRemoval(object sender, ElapsedEventArgs elapsedEventArgs)

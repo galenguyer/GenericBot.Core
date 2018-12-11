@@ -17,6 +17,9 @@ namespace GenericBot
             // Don't handle the command if it is a system message
             var message = parameterMessage;
 
+            GenericBot.MessageCounter++;
+            GenericBot.Latency = (int)Math.Round((DateTimeOffset.UtcNow - parameterMessage.Timestamp).TotalMilliseconds);
+
             if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(message.Author.Id))
             {
                 return;
@@ -169,7 +172,7 @@ namespace GenericBot
                 commandInfo.Command.ExecuteCommand(GenericBot.DiscordClient, message, commandInfo.Parameters).FireAndForget();
                 GenericBot.Logger.LogGenericMessage($"Guild: {parameterMessage.GetGuild().Name} ({parameterMessage.GetGuild().Id}) Channel: {parameterMessage.Channel.Name} ({parameterMessage.Channel.Id}) User: {parameterMessage.Author} ({parameterMessage.Author.Id}) Command: {commandInfo.Command.Name} Parameters {JsonConvert.SerializeObject(commandInfo.Parameters)}");
                 new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, commandInfo.Command.Name).Save();
-
+                GenericBot.CommandCounter++;
             }
             catch (NullReferenceException nullRefEx)
             {
