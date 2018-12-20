@@ -220,7 +220,7 @@ namespace GenericBot.CommandModules
                 if (dbUsers.Count > 5)
                 {
                     string info =
-                        $"Found `{dbUsers.Count}` users. Their first stored usernames are:\n{dbUsers.Select(u => $"{u.Usernames.First().Escape()} (`{user.ID}`)").ToList().SumAnd()}" +
+                        $"Found `{dbUsers.Count}` users. Their first stored usernames are:\n{dbUsers.Select(u => $"{u.Usernames.First().Escape()} (`{u.ID}`)").ToList().SumAnd()}" +
                         $"\nTry using more precise search parameters";
 
                     foreach (var str in info.SplitSafe(','))
@@ -478,7 +478,16 @@ namespace GenericBot.CommandModules
                     }
                 }
 
-                string res = "Succesfully muted " + mutedUsers.Select(u => u.Mention).ToList().SumAnd();
+                string res;
+
+                if(mutedUsers.Count > 0) 
+                {
+                    res = "Succesfully muted " + mutedUsers.Select(u => u.Mention).ToList().SumAnd();
+                }
+                else
+                {
+                    res = "Could not find that user";
+                }
 
                 await msg.ReplyAsync(res);
 
