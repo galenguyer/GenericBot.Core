@@ -292,7 +292,7 @@ namespace GenericBot.CommandModules
                 {
                     parameters.RemoveAt(0);
                     string warning = parameters.reJoin();
-                    warning += $" (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
+                    warning += $" (Added By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
                     DBGuild guildDb = new DBGuild(msg.GetGuild().Id);
                     if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
                     {
@@ -362,7 +362,8 @@ namespace GenericBot.CommandModules
                     }
                     parameters.RemoveAt(0);
                     string warning = parameters.reJoin();
-                    warning += $" (By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
+                    warning += $" (Issued By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
+
                     DBGuild guildDb = new DBGuild(msg.GetGuild().Id);
                     if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
                     {
