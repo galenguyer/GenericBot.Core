@@ -97,10 +97,10 @@ namespace GenericBot.CommandModules
             setPoints.ToExecute += async (client, msg, parameters) =>
             {
                 var dbGuild = new DBGuild(msg.GetGuild().Id);
-                var user = dbGuild.GetUser(msg.GetMentionedUsers().First().Id);
+                var user = dbGuild.GetUser(ulong.Parse(parameters[0]));
                 user.PointsCount = decimal.Parse(parameters[1]);
                 dbGuild.Save();
-                await msg.ReplyAsync($"{msg.GetMentionedUsers().First().Mention} now has {(user.PointsCount)} points");
+                await msg.ReplyAsync($"`{parameters[0]}` now has {(user.PointsCount)} points");
             };
             pointCommands.Add(setPoints);
 
