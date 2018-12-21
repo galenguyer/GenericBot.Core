@@ -81,7 +81,7 @@ namespace GenericBot.CommandModules
                                 dbGuild.GetUser(u.Id).PointsCount++;
                             }
                             dbGuild.Save();
-                            await msg.ReplyAsync($"{msg.MentionedUsers.Select(us => us.Mention).ToList().SumAnd()} recieved a {GenericBot.GuildConfigs[msg.GetGuild().Id].PointsName} from {msg.Author.Mention}!");
+                            await msg.ReplyAsync($"{msg.MentionedUsers.Select(us => us.Mention).ToList().SumAnd()} received a {GenericBot.GuildConfigs[msg.GetGuild().Id].PointsName} from {msg.Author.Mention}!");
                         }
                     }
                     else
