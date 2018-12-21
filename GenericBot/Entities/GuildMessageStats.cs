@@ -297,12 +297,12 @@ namespace GenericBot.Entities
                     if (msg.GetGuild().Users.HasElement(u => u.Id == user.Id, out var us))
                     {
                         mostActiveUsersToday += $"    {us.GetDisplayName()} (`{us}`) " +
-                        $"(`{MessageCountTodayByUser(user)}` messages, ";
+                        $"(`{MessageCountTodayByUser(user)}` messages)\n";
                     }
                     else
                     {
                         mostActiveUsersToday += $"    Unknown User (`{user.Id}`) " +
-                        $"(`{MessageCountTodayByUser(user)}` messages, ";
+                        $"(`{MessageCountTodayByUser(user)}` messages)\n";
                     }
                 }
 
