@@ -70,8 +70,8 @@ namespace GenericBot.CommandModules
                             canvas.Clear(Color.Transparent);
 
                             //this paints the frontimage with a offset at the given coordinates
-                            canvas.DrawImage(avatar, 283, 228, 118*avatar.Width/avatar.Height, 118);
-                            canvas.DrawImage(avatar, 746, 250, 364*avatar.Width/avatar.Height, 346);
+                            canvas.DrawImage(avatar, 283, 228, 118 * avatar.Width / avatar.Height, 118);
+                            canvas.DrawImage(avatar, 746, 250, 364 * avatar.Width / avatar.Height, 346);
 
                             //this selects the entire backimage and and paints
                             //it on the new image in the same size, so its not distorted.
@@ -102,6 +102,88 @@ namespace GenericBot.CommandModules
             };
 
             SocialCommands.Add(star);
+
+            Command respects = new Command("respects");
+            respects.ToExecute += async (client, msg, parameters) =>
+            {
+                string filename = "";
+                if (parameters.Empty())
+                {
+                    var user = msg.Author;
+                    using (WebClient webClient = new WebClient())
+                    {
+                        await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl().Replace("size=128", "size=512")),
+                            $"files/img/{user.AvatarId}.png");
+                    }
+                    filename = $"files/img/{user.AvatarId}.png";
+                }
+                else if (Uri.IsWellFormedUriString(parameters[0], UriKind.RelativeOrAbsolute) &&
+                                         (parameters[0].EndsWith(".png") || parameters[0].EndsWith(".jpg") ||
+                                          parameters[0].EndsWith("jpeg") || parameters[0].EndsWith(".gif")))
+                {
+                    filename = $"files/img/{msg.Id}.{parameters.reJoin().Split('.').Last()}";
+                    using (WebClient webclient = new WebClient())
+                    {
+                        await webclient.DownloadFileTaskAsync(new Uri(parameters.reJoin()), filename);
+                    }
+                }
+                else if (msg.GetMentionedUsers().Any())
+                {
+                    var user = msg.GetMentionedUsers().First();
+                    using (WebClient webClient = new WebClient())
+                    {
+                        await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl().Replace("size=128", "size=512")),
+                            $"files/img/{user.AvatarId}.png");
+                    }
+                    filename = $"files/img/{user.AvatarId}.png";
+                }
+
+                {
+                    int targetWidth = 1920;
+                    int targetHeight = 1080; //height and width of the finished image
+                    Image baseImage = Image.FromFile("files/img/respects.png");
+                    Image avatar = Image.FromFile(filename);
+
+                    //be sure to use a pixelformat that supports transparency
+                    using (var bitmap = new Bitmap(targetWidth, targetHeight, PixelFormat.Format32bppArgb))
+                    {
+                        using (var canvas = Graphics.FromImage(bitmap))
+                        {
+                            //this ensures that the backgroundcolor is transparent
+                            canvas.Clear(Color.Transparent);
+
+                            //this paints the frontimage with a offset at the given coordinates
+                            canvas.DrawImage(avatar, 537, 130, 235, 235);
+
+                            //this selects the entire backimage and and paints
+                            //it on the new image in the same size, so its not distorted.
+                            canvas.DrawImage(baseImage, 0, 0, targetWidth, targetHeight);
+                            canvas.Save();
+                        }
+
+                        bitmap.Save($"files/img/respects_{msg.Id}.png", System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                    await Task.Delay(100);
+                    await msg.Channel.SendFileAsync($"files/img/respects_{msg.Id}.png");
+                    while (true)
+                    {
+                        try
+                        {
+                            baseImage.Dispose();
+                            avatar.Dispose();
+                            File.Delete(filename);
+                            File.Delete($"files/img/respects_{msg.Id}.png");
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                }
+            };
+
+            SocialCommands.Add(respects);
 
             Command jeff = new Command("jeff");
             jeff.ToExecute += async (client, msg, parameters) =>
