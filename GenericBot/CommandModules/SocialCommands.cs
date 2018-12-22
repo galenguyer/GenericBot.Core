@@ -20,6 +20,23 @@ namespace GenericBot.CommandModules
         {
             List<Command> SocialCommands = new List<Command>();
 
+            Command mock = new Command("mock");
+            mock.Description = "MOcKinG sPoNgeBoB TeXt";
+            mock.ToExecute += async (client, msg, parameters) =>
+            {
+                string rawMesage = CommandHandler.GetParameterString(msg);
+                string mockedMessage = "";
+                foreach(var c in rawMesage.ToLower())
+                {
+                    if (new Random().Next() > new Random().Next())
+                        mockedMessage += char.ToUpper(c);
+                    else
+                        mockedMessage += c;
+                }
+                await msg.ReplyAsync(mockedMessage);
+            };
+            SocialCommands.Add(mock);
+
             Command star = new Command("star");
             star.ToExecute += async (client, msg, parameters) =>
             {

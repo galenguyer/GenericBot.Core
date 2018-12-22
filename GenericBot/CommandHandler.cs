@@ -132,9 +132,48 @@ namespace GenericBot
                 Console.WriteLine(e);
             }
 
-            //Console.WriteLine($"Command: {parsedCommand.Command.Name} Name: {parsedCommand.Name} Parameters: {parsedCommand.Parameters.Count}");
-
             return parsedCommand;
         }
+
+        public static string GetParameterString(SocketMessage msg)
+        {
+            ParsedCommand parsedCommand = new ParsedCommand();
+
+            parsedCommand.Message = msg;
+
+            string message = msg.Content;
+
+            string pref = GenericBot.GlobalConfiguration.DefaultPrefix;
+
+            if (msg.Channel is IDMChannel) goto DMC;
+
+            if (!String.IsNullOrEmpty(GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix))
+                pref = GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix;
+
+            DMC:
+
+            if (!message.StartsWith(pref)) return null;
+
+            message = message.Substring(pref.Length);
+
+            string commandId = message.Split(' ')[0].ToLower();
+
+            Command cmd = new Command("tempCommand");
+
+            if (GenericBot.Commands.HasElement(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)) ||
+                                                    GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.Any(a => a.Alias == commandId) &&
+                                                    c.Name == GenericBot.GuildConfigs[msg.GetGuild().Id].CustomAliases.First(a => a.Alias == commandId).Command, out cmd))
+            {
+                parsedCommand.Command = cmd;
+            }
+            else
+            {
+                parsedCommand.Command = null;
+            }
+
+            parsedCommand.Name = commandId;
+            return message.Substring(commandId.Length);
+        }
+
     }
 }
