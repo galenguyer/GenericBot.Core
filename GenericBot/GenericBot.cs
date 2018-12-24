@@ -194,6 +194,15 @@ namespace GenericBot
 
         private static void StatusPollingTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
+            if(GenericBot.DiscordClient.GetShard(0).ConnectionState == ConnectionState.Disconnecting)
+            {
+                if (StatusPollingTimer.Interval == 15 * 1000)
+                    Environment.Exit(1);
+                else
+                    StatusPollingTimer.Interval = 15 * 1000;
+
+                return;
+            }
             try
             {
                 using (var httpClient = new WebClient())
