@@ -4,7 +4,7 @@
     {
         public string Content { get; set; }
         public int Id { get; set; }
-        public bool Active = true;
+        public bool Active { get; set; }
 
         public Quote()
         {
