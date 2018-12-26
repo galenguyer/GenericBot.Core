@@ -26,10 +26,15 @@ namespace GenericBot.CommandModules
             {
                 string rawMesage = CommandHandler.GetParameterString(msg);
                 string mockedMessage = "";
+                double rand = new Random().NextDouble();
                 foreach(var c in rawMesage.ToLower())
                 {
-                    if (new Random().Next() > new Random().Next())
+                    rand += new Random().NextDouble();
+                    if (rand >= 1)
+                    {
+                        rand = 0;
                         mockedMessage += char.ToUpper(c);
+                    }
                     else
                         mockedMessage += c;
                 }
