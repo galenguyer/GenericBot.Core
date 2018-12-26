@@ -32,7 +32,7 @@ namespace GenericBot.CommandModules
                     rand += new Random().NextDouble();
                     if (rand >= 1)
                     {
-                        rand = 0;
+                        rand = new Random().NextDouble();
                         mockedMessage += char.ToUpper(c);
                     }
                     else
