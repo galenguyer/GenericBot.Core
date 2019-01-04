@@ -72,7 +72,7 @@ namespace GenericBot.CommandModules
                                 Attatchments = m.Attachments,
                                 Timestamp = m.CreatedAt
                             })
-                        }));
+                        }, Formatting.Indented));
                         await msg.GetGuild().GetTextChannel(logChannelId).SendFileAsync(fileName, "");
                         File.Delete(fileName);
                     }
