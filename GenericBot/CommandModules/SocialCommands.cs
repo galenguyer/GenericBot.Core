@@ -11,6 +11,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Color = System.Drawing.Color;
 using Image = System.Drawing.Image;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace GenericBot.CommandModules
 {
@@ -206,6 +208,62 @@ namespace GenericBot.CommandModules
             };
 
             SocialCommands.Add(respects);
+
+            Command box = new Command("box");
+            box.Aliases = new List<string> { "boxer" };
+            box.ToExecute += async (client, msg, parameters) =>
+            {
+                var workout = $"files/boxer/{msg.Id}";
+                Directory.CreateDirectory(workout);
+                var random = new Random();
+                for (int i = 0; i < 8; i++)
+                {
+                    File.Copy($"files/boxer/boxer{random.Next(1, 4)}.png", $"{workout}/boxer{i}.png");
+                }
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Process cmd = new Process();
+                    cmd.StartInfo.FileName = "cmd.exe";
+                    cmd.StartInfo.RedirectStandardInput = true;
+                    cmd.StartInfo.RedirectStandardOutput = true;
+                    cmd.StartInfo.RedirectStandardError = true;
+                    cmd.StartInfo.CreateNoWindow = true;
+                    cmd.StartInfo.UseShellExecute = false;
+                    cmd.Start();
+
+                    cmd.StandardInput.WriteLine($"ffmpeg -t 2 -f image2 -framerate 2 -i {workout}/boxer%d.png -vf scale=300:-1 {workout}/boxer.gif");
+                    cmd.StandardInput.Flush();
+                    cmd.StandardInput.Close();
+                    cmd.WaitForExit();
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process proc = new System.Diagnostics.Process();
+                    proc.StartInfo.FileName = "/bin/bash";
+                    proc.StartInfo.Arguments = $"-c \"ffmpeg -t 2 -f image2 -framerate 2 -i {workout}/boxer%d.png -vf scale=300:-1 {workout}/boxer.gif\"";
+                    proc.StartInfo.RedirectStandardOutput = true;
+                    proc.StartInfo.CreateNoWindow = true;
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.Start();
+                    proc.WaitForExit();
+                }
+                else
+                {
+                    await msg.Channel.SendMessageAsync("Unrecognized platform");
+                }
+
+                if (!File.Exists($"{workout}/boxer.gif"))
+                {
+                    await msg.Channel.SendMessageAsync("ffmpeg not installed. Contact the bot maintainer to solve this.");
+                }
+                else
+                {
+                    await msg.Channel.SendFileAsync($"{workout}/boxer.gif");
+                    Directory.Delete(workout, recursive: true);
+                }
+
+            };
+            SocialCommands.Add(box);
 
             Command jeff = new Command("jeff");
             jeff.ToExecute += async (client, msg, parameters) =>
