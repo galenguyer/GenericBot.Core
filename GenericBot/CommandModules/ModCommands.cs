@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using GenericBot.Entities;
+using Newtonsoft.Json;
 
 namespace GenericBot.CommandModules
 {
@@ -42,8 +43,42 @@ namespace GenericBot.CommandModules
                         await msg.ReplyAsync($"It looks like you're trying to mention someone but failed.");
                         return;
                     }
+                    msgs = msgs.Where(m => DateTime.Now - m.CreatedAt < TimeSpan.FromDays(14)).ToList();
+                    var logChannelId = GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId;
+                    if(msg.GetGuild().Channels.Any(c => c.Id == logChannelId))
+                    {
+                        string fileName = $"files/{msg.Channel.Name}-cleared-{msg.Id.ToString().Substring(14, 4)}.txt";
+                        File.WriteAllText(fileName, JsonConvert.SerializeObject(new
+                        {
+                            Guild = new
+                            {
+                                msg.GetGuild().Id,
+                                msg.GetGuild().Name, 
+                                Channel = new
+                                {
+                                    msg.Channel.Id,
+                                    msg.Channel.Name
+                                }
+                            },
+                            Messages = msgs.Select(m => new
+                            {
+                                m.Id,
+                                Author = new
+                                {
+                                    m.Author.Id,
+                                    Username = $"{m.Author.Username}#{m.Author.Discriminator}"
+                                },
+                                m.Content,
+                                Attatchments = m.Attachments,
+                                Timestamp = m.CreatedAt
+                            })
+                        }));
+                        await msg.Channel.SendFileAsync(filePath: fileName);
+                        File.Delete(fileName);
+                    }
+                    msgs.ForEach(m => GenericBot.ClearedMessageIds.Add(m.Id));
 
-                    await (msg.Channel as ITextChannel).DeleteMessagesAsync(msgs.Where(m => DateTime.Now - m.CreatedAt < TimeSpan.FromDays(14)));
+                    await (msg.Channel as ITextChannel).DeleteMessagesAsync(msgs);
 
                     var messagesSent = new List<IMessage>();
 

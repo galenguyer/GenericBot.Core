@@ -193,7 +193,7 @@ namespace GenericBot
         public static async Task MessageDeleted(Cacheable<IMessage, ulong> arg, ISocketMessageChannel channel)
         {
             if (!arg.HasValue) return;
-
+            if (GenericBot.ClearedMessageIds.Contains(arg.Id)) return;
             var guildConfig = GenericBot.GuildConfigs[(arg.Value as SocketMessage).GetGuild().Id];
 
             if (guildConfig.UserLogChannelId == 0 || guildConfig.MessageLoggingIgnoreChannels.Contains(channel.Id)) return;

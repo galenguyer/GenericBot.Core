@@ -54,6 +54,7 @@ namespace GenericBot
         public static ParsedCommand LastCommand;
 
         public static List<string> LockedFiles = new List<string>();
+        public static HashSet<ulong> ClearedMessageIds = new HashSet<ulong>();
 
         public static int Disconnects = 0;
 
