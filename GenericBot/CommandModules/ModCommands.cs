@@ -60,7 +60,7 @@ namespace GenericBot.CommandModules
                                     msg.Channel.Name
                                 }
                             },
-                            Messages = msgs.OrderByDescending(m => m.Id).Select(m => new
+                            Messages = msgs.OrderBy(m => m.Id).Select(m => new
                             {
                                 m.Id,
                                 Author = new
