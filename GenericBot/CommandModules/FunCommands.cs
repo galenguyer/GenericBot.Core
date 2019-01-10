@@ -18,6 +18,28 @@ namespace GenericBot.CommandModules
         {
             List<Command> FunCommands = new List<Command>();
 
+            Command markov = new Command("markov");
+            markov.Description = "Create a markov chain from the last messages in the channel";
+            markov.Delete = true;
+            markov.Usage = "markov";
+            markov.ToExecute += async (client, msg, parameters) =>
+            {
+                var messages = msg.Channel.GetMessagesAsync().Flatten().Reverse().Select(m => m.Content).ToList().Result;
+                messages.ToList().AddRange(messages.TakeLast(50));
+                messages.ToList().AddRange(messages.TakeLast(25));
+                messages.ToList().AddRange(messages.TakeLast(10));
+
+                int averageLength = messages.Sum(m => m.Split(' ').Length) / 185;
+                averageLength = averageLength > 10 ? averageLength : averageLength * 2;
+
+                var markovGenerator = new SharperMark.LookbackMarkov();
+                markovGenerator.Train(messages.ToArray());
+
+                await msg.ReplyAsync(markovGenerator.GenerateWords(averageLength));
+            };
+
+            FunCommands.Add(markov);
+
             Command wat = new Command("wat");
             wat.Description = "The best command";
             wat.ToExecute += async (client, msg, parameters) =>
