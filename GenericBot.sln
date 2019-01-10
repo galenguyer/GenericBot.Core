@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericBot", "GenericBot\GenericBot.csproj", "{A206F030-5490-4BF3-B4B9-6DD7D9166533}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharperMark", "SharperMark\SharperMark.csproj", "{E4247584-455A-4EA0-9FD2-4918993553AA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{A206F030-5490-4BF3-B4B9-6DD7D9166533}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A206F030-5490-4BF3-B4B9-6DD7D9166533}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A206F030-5490-4BF3-B4B9-6DD7D9166533}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E4247584-455A-4EA0-9FD2-4918993553AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4247584-455A-4EA0-9FD2-4918993553AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4247584-455A-4EA0-9FD2-4918993553AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4247584-455A-4EA0-9FD2-4918993553AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
