@@ -55,6 +55,7 @@ namespace GenericBot
 
         public static List<string> LockedFiles = new List<string>();
         public static HashSet<ulong> ClearedMessageIds = new HashSet<ulong>();
+        public static DateTimeOffset LastMessageRecieved = DateTimeOffset.UtcNow;
 
         public static int Disconnects = 0;
 
@@ -198,11 +199,17 @@ namespace GenericBot
             if(GenericBot.DiscordClient.GetShard(0).ConnectionState == ConnectionState.Disconnecting)
             {
                 if (StatusPollingTimer.Interval == 15 * 1000)
+                {
+                    Logger.LogErrorMessage("Disconnecting timed out, forcing exit");
                     Environment.Exit(1);
+                }
                 else
                     StatusPollingTimer.Interval = 15 * 1000;
-
                 return;
+            }
+            if (LastMessageRecieved.AddSeconds(55) < DateTimeOffset.UtcNow)
+            {
+                Logger.LogErrorMessage("Discord.NET hanging without disconnecting (or quiet time), exiting");
             }
             try
             {

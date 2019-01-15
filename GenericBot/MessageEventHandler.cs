@@ -19,12 +19,10 @@ namespace GenericBot
 
             GenericBot.MessageCounter++;
             GenericBot.Latency = (int)Math.Round((DateTimeOffset.UtcNow - parameterMessage.Timestamp).TotalMilliseconds);
+            GenericBot.LastMessageRecieved = message.EditedTimestamp ?? message.Timestamp;
 
             if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(message.Author.Id))
-            {
                 return;
-            }
-
             if (parameterMessage.Author.Id == GenericBot.DiscordClient.CurrentUser.Id)
                 return;
 
