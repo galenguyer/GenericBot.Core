@@ -66,14 +66,14 @@ namespace GenericBot
                 }
                 guildDb.Save();
             }
-            catch(Exception ex){GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace)}
+            catch(Exception ex){ GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace); }
             if (!edited)
             {
                 try
                 {
                     new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
                 }
-                catch (Exception ex) { GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace)}
+                catch (Exception ex) { GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace); }
             }
 
             if (parameterMessage.Author.Id != GenericBot.DiscordClient.CurrentUser.Id &&
@@ -141,7 +141,7 @@ namespace GenericBot
             {
                 pointThread.Start();
             }
-            catch (Exception ex) { GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace)}
+            catch (Exception ex) { GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace); }
 
             try
             {
