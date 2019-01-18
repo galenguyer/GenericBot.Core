@@ -52,21 +52,28 @@ namespace GenericBot
                 }
             }
 
-            var guildDb = new DBGuild(message.GetGuild().Id);
-            if (guildDb.Users.Any(u => u.ID.Equals(message.Author.Id))) // if already exists
+            try
             {
-                guildDb.Users.Find(u => u.ID.Equals(message.Author.Id)).AddUsername(message.Author.Username);
-                guildDb.Users.Find(u => u.ID.Equals(message.Author.Id)).AddNickname(message.Author as SocketGuildUser);
+                var guildDb = new DBGuild(message.GetGuild().Id);
+                if (guildDb.Users.Any(u => u.ID.Equals(message.Author.Id))) // if already exists
+                {
+                    guildDb.Users.Find(u => u.ID.Equals(message.Author.Id)).AddUsername(message.Author.Username);
+                    guildDb.Users.Find(u => u.ID.Equals(message.Author.Id)).AddNickname(message.Author as SocketGuildUser);
+                }
+                else
+                {
+                    guildDb.Users.Add(new DBUser(message.Author as SocketGuildUser));
+                }
+                guildDb.Save();
             }
-            else
-            {
-                guildDb.Users.Add(new DBUser(message.Author as SocketGuildUser));
-            }
-            guildDb.Save();
-
+            catch(Exception ex){GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace)}
             if (!edited)
             {
-                new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
+                try
+                {
+                    new GuildMessageStats(parameterMessage.GetGuild().Id).AddMessage(parameterMessage.Author.Id).Save();
+                }
+                catch (Exception ex) { GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace)}
             }
 
             if (parameterMessage.Author.Id != GenericBot.DiscordClient.CurrentUser.Id &&
@@ -130,12 +137,16 @@ namespace GenericBot
 
             });
             pointThread.IsBackground = true;
-            pointThread.Start();
-
-
-            GenericBot.QuickWatch.Restart();
             try
             {
+                pointThread.Start();
+            }
+            catch (Exception ex) { GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace)}
+
+            try
+            {
+                GenericBot.QuickWatch.Restart();
+
                 var commandInfo = CommandHandler.ParseMessage(parameterMessage);
 
                 CustomCommand custom = new CustomCommand();
