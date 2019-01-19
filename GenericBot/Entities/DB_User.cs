@@ -20,6 +20,8 @@ namespace GenericBot.Entities
         }
         public DBUser(SocketGuildUser user)
         {
+            if (user == null)
+                return;
             ID = user.Id;
             Nicknames = new List<string>();
             Usernames = new List<string> { user.Username };
