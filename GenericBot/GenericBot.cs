@@ -196,21 +196,18 @@ namespace GenericBot
 
         private static void StatusPollingTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            //if(GenericBot.DiscordClient.GetShard(0).ConnectionState == ConnectionState.Disconnecting)
-            //{
-            //    if (StatusPollingTimer.Interval == 15 * 1000)
-            //    {
-            //        Logger.LogErrorMessage("Disconnecting timed out, forcing exit");
-            //        Environment.Exit(1);
-            //    }
-            //    else
-            //        StatusPollingTimer.Interval = 15 * 1000;
-            //    return;
-            //}
-            //if (LastMessageRecieved.AddSeconds(55) < DateTimeOffset.UtcNow)
-            //{
-            //    Logger.LogErrorMessage("Discord.NET hanging without disconnecting (or quiet time), exiting");
-            //}
+            if (GenericBot.DiscordClient.GetShard(0).ConnectionState == ConnectionState.Disconnecting)
+            {
+                if (StatusPollingTimer.Interval == 15 * 1000)
+                {
+                    Logger.LogErrorMessage("Disconnecting timed out, forcing exit");
+                    Environment.Exit(1);
+                }
+                else
+                    StatusPollingTimer.Interval = 15 * 1000;
+                return;
+            }
+
             try
             {
                 using (var httpClient = new WebClient())
