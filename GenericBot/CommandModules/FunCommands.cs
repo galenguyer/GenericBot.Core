@@ -303,7 +303,7 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
-                        resp.Append(block.Multiply(str.Length));
+                        resp.Append(new String(block, str.Length));
                         if (rcont == 16) rcont = 1;
                     }
                     rcont++;

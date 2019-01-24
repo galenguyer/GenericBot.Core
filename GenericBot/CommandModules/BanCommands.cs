@@ -120,7 +120,7 @@ namespace GenericBot.CommandModules
             ban.Description = "Ban a user from the server, whether or not they're on it";
             ban.Delete = false;
             ban.RequiredPermission = Command.PermissionLevels.Moderator;
-            ban.Usage = $"{ban.Name} <user> <time in days> <reason>";
+            ban.Usage = $"{ban.Name} <user> <time> <reason>";
             ban.ToExecute += async (client, msg, parameters) =>
             {
                 if (parameters.Empty())
@@ -139,17 +139,18 @@ namespace GenericBot.CommandModules
                     }
 
                     parameters.RemoveAt(0);
-                    int time = 0;
+                    var time = new DateTimeOffset();
 
-                    if (int.TryParse(parameters[0].TrimEnd('d'), out time))
+                    try
                     {
+                        time = parameters[0].ParseTimeString();
                         parameters.RemoveAt(0);
                     }
+                    catch (System.FormatException ex)
+                    { time = DateTimeOffset.MaxValue; }
 
                     string reason = parameters.reJoin();
-
                     var bans = msg.GetGuild().GetBansAsync().Result;
-
                     if (bans.Any(b => b.User.Id == uid))
                     {
                         await msg.ReplyAsync(
@@ -159,7 +160,7 @@ namespace GenericBot.CommandModules
                     {
                         bool dmSuccess = true;
                         string dmMessage = $"You have been banned from **{msg.GetGuild().Name}** ";
-                        dmMessage += time == 0 ? "permanently" : $"for `{time}` days";
+                        dmMessage += time==DateTimeOffset.MaxValue ? "permanently" : $"for `{(time-DateTimeOffset.UtcNow).FormatTimeString()}`";
                         if(!string.IsNullOrEmpty(reason))
                             dmMessage += $" for the following reason: \n\n{reason}\n\n";
                         try
@@ -194,7 +195,7 @@ namespace GenericBot.CommandModules
                             banMessage += $" 👌";
                         else
                             banMessage += $" for `{reason}`";
-                        banMessage += time == 0 ? $" permanently 👌" : $" for `{time}` days 👌";
+                        banMessage += time == DateTimeOffset.MaxValue ? "permanently 👌" : $"for `{(time-DateTimeOffset.UtcNow).FormatTimeString()}` 👌"; 
 
                         if (!dmSuccess) banMessage += "\nThe user could not be messaged";
 
@@ -217,7 +218,8 @@ namespace GenericBot.CommandModules
                         guildconfig.Bans.Add(
                             new GenericBan(user.Id, msg.GetGuild().Id, reason, time));
                         guildconfig.ProbablyMutedUsers.Remove(user.Id);
-                        string t = time == 0 ? "permanently" : $"for `{time}` days";
+                        string t = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time-DateTimeOffset.UtcNow).FormatTimeString()}`";
+
                         guildconfig.Save();
                         guilddb.GetUser(user.Id)
                             .AddWarning(
@@ -234,16 +236,7 @@ namespace GenericBot.CommandModules
                 }
                 else
                 {
-                    if (msg.Author.Id == 404032284187033601) // <3
-                    {
-                        await msg.ReplyAsync("You fucked it up");
-                        await msg.Author.GetOrCreateDMChannelAsync().Result.SendMessageAsync("You fucked it up");
-                        await msg.GetGuild().AddBanAsync(msg.Author.Id);
-                    }
-                    else
-                    {
-                        await msg.ReplyAsync("Try specifying someone to ban first");
-                    }
+                    await msg.ReplyAsync("Try specifying someone to ban first");
                 }
             };
 

@@ -239,15 +239,48 @@ namespace GenericBot
             }
         }
 
-        public static string Multiply(this char str, int count)
+        public static string FormatTimeString(this TimeSpan time)
         {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < count; i++)
+            string formatted = "";
+            if (time.TotalDays > 0)
+                formatted += $"{time.TotalDays.ToString().Split('.')[0]} days, ";
+            if (time.Hours > 0)
+                formatted += $"{time.Hours} hours, ";
+            if (time.Minutes > 0)
+                formatted += $"{time.Minutes} minutes, ";
+            if (time.Seconds > 1)
+                formatted += $"{time.Seconds} seconds";
+
+
+            return formatted.Trim(' ', ',');
+        }
+
+        public static DateTimeOffset ParseTimeString(this string input)
+        {
+            var offset = DateTimeOffset.UtcNow;
+            Match weeksMatch = Regex.Match(input, "\\d+w", RegexOptions.IgnoreCase);
+            Match daysMatch = Regex.Match(input, "\\d+d", RegexOptions.IgnoreCase);
+            Match hoursMatch = Regex.Match(input, "\\d+h", RegexOptions.IgnoreCase);
+            Match minutesMatch = Regex.Match(input, "\\d+m", RegexOptions.IgnoreCase);
+            Match secondsMatch = Regex.Match(input, "\\d+s", RegexOptions.IgnoreCase);
+            if (!weeksMatch.Success && !daysMatch.Success && !hoursMatch.Success && !minutesMatch.Success && !secondsMatch.Success)
             {
-                builder.Append(str);
+                throw new FormatException();
             }
 
-            return builder.ToString();
+            if (weeksMatch.Success)
+                offset = offset.AddDays(int.Parse(weeksMatch.Value.ToLower().TrimEnd('w')) * 7);
+            if (daysMatch.Success)
+                offset = offset.AddDays(int.Parse(daysMatch.Value.ToLower().TrimEnd('d')));
+            if (hoursMatch.Success)
+                offset = offset.AddHours(int.Parse(hoursMatch.Value.ToLower().TrimEnd('h')));
+            if (minutesMatch.Success)
+                offset = offset.AddMinutes(int.Parse(minutesMatch.Value.ToLower().TrimEnd('m')));
+            if (secondsMatch.Success)
+                offset = offset.AddSeconds(int.Parse(secondsMatch.Value.ToLower().TrimEnd('s')));
+
+            return offset;
         }
+
     }
 }

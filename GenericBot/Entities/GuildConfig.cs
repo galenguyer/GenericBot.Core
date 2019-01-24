@@ -99,11 +99,11 @@ namespace GenericBot.Entities
         public DateTimeOffset BannedUntil;
         public string Reason;
 
-        public GenericBan(ulong userid, ulong guildid, string reason, int days = 0)
+        public GenericBan(ulong userid, ulong guildid, string reason, DateTimeOffset time)
         {
             this.Id = userid;
             this.GuildId = guildid;
-            this.BannedUntil = days != 0 ? DateTimeOffset.UtcNow + TimeSpan.FromDays(days) : DateTimeOffset.MaxValue;
+            this.BannedUntil = time;
             this.Reason = reason;
         }
     }
