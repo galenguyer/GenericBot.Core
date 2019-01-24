@@ -148,6 +148,7 @@ namespace GenericBot.CommandModules
                     }
                     catch (System.FormatException ex)
                     { time = DateTimeOffset.MaxValue; }
+                    var tmsg = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time - DateTimeOffset.UtcNow).FormatTimeString()}`"; 
 
                     string reason = parameters.reJoin();
                     var bans = msg.GetGuild().GetBansAsync().Result;
@@ -160,7 +161,7 @@ namespace GenericBot.CommandModules
                     {
                         bool dmSuccess = true;
                         string dmMessage = $"You have been banned from **{msg.GetGuild().Name}** ";
-                        dmMessage += time==DateTimeOffset.MaxValue ? "permanently" : $"for `{(time-DateTimeOffset.UtcNow).FormatTimeString()}`";
+                        dmMessage += tmsg;
                         if(!string.IsNullOrEmpty(reason))
                             dmMessage += $" for the following reason: \n\n{reason}\n\n";
                         try
@@ -195,7 +196,7 @@ namespace GenericBot.CommandModules
                             banMessage += $" 👌";
                         else
                             banMessage += $" for `{reason}`";
-                        banMessage += time == DateTimeOffset.MaxValue ? "permanently 👌" : $"for `{(time-DateTimeOffset.UtcNow).FormatTimeString()}` 👌"; 
+                        banMessage += $"{tmsg} 👌"; 
 
                         if (!dmSuccess) banMessage += "\nThe user could not be messaged";
 
@@ -218,7 +219,7 @@ namespace GenericBot.CommandModules
                         guildconfig.Bans.Add(
                             new GenericBan(user.Id, msg.GetGuild().Id, reason, time));
                         guildconfig.ProbablyMutedUsers.Remove(user.Id);
-                        string t = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time-DateTimeOffset.UtcNow).FormatTimeString()}`";
+                        string t = tmsg;
 
                         guildconfig.Save();
                         guilddb.GetUser(user.Id)
