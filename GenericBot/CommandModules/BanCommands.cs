@@ -148,7 +148,7 @@ namespace GenericBot.CommandModules
                     }
                     catch (System.FormatException ex)
                     { time = DateTimeOffset.MaxValue; }
-                    var tmsg = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time - DateTimeOffset.UtcNow).FormatTimeString()}`"; 
+                    var tmsg = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`"; 
 
                     string reason = parameters.reJoin();
                     var bans = msg.GetGuild().GetBansAsync().Result;
