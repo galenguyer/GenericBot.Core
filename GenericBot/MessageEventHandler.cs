@@ -197,9 +197,13 @@ namespace GenericBot
                 await GenericBot.Logger.LogErrorMessage(ex.Message);
                 Console.WriteLine($"{ex.StackTrace}");
             }
-            Console.WriteLine(Math.Round((double)GC.GetTotalMemory(true)/(1024*1024), 2) + "MB in use after command");
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            finally
+            {
+                // Only run this after a command
+                Console.WriteLine(Math.Round((double)GC.GetTotalMemory(true) / (1024 * 1024), 2) + "MB in use after command");
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
         }
 
         public static async Task MessageDeleted(Cacheable<IMessage, ulong> arg, ISocketMessageChannel channel)
