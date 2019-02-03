@@ -23,6 +23,8 @@ namespace GenericBot.Entities
         public List<ulong> GlobalAdminIds { get; set; }
         //Status to use
         public string PlayingStatus { get; set; }
+        // Wolfram-Alpha Token
+        public string WolframAppId { get; set; }
 
         //Blacklist
         public List<ulong> BlacklistedIds { get; set; }

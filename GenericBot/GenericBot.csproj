@@ -14,6 +14,7 @@
     <PackageReference Include="System.Drawing.Common" Version="4.5.0-preview1-25914-04" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="TweetMoaSharp" Version="4.0.3" />
+    <PackageReference Include="Wolfram.Alpha" Version="1.0.7" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="files\guildConfigs" />
