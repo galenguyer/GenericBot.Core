@@ -182,6 +182,11 @@ namespace GenericBot
                 GenericBot.Logger.LogGenericMessage($"Guild: {parameterMessage.GetGuild().Name} ({parameterMessage.GetGuild().Id}) Channel: {parameterMessage.Channel.Name} ({parameterMessage.Channel.Id}) User: {parameterMessage.Author} ({parameterMessage.Author.Id}) Command: {commandInfo.Command.Name} Parameters {JsonConvert.SerializeObject(commandInfo.Parameters)}");
                 new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, commandInfo.Command.Name).Save();
                 GenericBot.CommandCounter++;
+
+                // Only run this after a command
+                Console.WriteLine(Math.Round((double)GC.GetTotalMemory(true) / (1024 * 1024), 2) + "MB in use after command");
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
             catch (NullReferenceException nullRefEx)
             {
@@ -196,13 +201,6 @@ namespace GenericBot
                 }
                 await GenericBot.Logger.LogErrorMessage(ex.Message);
                 Console.WriteLine($"{ex.StackTrace}");
-            }
-            finally
-            {
-                // Only run this after a command
-                Console.WriteLine(Math.Round((double)GC.GetTotalMemory(true) / (1024 * 1024), 2) + "MB in use after command");
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
             }
         }
 
