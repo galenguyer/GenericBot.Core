@@ -202,6 +202,12 @@ namespace GenericBot
                 await GenericBot.Logger.LogErrorMessage(ex.Message);
                 Console.WriteLine($"{ex.StackTrace}");
             }
+            finally
+            {
+                // Ensure point thread is killed as it should be
+                System.Threading.Thread.Sleep(1000);
+                pointThread.Abort();
+            }
         }
 
         public static async Task MessageDeleted(Cacheable<IMessage, ulong> arg, ISocketMessageChannel channel)
