@@ -132,7 +132,7 @@ namespace GenericBot
                 }
                 catch (Exception ex)
                 {
-                    //GenericBot.Logger.LogErrorMessage($"{ex.Message}\nGuild:{message.GetGuild().Name} | {message.GetGuild().Id}\nChannel:{message.Channel.Name} | {message.Channel.Id}\nUser:{message.Author} | {message.Author.Id}\n{message.Content}");
+                    GenericBot.Logger.LogErrorMessage($"{ex.Message}\nGuild:{message.GetGuild().Name} | {message.GetGuild().Id}\nChannel:{message.Channel.Name} | {message.Channel.Id}\nUser:{message.Author} | {message.Author.Id}\n{message.Content}");
                 }
 
             });
@@ -197,6 +197,9 @@ namespace GenericBot
                 await GenericBot.Logger.LogErrorMessage(ex.Message);
                 Console.WriteLine($"{ex.StackTrace}");
             }
+            Console.WriteLine(Math.Round((double)GC.GetTotalMemory(true)/(1024*1024), 2) + "MB in use after command");
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         public static async Task MessageDeleted(Cacheable<IMessage, ulong> arg, ISocketMessageChannel channel)
