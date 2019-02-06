@@ -149,7 +149,7 @@ namespace GenericBot.CommandModules
                         parameters.RemoveAt(0);
                     }
                     catch (System.FormatException ex)
-                    { time = DateTimeOffset.MaxValue; }
+                    { time = DateTimeOffset.MaxValue; parameters.RemoveAt(0); }
                     var tmsg = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`"; 
 
                     string reason = parameters.reJoin();
