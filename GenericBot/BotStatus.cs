@@ -14,7 +14,6 @@ namespace GenericBot
         public int CommandCounter { get; set; }
         public int Latency { get; set; }
         public string ServerInfo { get; set; }
-        public double CoreTempInC { get; set; }
         public string MemoryUsage { get; set; }
 
         public BotStatus()
@@ -28,24 +27,6 @@ namespace GenericBot
             this.MemoryUsage = $"{Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB";
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                var process = new Process()
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "/bin/bash",
-                        Arguments = $"-c \"cat /sys/class/thermal/thermal_zone*/temp\"",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                    }
-                };
-
-                process.Start();
-                string result = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-
-                this.CoreTempInC = double.Parse(result) / 1000;
-
                 process = new Process()
                 {
                     StartInfo = new ProcessStartInfo
