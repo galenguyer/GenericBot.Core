@@ -27,7 +27,7 @@ namespace GenericBot
             this.MemoryUsage = $"{Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB";
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                process = new Process()
+                var process = new Process()
                 {
                     StartInfo = new ProcessStartInfo
                     {
@@ -39,7 +39,7 @@ namespace GenericBot
                     }
                 };
                 process.Start();
-                result = process.StandardOutput.ReadToEnd();
+                var result = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
                 this.ServerInfo = result;
             }
