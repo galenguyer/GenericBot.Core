@@ -137,11 +137,6 @@ namespace GenericBot
 
             });
             pointThread.IsBackground = true;
-            try
-            {
-                pointThread.Start();
-            }
-            catch (Exception ex) { GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace); }
 
             try
             {
@@ -204,6 +199,12 @@ namespace GenericBot
             }
             finally
             {
+                // Run the point thread
+                try
+                {
+                    pointThread.Start();
+                }
+                catch (Exception ex) { GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace); }
                 // Ensure point thread is killed as it should be
                 System.Threading.Thread.Sleep(1000);
                 pointThread.Abort();
