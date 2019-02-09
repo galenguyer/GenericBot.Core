@@ -257,7 +257,7 @@ namespace GenericBot
 
             log.Footer = new EmbedFooterBuilder().WithText(arg.Value.Id.ToString());
 
-            await (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
+            (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
         }
 
         public static async Task MessageRecieved(SocketMessage arg)

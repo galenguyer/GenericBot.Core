@@ -46,11 +46,8 @@ namespace GenericBot
             {
                 guildDb.Users.Add(new DBUser(user));
             }
-            lock ("db")
-            {
-                guildDb.Save();
-            }
-
+            guildDb.Save();
+            
             #endregion Databasae
 
             #region Logging
@@ -67,7 +64,7 @@ namespace GenericBot
 
                 try
                 {
-                    await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
+                    user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
                 }
                 catch (Exception ex)
                 {
@@ -84,7 +81,7 @@ namespace GenericBot
                 {
                     try
                     {
-                        await user.AddRoleAsync(user.Guild.GetRole(role));
+                        user.AddRoleAsync(user.Guild.GetRole(role));
                     }
                     catch
                     {
@@ -131,7 +128,7 @@ namespace GenericBot
             {
             }
 
-            await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
+            user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
 
             #endregion Logging
 
@@ -225,7 +222,7 @@ namespace GenericBot
                 .AddField(new EmbedFieldBuilder().WithName("Mention").WithValue(user.Mention).WithIsInline(true))
                 .WithFooter($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
 
-            await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
+            user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
 
             #endregion Logging
         }
