@@ -107,7 +107,6 @@ namespace GenericBot
             {
                 LogLevel = LogSeverity.Debug,
                 MessageCacheSize = 100,
-                DefaultRetryMode = RetryMode.AlwaysRetry,
                 TotalShards = 8,
             });
 
