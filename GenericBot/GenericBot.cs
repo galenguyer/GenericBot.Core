@@ -109,7 +109,6 @@ namespace GenericBot
                 MessageCacheSize = 100,
                 DefaultRetryMode = RetryMode.AlwaysRetry,
                 TotalShards = 8,
-                ConnectionTimeout = 2500
             });
 
             DiscordClient.Log += Logger.LogClientMessage;
