@@ -52,7 +52,7 @@ namespace GenericBot.Entities
             {
 
             }
-            if (SendTyping)  await msg.Channel.TriggerTypingAsync();
+            // if (SendTyping)  await msg.Channel.TriggerTypingAsync();
             if (Delete)
             {
                 try
