@@ -107,7 +107,6 @@ namespace GenericBot
             {
                 LogLevel = LogSeverity.Debug,
                 MessageCacheSize = 100,
-                TotalShards = 8,
             });
 
             DiscordClient.Log += Logger.LogClientMessage;
