@@ -32,9 +32,6 @@ namespace GenericBot
         public static string DBPassword;
 
         public static Timer StatusPollingTimer = new Timer();
-        //public static int MessageCounter = 0;
-        //public static int CommandCounter = 0;
-        //public static int Latency = 0;
 
         public static ConcurrentDictionary<ulong, DBGuild> LoadedGuildDbs = new ConcurrentDictionary<ulong, DBGuild>();
         public static ConcurrentDictionary<ulong, GuildMessageStats> LoadedGuildMessageStats = new ConcurrentDictionary<ulong, GuildMessageStats>();
@@ -198,21 +195,6 @@ namespace GenericBot
                     StatusPollingTimer.Interval = 15 * 1000;
                 return;
             }
-
-            //try
-            //{
-            //    using (var httpClient = new WebClient())
-            //    {
-            //        httpClient.Headers["Authorization"] = GlobalConfiguration.StatusAuthKey;
-            //        httpClient.Headers[HttpRequestHeader.ContentType] = "application/json";
-            //        var result = httpClient.UploadString("https://mastrchef.rocks/programs/genericbot/status/update/", JsonConvert.SerializeObject(new BotStatus()));
-            //    }
-            //    StatusPollingTimer.Interval = 5 * 1000;
-            //}
-            //catch (Exception ex)
-            //{
-            //    StatusPollingTimer.Interval = 15 * 1000;
-            //}
         }
 
         private static void CheckMuteRemoval(object sender, ElapsedEventArgs elapsedEventArgs)
