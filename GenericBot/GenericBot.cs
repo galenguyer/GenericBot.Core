@@ -40,10 +40,6 @@ namespace GenericBot
         public static ConcurrentDictionary<ulong, GuildMessageStats> LoadedGuildMessageStats = new ConcurrentDictionary<ulong, GuildMessageStats>();
         public static LiteDB.LiteDatabase GlobalDatabase;
 
-        public static TwitterService Twitter = new TwitterService("AfaD74ulbQQmjb1yDuGKWtVY9", "WAuRJS6Z4RUDgignHmsDzudbIx2YP4PgnAcz3tp7G7nd1ZHs2z");
-        public static List<GenericTweet> TweetStore;
-        public static LinkedList<QueuedTweet> TweetQueue = new LinkedList<QueuedTweet>();
-        public static Timer TweetSender = new Timer();
         public static Timer Updater = new Timer();
 
         public static Dictionary<ulong, List<IMessage>> MessageDeleteQueue = new Dictionary<ulong, List<IMessage>>();
@@ -70,15 +66,8 @@ namespace GenericBot
             DBPassword = GlobalConfiguration.DatabasePassword;
             GlobalDatabase = new LiteDB.LiteDatabase(@"Filename=files/guildDatabase.db; Mode=Shared; Async=true; Password=" + DBPassword);
             GuildConfigs = new Dictionary<ulong, GuildConfig>();
-            TweetStore = JsonConvert.DeserializeObject<List<GenericTweet>>(File.ReadAllText("files/tweetStore.json"));
-            Twitter.AuthenticateWith("924464831813398529-pi51h6UB3iitJB2UQwGrHukYjD1Pz7F", "3R0vFFQLCGe9vuGvn00Avduq1K8NHjmRBUFJVuo9nRYXJ");
 
             #region Timers
-
-            TweetSender.AutoReset = true;
-            TweetSender.Interval = 60 * 1000;
-            TweetSender.Elapsed += TweetSenderOnElapsed;
-            TweetSender.Start();
 
             Updater.AutoReset = true;
             Updater.Interval = 5 * 1000;
@@ -271,40 +260,6 @@ namespace GenericBot
                     }
                 }
             }
-        }
-
-        private static async void TweetSenderOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
-        {
-            if (!TweetQueue.Any())
-            {
-                return;
-            }
-
-            var tweetInfo = TweetQueue.First.Value;
-            var msg = tweetInfo.msg;
-
-            var response = GenericBot.Twitter.SendTweetAsync(new SendTweetOptions
-            {
-                Status = tweetInfo.InputMessage
-            }).Result;
-
-            if (response.Response.Error != null)
-            {
-                await msg.ReplyAsync($"{msg.Author.Mention}, there was an error sending your tweet: {response.Response.Error.Message}");
-                await GenericBot.Logger.LogErrorMessage(
-                    $"{msg.Author.Id} tried tweeting {tweetInfo.InputMessage}. Failure: {response.Response.Error.Message}");
-                GenericBot.TweetStore.Add(new GenericTweet(msg, tweetInfo.InputMessage, null, false));
-            }
-            else
-            {
-                await msg.ReplyAsync($"{msg.Author.Mention}, your tweet is here: {response.Value.ToTwitterUrl()}");
-                await GenericBot.Logger.LogGenericMessage($"{msg.Author.Id} tweeted {response.Value.ToTwitterUrl()}");
-                GenericBot.TweetStore.Add(new GenericTweet(msg, tweetInfo.InputMessage, response.Value.ToTwitterUrl().ToString(), true));
-            }
-
-            TweetQueue.RemoveFirst();
-            File.WriteAllText("files/tweetStore.json", JsonConvert.SerializeObject(GenericBot.TweetStore, Formatting.Indented));
-
         }
 
         internal static string GetStringSha256Hash(string text)

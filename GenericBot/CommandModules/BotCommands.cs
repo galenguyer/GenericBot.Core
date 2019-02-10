@@ -194,57 +194,6 @@ namespace GenericBot.CommandModules
 
             botCommands.Add(leaveGuild);
 
-            Command tweet = new Command("tweet");
-            tweet.Description = "Send a tweet from the @GenericBoTweets account";
-            tweet.Usage = "tweet <message>";
-            tweet.RequiredPermission = Command.PermissionLevels.User;
-            tweet.ToExecute += async (client, msg, parameters) =>
-            {
-                if (!GenericBot.GuildConfigs[msg.GetGuild().Id].AllowTwitter && tweet.GetPermissions(msg.Author, msg.GetGuild().Id) < Command.PermissionLevels.GlobalAdmin)
-                {
-                    await msg.ReplyAsync("That command has been disabled on this guild");
-                    return;
-                }
-
-
-                string message = parameters.reJoin();
-                message = (msg.Author.Username + ": " + message);
-                if (message.Length > 275)
-                {
-                    message = message.Substring(0, 275) + "...";
-                }
-
-                if (tweet.GetPermissions(msg.Author, msg.GetGuild().Id) < Command.PermissionLevels.GlobalAdmin)
-                {
-                    GenericBot.TweetQueue.AddLast(new QueuedTweet(msg, message));
-                    await msg.ReplyAsync($"Your tweet has been added to the queue! It'll be sent in around `{GenericBot.TweetQueue.Count}` minutes");
-                }
-                else
-                {
-                    var response =  GenericBot.Twitter.SendTweetAsync(new SendTweetOptions
-                    {
-                        Status = message
-                    }).Result;
-
-                    if (response.Response.Error != null)
-                    {
-                        await msg.ReplyAsync($"{msg.Author.Mention}, there was an error sending your tweet: {response.Response.Error.Message}");
-                        await GenericBot.Logger.LogErrorMessage(
-                            $"{msg.Author.Id} tried tweeting {message}. Failure: {response.Response.Error.Message}");
-                        GenericBot.TweetStore.Add(new GenericTweet(msg, message, null, false));
-                    }
-                    else
-                    {
-                        await msg.ReplyAsync($"{msg.Author.Mention}, your tweet is here: {response.Value.ToTwitterUrl()}");
-                        await GenericBot.Logger.LogGenericMessage($"{msg.Author.Id} tweeted {response.Value.ToTwitterUrl()}");
-                        GenericBot.TweetStore.Add(new GenericTweet(msg, message, response.Value.ToTwitterUrl().ToString(), true));
-                    }
-                    File.WriteAllText("files/tweetStore.json", JsonConvert.SerializeObject(GenericBot.TweetStore, Formatting.Indented));
-                }
-            };
-
-            botCommands.Add(tweet);
-
             Command fourchannel = new Command("4channel");
             fourchannel.RequiredPermission = Command.PermissionLevels.Admin;
             fourchannel.ToExecute += async (client, msg, parameters) =>
