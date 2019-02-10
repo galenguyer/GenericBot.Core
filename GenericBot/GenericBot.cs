@@ -45,9 +45,7 @@ namespace GenericBot
         public static Stopwatch QuickWatch = new Stopwatch();
         public static ParsedCommand LastCommand;
 
-        public static List<string> LockedFiles = new List<string>();
         public static HashSet<ulong> ClearedMessageIds = new HashSet<ulong>();
-        public static DateTimeOffset LastMessageRecieved = DateTimeOffset.UtcNow;
 
         public static int Disconnects = 0;
 
