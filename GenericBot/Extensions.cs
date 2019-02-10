@@ -91,7 +91,7 @@ namespace GenericBot
                 output = default(T);
                 return false;
             }
-            catch (Exception e)
+            catch
             {
                 output = default(T);
                 return false;
@@ -112,7 +112,7 @@ namespace GenericBot
             }
         }
 
-        public static async Task<List<IMessage>> GetManyMessages(this SocketTextChannel channel, int count)
+        public static List<IMessage> GetManyMessages(this SocketTextChannel channel, int count)
         {
             count++;
             var msgs = (channel as IMessageChannel).GetMessagesAsync().Flatten().ToList().Result;

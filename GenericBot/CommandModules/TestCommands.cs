@@ -287,7 +287,7 @@ namespace GenericBot.CommandModules
                         await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
                         success.Add(user);
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         failed.Add(user);
                     }

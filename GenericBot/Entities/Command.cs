@@ -42,16 +42,9 @@ namespace GenericBot.Entities
 
         public async Task ExecuteCommand(DiscordShardedClient client, SocketMessage msg, List<string> parameters = null)
         {
-
-            try
-            {
-                if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) < RequiredPermission)
-                    return;
-            }
-            catch (Exception ex)
-            {
-
-            }
+            if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) < RequiredPermission)
+                return;
+         
             // if (SendTyping)  await msg.Channel.TriggerTypingAsync();
             if (Delete)
             {
@@ -59,7 +52,9 @@ namespace GenericBot.Entities
                 {
                     await msg.DeleteAsync();
                 }
+#pragma warning disable CS0168 // Variable is declared but never used
                 catch (Discord.Net.HttpException httpException)
+#pragma warning restore CS0168 // Variable is declared but never used
                 {
                     await GenericBot.Logger.LogErrorMessage(
                         $"Could Not Delete Message {msg.Id} CHANNELID {msg.Channel.Id}");

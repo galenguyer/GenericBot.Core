@@ -12,7 +12,8 @@ namespace GenericBot
         private List<string> dogs = new List<string>();
         private List<string> cats = new List<string>();
 
-        private class Cat { public string file; public Cat() { } }
+        // For deserialization
+        private class Cat { public string file { get; set; } public Cat() { } }
 
         public Animols()
         {

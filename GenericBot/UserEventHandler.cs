@@ -11,7 +11,7 @@ namespace GenericBot
 {
     public static class UserEventHandler
     {
-        public static async Task UserUpdated(SocketGuildUser beforeUser, SocketGuildUser afterUser)
+        public static Task UserUpdated(SocketGuildUser beforeUser, SocketGuildUser afterUser)
         {
             if (beforeUser.Username != afterUser.Username || beforeUser.Nickname != afterUser.Nickname)
             {
@@ -29,6 +29,7 @@ namespace GenericBot
                 }
                 guildDb.Save();
             }
+            return Task.CompletedTask;
         }
 
         public static async Task UserJoined(SocketGuildUser user)
@@ -64,15 +65,16 @@ namespace GenericBot
 
                 try
                 {
-                    user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
+                    await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
                 }
-                catch (Exception ex)
+                catch
                 {
+                    await GenericBot.Logger.LogErrorMessage($"Could not send verification DM to {user} ({user.Id}) on {user.Guild} ({user.Guild.Id})");
                 }
             }
             if (guildConfig.ProbablyMutedUsers.Contains(user.Id))
             {
-                try { user.AddRoleAsync(user.Guild.GetRole(guildConfig.MutedRoleId)); }
+                try { await user.AddRoleAsync(user.Guild.GetRole(guildConfig.MutedRoleId)); }
                 catch { }
             }
             if(guildConfig.AutoRoleIds != null && guildConfig.AutoRoleIds.Any())
@@ -81,7 +83,7 @@ namespace GenericBot
                 {
                     try
                     {
-                        user.AddRoleAsync(user.Guild.GetRole(role));
+                        await user.AddRoleAsync(user.Guild.GetRole(role));
                     }
                     catch
                     {
@@ -128,7 +130,7 @@ namespace GenericBot
             {
             }
 
-            user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
+            await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
 
             #endregion Logging
 
@@ -222,7 +224,7 @@ namespace GenericBot
                 .AddField(new EmbedFieldBuilder().WithName("Mention").WithValue(user.Mention).WithIsInline(true))
                 .WithFooter($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
 
-            user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
+            await user.Guild.GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
 
             #endregion Logging
         }

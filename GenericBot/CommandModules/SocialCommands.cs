@@ -107,21 +107,10 @@ namespace GenericBot.CommandModules
                     }
                     await Task.Delay(100);
                     await msg.Channel.SendFileAsync($"files/img/star_{msg.Id}.png");
-                    while (true)
-                    {
-                        try
-                        {
-                            baseImage.Dispose();
-                            avatar.Dispose();
-                            File.Delete(filename);
-                            File.Delete($"files/img/star_{msg.Id}.png");
-                            break;
-                        }
-                        catch (Exception ex)
-                        {
-
-                        }
-                    }
+                    baseImage.Dispose();
+                    avatar.Dispose();
+                    File.Delete(filename);
+                    File.Delete($"files/img/star_{msg.Id}.png");
                 }
             };
 
@@ -189,21 +178,10 @@ namespace GenericBot.CommandModules
                     }
                     await Task.Delay(100);
                     await msg.Channel.SendFileAsync($"files/img/respects_{msg.Id}.png");
-                    while (true)
-                    {
-                        try
-                        {
-                            baseImage.Dispose();
-                            avatar.Dispose();
-                            File.Delete(filename);
-                            File.Delete($"files/img/respects_{msg.Id}.png");
-                            break;
-                        }
-                        catch (Exception ex)
-                        {
-
-                        }
-                    }
+                    baseImage.Dispose();
+                    avatar.Dispose();
+                    File.Delete(filename);
+                    File.Delete($"files/img/respects_{msg.Id}.png");
                 }
             };
 
@@ -543,7 +521,7 @@ namespace GenericBot.CommandModules
 
                     await msg.Channel.SendMessageAsync("", embed: embedBuilder.Build());
                 }
-                catch (Exception e)
+                catch
                 {
                     await msg.Channel.SendMessageAsync("", embed: new EmbedBuilder()
                         .WithColor(255, 0, 0)

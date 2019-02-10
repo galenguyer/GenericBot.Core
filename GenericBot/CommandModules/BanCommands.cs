@@ -104,11 +104,12 @@ namespace GenericBot.CommandModules
                             .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
                                 new DBGuild(msg.GetGuild().Id).GetUser(user.Id).Warnings.SumAnd()));
 
-                        ((SocketTextChannel)GenericBot.DiscordClient.GetChannel(gc.UserLogChannelId))
+                        await ((SocketTextChannel)GenericBot.DiscordClient.GetChannel(gc.UserLogChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }
                     catch (Discord.Net.HttpException httpException)
                     {
+                        await GenericBot.Logger.LogErrorMessage(httpException.Message + "\n" + httpException.StackTrace);
                         await msg.ReplyAsync("Could not unban that user. Either I don't have the permissions or they weren't banned");
                     }
                 }
@@ -148,7 +149,9 @@ namespace GenericBot.CommandModules
                         time = parameters[0].ParseTimeString();
                         parameters.RemoveAt(0);
                     }
+#pragma warning disable CS0168 // Variable is declared but never used
                     catch (System.FormatException ex)
+#pragma warning restore CS0168 // Variable is declared but never used
                     { time = DateTimeOffset.MaxValue; parameters.RemoveAt(0); }
                     var tmsg = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`"; 
 

@@ -31,7 +31,7 @@ namespace GenericBot.CommandModules
                 int count;
                 if (int.TryParse(paramList[0], out count))
                 {
-                    List<IMessage> msgs = (msg.Channel as SocketTextChannel).GetManyMessages(count).Result;
+                    List<IMessage> msgs = (msg.Channel as SocketTextChannel).GetManyMessages(count);
                     if (msg.GetMentionedUsers().Any())
                     {
                         var users = msg.GetMentionedUsers();
@@ -414,7 +414,7 @@ namespace GenericBot.CommandModules
                         await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(
                             $"The Moderator team of **{msg.GetGuild().Name}** has issued you the following warning:\n{parameters.reJoin()}");
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         warning += $"\nCould not message {user}";
                     }
@@ -504,7 +504,7 @@ namespace GenericBot.CommandModules
                 {
                     try
                     {
-                        (msg.GetGuild().GetUser(user)).AddRolesAsync(new List<IRole> { mutedRole });
+                        await (msg.GetGuild().GetUser(user)).AddRolesAsync(new List<IRole> { mutedRole });
                         gc.ProbablyMutedUsers.Add(user);
                         gc.Save();
                         mutedUsers.Add(msg.GetGuild().GetUser(user));
@@ -555,7 +555,7 @@ namespace GenericBot.CommandModules
                 {
                     try
                     {
-                        (msg.GetGuild().GetUser(user)).RemoveRoleAsync(mutedRole);
+                        await (msg.GetGuild().GetUser(user)).RemoveRoleAsync(mutedRole);
                         gc.ProbablyMutedUsers.Remove(user);
                         mutedUsers.Add(msg.GetGuild().GetUser(user));
                     }

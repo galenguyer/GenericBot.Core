@@ -198,7 +198,7 @@ namespace GenericBot.CommandModules
                 {
                     await msg.ReplyAsync(GenericBot.Animols.GetCat());
                 }
-                catch (Exception ex)
+                catch
                 {
                     await msg.ReplyAsync("Uh oh, something borked a bit. Wait a sec and try again.");
                 }
@@ -287,7 +287,7 @@ namespace GenericBot.CommandModules
             Command redact = new Command(nameof(redact));
             redact.ToExecute += async (client, msg, parameters) =>
             {
-                msg.DeleteAsync();
+                await msg.DeleteAsync();
                 char block = '█';
                 int rcont = 1;
                 StringBuilder resp = new StringBuilder();

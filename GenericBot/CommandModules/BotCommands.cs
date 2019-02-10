@@ -381,7 +381,7 @@ namespace GenericBot.CommandModules
                         string notif = $"Hello, valued {guild.GetUser(client.CurrentUser.Id).GetDisplayName()}:tm: user! " +
                         $"A high-priority, global notification has been sent out to all servers using me:\n\n{param}";
                         await channel.SendMessageAsync(notif);
-                        GenericBot.Logger.LogGenericMessage($"Sent {notif} to {guild.Name}");
+                        await GenericBot.Logger.LogGenericMessage($"Sent {notif} to {guild.Name}");
                         servers++;
                     }
                     else
@@ -392,7 +392,7 @@ namespace GenericBot.CommandModules
                         try
                         {
                             await guild.Owner.GetOrCreateDMChannelAsync().Result.SendMessageAsync(notif);
-                            GenericBot.Logger.LogGenericMessage($"Sent {notif} to {guild.Name}'s owner, {guild.Owner.GetDisplayName()}");
+                            await GenericBot.Logger.LogGenericMessage($"Sent {notif} to {guild.Name}'s owner, {guild.Owner.GetDisplayName()}");
                             owners++;
                         }
                         catch

@@ -13,7 +13,7 @@ namespace GenericBot
         private DiscordShardedClient _client = GenericBot.DiscordClient;
         private IServiceProvider _map;
 
-        public async Task Install(IServiceProvider map)
+        public Task Install(IServiceProvider map)
         {
             _map = map;
             // Create Command Service, inject it into Dependency Map
@@ -44,6 +44,8 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new NoPolymer().GetPolyCommands());
 
             Console.WriteLine(GenericBot.Commands.Select(c => c.Name).Aggregate((i, j) => i + ", " + j));
+
+            return Task.CompletedTask;
         }
 
         private async Task HandleEditedCommand(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
@@ -81,7 +83,7 @@ namespace GenericBot
             log.AddField(new EmbedFieldBuilder().WithName("Before").WithValue(arg1.Value.Content.SafeSubstring(1016)));
             log.AddField(new EmbedFieldBuilder().WithName("After").WithValue(arg2.Content.SafeSubstring(1016)));
 
-            arg2.GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
+            await arg2.GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
         }
 
         public static ParsedCommand ParseMessage(SocketMessage msg)

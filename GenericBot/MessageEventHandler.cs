@@ -21,8 +21,10 @@ namespace GenericBot
             //GenericBot.Latency = (int)Math.Round((DateTimeOffset.UtcNow - parameterMessage.Timestamp).TotalMilliseconds);
             //GenericBot.LastMessageRecieved = message.EditedTimestamp ?? message.Timestamp;
 
+            // Don't do stuff if the user is blacklisted
             if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(message.Author.Id))
                 return;
+            // Don't do stuff if the user is the bot
             if (parameterMessage.Author.Id == GenericBot.DiscordClient.CurrentUser.Id)
                 return;
 
@@ -43,7 +45,7 @@ namespace GenericBot
                             .AddRoleAsync(guild.GetRole(GenericBot.GuildConfigs[guild.Id].VerifiedRole));
                         if (guild.TextChannels.HasElement(c => c.Id == (GenericBot.GuildConfigs[guild.Id].UserLogChannelId), out SocketTextChannel logChannel))
                         {
-                            logChannel.SendMessageAsync($"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}`:  `{message.Author}` (`{message.Author.Id}`) just verified");
+                            await logChannel.SendMessageAsync($"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}`:  `{message.Author}` (`{message.Author.Id}`) just verified");
                         }
                         await message.ReplyAsync($"You've been verified on **{guild.Name}**!");
                         await msg.ModifyAsync(m =>
@@ -66,7 +68,7 @@ namespace GenericBot
                 }
                 guildDb.Save();
             }
-            catch(Exception ex){ GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace); }
+            catch(Exception ex){ await GenericBot.Logger.LogErrorMessage(ex.Message + "\n" + ex.StackTrace); }
             //if (!edited)
             //{
             //    try
@@ -111,7 +113,7 @@ namespace GenericBot
             DMChannel:
                 GenericBot.LastCommand = commandInfo;
                 commandInfo.Command.ExecuteCommand(GenericBot.DiscordClient, message, commandInfo.Parameters).FireAndForget();
-                GenericBot.Logger.LogGenericMessage($"Guild: {parameterMessage.GetGuild().Name} ({parameterMessage.GetGuild().Id}) Channel: {parameterMessage.Channel.Name} ({parameterMessage.Channel.Id}) User: {parameterMessage.Author} ({parameterMessage.Author.Id}) Command: {commandInfo.Command.Name} Parameters {JsonConvert.SerializeObject(commandInfo.Parameters)}");
+                await GenericBot.Logger.LogGenericMessage($"Guild: {parameterMessage.GetGuild().Name} ({parameterMessage.GetGuild().Id}) Channel: {parameterMessage.Channel.Name} ({parameterMessage.Channel.Id}) User: {parameterMessage.Author} ({parameterMessage.Author.Id}) Command: {commandInfo.Command.Name} Parameters {JsonConvert.SerializeObject(commandInfo.Parameters)}");
                 //new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, commandInfo.Command.Name).Save();
                 //GenericBot.CommandCounter++;
 
@@ -120,9 +122,11 @@ namespace GenericBot
                 //GC.Collect();
                 //GC.WaitForPendingFinalizers();
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (NullReferenceException nullRefEx)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
-
+                // No command was found, ignore stuff
             }
             catch (Exception ex)
             {
@@ -247,12 +251,12 @@ namespace GenericBot
 
             log.Footer = new EmbedFooterBuilder().WithText(arg.Value.Id.ToString());
 
-            (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
+            await (arg.Value as SocketMessage).GetGuild().GetTextChannel(guildConfig.UserLogChannelId).SendMessageAsync("", embed: log.Build());
         }
 
         public static async Task MessageRecieved(SocketMessage arg)
         {
-            MessageEventHandler.MessageRecieved(arg, false);
+            await MessageEventHandler.MessageRecieved(arg, false);
         }
     }
 }

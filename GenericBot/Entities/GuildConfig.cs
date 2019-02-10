@@ -85,7 +85,7 @@ namespace GenericBot.Entities
                 var guild = GenericBot.DiscordClient.GetGuild(GuildId);
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }

@@ -220,7 +220,7 @@ namespace GenericBot.CommandModules
 
                 foreach (var str in message.SplitSafe())
                 {
-                    msg.ReplyAsync(str);
+                    await msg.ReplyAsync(str);
                 }
             };
 
@@ -386,7 +386,7 @@ namespace GenericBot.CommandModules
                                     msg.GetGuild().Roles.First(r => r.Id.Equals(id)));
                                 success++;
                             }
-                            catch (Exception e)
+                            catch
                             {
                                 fails++;
                             }

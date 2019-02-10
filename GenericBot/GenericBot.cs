@@ -26,7 +26,6 @@ namespace GenericBot
         public static GlobalConfiguration GlobalConfiguration;
         public static Dictionary<ulong, GuildConfig> GuildConfigs;
         public static List<Command> Commands = new List<Command>();
-        public static string SessionId;
         public static string BuildNumber = "Unknown";
         public static bool DebugMode = false;
         public static Animols Animols = new Animols();
@@ -164,7 +163,7 @@ namespace GenericBot
             {
                 var config = JsonConvert.DeserializeObject<GuildConfig>(File.ReadAllText($"files/guildConfigs/{guild.Id}.json"));
                 GuildConfigs.Add(guild.Id, config); 
-                Logger.LogGenericMessage($"Loaded config for {guild.Name} ({guild.Id}) Prefix: \"{config.Prefix}\"");
+                await Logger.LogGenericMessage($"Loaded config for {guild.Name} ({guild.Id}) Prefix: \"{config.Prefix}\"");
             }
             await Task.Delay(100);
             await Logger.LogGenericMessage($"Loaded {GuildConfigs.Count} Configs on Startup");
@@ -172,9 +171,9 @@ namespace GenericBot
 
         private async Task OnGuildConnected(SocketGuild guild)
         {
-            Logger.LogGenericMessage($"Connected to {guild.Name} ({guild.Id})");
+            await Logger.LogGenericMessage($"Connected to {guild.Name} ({guild.Id})");
             bool f = LoadedGuildDbs.TryAdd(guild.Id, new DBGuild(guild.Id));
-            Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}");
+            await Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}");
             if (!File.Exists($"files/guildConfigs/{guild.Id}.json"))
             {
                 new GuildConfig(guild.Id).Save();
@@ -324,7 +323,9 @@ namespace GenericBot
             {
                 GenericBot.MessageDeleteQueue.Add(messages.First().Channel.Id, messages);
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
                 GenericBot.MessageDeleteQueue[messages.First().Channel.Id].AddRange(messages);
             }

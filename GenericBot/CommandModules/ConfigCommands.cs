@@ -215,7 +215,7 @@ namespace GenericBot.CommandModules
                         }
                         await msg.ReplyAsync($"The prefix has been set to `{GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix}`");
                     }
-                    catch (Exception Ex)
+                    catch
                     {
                         GenericBot.GuildConfigs[msg.GetGuild().Id].Prefix = "";
                         await msg.ReplyAsync($"The prefix has been reset to the default of `{GenericBot.GlobalConfiguration.DefaultPrefix}`");
