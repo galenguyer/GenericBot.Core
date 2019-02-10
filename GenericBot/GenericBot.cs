@@ -135,11 +135,14 @@ namespace GenericBot
                 shard.SetGameAsync($"v. {BuildNumber}").FireAndForget();
             }
 
-            DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
-            DiscordClient.MessageDeleted += MessageEventHandler.MessageDeleted;
-            DiscordClient.JoinedGuild += GuildEventHandler.OnJoinedGuild;
-            DiscordClient.LeftGuild += GuildEventHandler.OnLeftGuild;
-            DiscordClient.UserLeft += UserEventHandler.UserLeft;
+            DiscordClient.MessageReceived += AsyncEventHandler.MessageRecieved;
+            DiscordClient.MessageUpdated += AsyncEventHandler.MessageUpdated;
+            DiscordClient.MessageDeleted += AsyncEventHandler.MessageDeleted;
+            DiscordClient.UserJoined += AsyncEventHandler.UserJoinedGuild;
+            DiscordClient.UserLeft += AsyncEventHandler.UserLeftGuild;
+            DiscordClient.GuildMemberUpdated += AsyncEventHandler.UserUpdated;
+            DiscordClient.JoinedGuild += AsyncEventHandler.BotJoinedGuild;
+            DiscordClient.LeftGuild += AsyncEventHandler.BotLeftGuild;
 
             var serviceProvider = ConfigureServices();
 
