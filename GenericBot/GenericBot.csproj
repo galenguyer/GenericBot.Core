@@ -4,11 +4,11 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="2.0.1" />
-    <PackageReference Include="Discord.Net.Core" Version="2.0.1" />
-    <PackageReference Include="Discord.Net.Rest" Version="2.0.1" />
-    <PackageReference Include="Discord.Net.Webhook" Version="2.0.1" />
-    <PackageReference Include="Discord.Net.WebSocket" Version="2.0.1" />
+    <PackageReference Include="Discord.Net" Version="2.0.2-dev-01059" />
+    <PackageReference Include="Discord.Net.Core" Version="2.0.2-dev-01059" />
+    <PackageReference Include="Discord.Net.Rest" Version="2.0.2-dev-01059" />
+    <PackageReference Include="Discord.Net.Webhook" Version="2.0.2-dev-01059" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="2.0.2-dev-01059" />
     <PackageReference Include="LiteDB" Version="4.1.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0-preview.19074.2" />
     <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview.19073.11" />
