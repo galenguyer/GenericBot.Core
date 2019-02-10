@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Timers;
@@ -14,7 +12,6 @@ using Discord.WebSocket;
 using GenericBot.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using TweetSharp;
 using Timer = System.Timers.Timer;
 
 namespace GenericBot
@@ -27,9 +24,7 @@ namespace GenericBot
         public static Dictionary<ulong, GuildConfig> GuildConfigs;
         public static List<Command> Commands = new List<Command>();
         public static string BuildNumber = "Unknown";
-        public static bool DebugMode = false;
         public static Animols Animols = new Animols();
-        public static string DBPassword;
 
         public static Timer StatusPollingTimer = new Timer();
 
@@ -58,8 +53,7 @@ namespace GenericBot
                 BuildNumber = File.ReadAllText("version.txt").Trim();
             }
             GlobalConfiguration = new GlobalConfiguration().Load();
-            DBPassword = GlobalConfiguration.DatabasePassword;
-            GlobalDatabase = new LiteDB.LiteDatabase(@"Filename=files/guildDatabase.db; Mode=Shared; Async=true; Password=" + DBPassword);
+            GlobalDatabase = new LiteDB.LiteDatabase(@"Filename=files/guildDatabase.db; Mode=Shared; Async=true; Password=" + GlobalConfiguration.DatabasePassword);
             GuildConfigs = new Dictionary<ulong, GuildConfig>();
 
             #region Timers

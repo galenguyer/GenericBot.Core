@@ -358,7 +358,7 @@ namespace GenericBot.CommandModules
             decryptDb.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             decryptDb.ToExecute += async (client, msg, parameters) =>
             {
-                File.WriteAllText($"files/guildDbs/{parameters[0]}_raw.json", AES.DecryptText(File.ReadAllText($"files/guildDbs/{parameters[0]}.json"), GenericBot.DBPassword));
+                File.WriteAllText($"files/guildDbs/{parameters[0]}_raw.json", AES.DecryptText(File.ReadAllText($"files/guildDbs/{parameters[0]}.json"), GenericBot.GlobalConfiguration.DatabasePassword));
                 var res = msg.Channel.SendFileAsync($"files/guildDbs/{parameters[0]}_raw.json", "Self-destructing in 15 seconds!").Result;
                 await Task.Delay(TimeSpan.FromSeconds(15));
                 try { await res.DeleteAsync(); }
