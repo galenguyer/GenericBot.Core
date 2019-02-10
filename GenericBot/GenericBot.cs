@@ -237,6 +237,7 @@ namespace GenericBot
                     if (ban.BannedUntil < DateTime.UtcNow)
                     {
                         gc.Bans.Remove(ban);
+                        gc.Save();
                         var user = DiscordClient.GetGuild(ban.GuildId).GetBansAsync().Result
                             .First(b => b.User.Id == ban.Id).User;
                         DiscordClient.GetGuild(ban.GuildId).RemoveBanAsync(ban.Id);
