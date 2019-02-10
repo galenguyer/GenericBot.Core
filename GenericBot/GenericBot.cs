@@ -97,7 +97,7 @@ namespace GenericBot
             }
             catch (Exception e)
             {
-                await Logger.LogErrorMessage($"{e.Message}\n{e.StackTrace.Split('\n').First(s => s.Contains("line"))}");
+                await Logger.LogErrorMessage($"{e.Message}\n{e.StackTrace}");
                 return;
             }
 
@@ -122,10 +122,7 @@ namespace GenericBot
             DiscordClient.JoinedGuild += AsyncEventHandler.BotJoinedGuild;
             DiscordClient.LeftGuild += AsyncEventHandler.BotLeftGuild;
 
-            var serviceProvider = ConfigureServices();
-
-            var _handler = new CommandHandler();
-            await _handler.Install(serviceProvider);
+            new CommandHandler().Install();
 
             Updater.Start();
 
@@ -152,7 +149,6 @@ namespace GenericBot
 
         private async Task OnGuildConnected(SocketGuild guild)
         {
-            await Logger.LogGenericMessage($"Connected to {guild.Name} ({guild.Id})");
             bool f = LoadedGuildDbs.TryAdd(guild.Id, new DBGuild(guild.Id));
             await Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}");
             if (!File.Exists($"files/guildConfigs/{guild.Id}.json"))
@@ -164,14 +160,6 @@ namespace GenericBot
                 GuildConfigs.Add(guild.Id, JsonConvert.DeserializeObject<GuildConfig>(
                     File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
             }
-        }
-
-        private IServiceProvider ConfigureServices()
-        {
-            var services = new ServiceCollection()
-                .AddSingleton(DiscordClient);
-            var provider = new DefaultServiceProviderFactory().CreateServiceProvider(services);
-            return provider;
         }
 
         private static void StatusPollingTimerOnElapsed(object sender, ElapsedEventArgs e)

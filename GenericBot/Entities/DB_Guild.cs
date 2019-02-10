@@ -34,7 +34,6 @@ namespace GenericBot.Entities
                     col.EnsureIndex(c => c.ID, true);
                     if (col.Exists(c => c.ID.Equals(guildId)))
                     {
-                        Console.WriteLine("DB loaded from LITEDB");
                         tempdb = col.FindOne(c => c.ID.Equals(guildId));
                     }
                     else

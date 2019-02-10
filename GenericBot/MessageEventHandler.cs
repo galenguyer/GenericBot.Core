@@ -17,10 +17,6 @@ namespace GenericBot
             // Don't handle the command if it is a system message
             var message = parameterMessage;
 
-            //GenericBot.MessageCounter++;
-            //GenericBot.Latency = (int)Math.Round((DateTimeOffset.UtcNow - parameterMessage.Timestamp).TotalMilliseconds);
-            //GenericBot.LastMessageRecieved = message.EditedTimestamp ?? message.Timestamp;
-
             // Don't do stuff if the user is blacklisted
             if (GenericBot.GlobalConfiguration.BlacklistedIds.Contains(message.Author.Id))
                 return;

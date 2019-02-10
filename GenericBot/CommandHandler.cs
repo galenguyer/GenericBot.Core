@@ -10,15 +10,8 @@ namespace GenericBot
 {
     public class CommandHandler
     {
-        private DiscordShardedClient _client = GenericBot.DiscordClient;
-        private IServiceProvider _map;
-
-        public Task Install(IServiceProvider map)
+        public void Install()
         {
-            _map = map;
-            // Create Command Service, inject it into Dependency Map
-            _client = map.GetService(typeof(DiscordShardedClient)) as DiscordShardedClient;
-
             GenericBot.Commands.AddRange(new BotCommands().GetBotCommands());
             GenericBot.Commands.AddRange(new HelpModule().GetHelpCommands());
             GenericBot.Commands.AddRange(new TestCommands().GetTestCommands());
@@ -38,8 +31,6 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new NoPolymer().GetPolyCommands());
 
             Console.WriteLine(GenericBot.Commands.Select(c => c.Name).Aggregate((i, j) => i + ", " + j));
-
-            return Task.CompletedTask;
         }
 
         public static ParsedCommand ParseMessage(SocketMessage msg)
