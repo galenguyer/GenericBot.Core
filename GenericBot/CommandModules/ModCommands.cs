@@ -583,41 +583,6 @@ namespace GenericBot.CommandModules
 
             ModCommands.Add(unmute);
 
-            Command archive = new Command("archive");
-            archive.RequiredPermission = Command.PermissionLevels.Admin;
-            archive.Description = "Save all the messages from a text channel";
-            archive.ToExecute += async (client, msg, parameters) =>
-            {
-                var msgs = (msg.Channel as SocketTextChannel).GetManyMessages(50000).Result;
-
-                var channel = msg.Channel;
-                string str = $"{((IGuildChannel)channel).Guild.Name} | {((IGuildChannel)channel).Guild.Id}\n";
-                str += $"#{channel.Name} | {channel.Id}\n";
-                str += $"{DateTime.Now}\n\n";
-
-                IMessage lastMsg = null;
-                msgs.Reverse();
-                msgs.Remove(msg);
-                foreach (var m in msgs)
-                {
-                    string msgstr = $"{m.Id}\n";
-                    if (lastMsg != null && m.Author.Id != lastMsg.Author.Id) msgstr += $"{m.Author} | {m.Author.Id}\n{m.Timestamp}\n";
-                    msgstr += $"{m.Content}\n";
-                    foreach (var a in m.Attachments)
-                    {
-                        msgstr += $"{a.Url}\n";
-                    }
-                    str += msgstr + "\n";
-                    lastMsg = m;
-                }
-
-                string filename = $"{channel.Name}.txt";
-                File.WriteAllText("files/" + filename, str);
-                await msg.Channel.SendFileAsync("files/" + filename, $"Here you go! I saved {msgs.Count()} messages");
-            };
-
-            ModCommands.Add(archive);
-
             return ModCommands;
         }
     }
