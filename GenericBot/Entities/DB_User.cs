@@ -53,6 +53,7 @@ namespace GenericBot.Entities
 
         public void AddNickname(SocketGuildUser user)
         {
+            if (user == null) return;
             if (Nicknames == null) Nicknames = new List<string>();
             if (user.Nickname != null && !string.IsNullOrEmpty(user.Nickname) && !Nicknames.Contains(user.Nickname))
             {
