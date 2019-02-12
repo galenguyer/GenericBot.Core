@@ -164,7 +164,7 @@ namespace GenericBot
 
         private static void StatusPollingTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            if (GenericBot.DiscordClient.GetShard(0).ConnectionState == ConnectionState.Disconnecting)
+            if (GenericBot.DiscordClient.GetShard(0).ConnectionState == ConnectionState.Disconnecting || GenericBot.DiscordClient.GetShard(0).ConnectionState == ConnectionState.Disconnected)
             {
                 if (StatusPollingTimer.Interval == 15 * 1000)
                 {
