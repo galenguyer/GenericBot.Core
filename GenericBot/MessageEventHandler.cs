@@ -108,8 +108,8 @@ namespace GenericBot
 
             DMChannel:
                 GenericBot.LastCommand = commandInfo;
-                await commandInfo.Command.ExecuteCommand(GenericBot.DiscordClient, message, commandInfo.Parameters);
                 await GenericBot.Logger.LogGenericMessage($"Guild: {parameterMessage.GetGuild().Name} ({parameterMessage.GetGuild().Id}) Channel: {parameterMessage.Channel.Name} ({parameterMessage.Channel.Id}) User: {parameterMessage.Author} ({parameterMessage.Author.Id}) Command: {commandInfo.Command.Name} Parameters {JsonConvert.SerializeObject(commandInfo.Parameters)}");
+                await commandInfo.Command.ExecuteCommand(GenericBot.DiscordClient, message, commandInfo.Parameters);
                 //new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, commandInfo.Command.Name).Save();
                 //GenericBot.CommandCounter++;
 
