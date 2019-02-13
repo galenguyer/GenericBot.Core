@@ -69,11 +69,10 @@ namespace GenericBot.Entities
             {
                 if (msg.Author.Id == GenericBot.GlobalConfiguration.OwnerId)
                 {
-                    await msg.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
+                    await msg.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1600) +
                                                       "\n```");
                 }
-                await GenericBot.Logger.LogErrorMessage(ex.Message);
-                //else Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+                await GenericBot.Logger.LogErrorMessage(ex.Message+"\n"+ex.StackTrace);
             }
         }
 
