@@ -102,8 +102,8 @@ namespace GenericBot
                     {
                         await parameterMessage.DeleteAsync();
                     }
-                    new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, custom.Name).Save();
                     await parameterMessage.ReplyAsync(custom.Response);
+                    new GuildMessageStats(parameterMessage.GetGuild().Id).AddCommand(parameterMessage.Author.Id, custom.Name).Save();
                 }
 
             DMChannel:
