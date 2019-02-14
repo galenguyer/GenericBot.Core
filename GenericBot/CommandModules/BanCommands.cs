@@ -282,7 +282,7 @@ namespace GenericBot.CommandModules
                     }
                     catch (System.FormatException ex)
                     { time = DateTimeOffset.MaxValue; }
-                }
+                
                     var tmsg = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`";
 
                     string reason = parameters.reJoin();
