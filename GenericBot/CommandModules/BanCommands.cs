@@ -151,7 +151,7 @@ namespace GenericBot.CommandModules
                         parameters.RemoveAt(0);
                     }
                     catch (System.FormatException ex)
-                    {  }
+                    { time = DateTimeOffset.MaxValue; }
                     var tmsg = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`"; 
 
                     string reason = parameters.reJoin();
@@ -275,12 +275,14 @@ namespace GenericBot.CommandModules
                     try
                     {
                         if (parameters[0] == "0" || parameters[0] == "0d")
-                            throw new System.FormatException();
-                        time = parameters[0].ParseTimeString();
+                            time = DateTimeOffset.MaxValue;
+                        else
+                            time = parameters[0].ParseTimeString();
                         parameters.RemoveAt(0);
                     }
                     catch (System.FormatException ex)
-                    { time = DateTimeOffset.MaxValue; parameters.RemoveAt(0); }
+                    { time = DateTimeOffset.MaxValue; }
+                }
                     var tmsg = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`";
 
                     string reason = parameters.reJoin();
