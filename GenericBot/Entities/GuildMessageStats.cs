@@ -311,10 +311,10 @@ namespace GenericBot.Entities
                 info += $"All Commands Logged: `{commands.Sum(c => c.Value)}`\n";
                 info += $"Most Active Users Overall: \n{mostActiveUsersOverall}";
                 info += $"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
-                info += $"Most Active Users Today: \n{mostActiveUsersToday}\n";
-                info += $"Users active overall: `{users.Count()}`";
-                info += $"Users active this month: `{GetTotalThisMonth(users).Count()}`";
-                info += $"Users active today: `{GetTotalToday(users).Count()}`";
+                info += $"Most Active Users Today: \n{mostActiveUsersToday}";
+                info += $"Users active overall: `{users.Count()}`\n";
+                info += $"Users active this month: `{GetTotalThisMonth(users).Count()}`\n";
+                info += $"Users active today: `{GetTotalToday(users).Count()}`\n";
 
                 await msg.ReplyAsync(info);
             };
