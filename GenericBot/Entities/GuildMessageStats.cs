@@ -311,7 +311,10 @@ namespace GenericBot.Entities
                 info += $"All Commands Logged: `{commands.Sum(c => c.Value)}`\n";
                 info += $"Most Active Users Overall: \n{mostActiveUsersOverall}";
                 info += $"Most Used Commands Overall: \n{MostUsedCommandsOverall}";
-                info += $"Most Active Users Today: \n{mostActiveUsersToday}";
+                info += $"Most Active Users Today: \n{mostActiveUsersToday}\n";
+                info += $"Users active overall: `{users.Count()}`";
+                info += $"Users active this month: `{GetTotalThisMonth(users).Count()}`";
+                info += $"Users active today: `{GetTotalToday(users).Count()}`";
 
                 await msg.ReplyAsync(info);
             };
@@ -330,6 +333,25 @@ namespace GenericBot.Entities
                             d => d.MessageCount)))).Take(3);
 
             return mostActiveIdToday.ToList();
+        }
+        public List<GuildMessageStats.StatsUser> GetTotalThisMonth(IEnumerable<GuildMessageStats.StatsUser> users)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var result = users.Where(u => u.Years.Any(
+                y => y.Year == now.Year && y.Months.Any(
+                    m => m.Month == now.Month)));
+
+            return result.ToList();
+        }
+        public List<GuildMessageStats.StatsUser> GetTotalToday (IEnumerable<GuildMessageStats.StatsUser> users)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var result = users.Where(u => u.Years.Any(
+                y => y.Year == now.Year && y.Months.Any(
+                    m => m.Month == now.Month && m.Days.Any(
+                        d => d.Day == now.Day))));
+
+            return result.ToList();
         }
 
         public int MessageCountTodayByUser(GuildMessageStats.StatsUser user)
