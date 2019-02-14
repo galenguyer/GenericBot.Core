@@ -115,7 +115,7 @@ namespace GenericBot
             }
             catch (NullReferenceException nullRefEx)
             {
-                Console.WriteLine($"Probably ignore nullref: \n{nullRefEx.StackTrace}"); 
+                //Console.WriteLine($"Probably ignore nullref: \n{nullRefEx.StackTrace}"); 
             }
             catch (Exception ex)
             {
