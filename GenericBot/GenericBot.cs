@@ -177,18 +177,18 @@ namespace GenericBot
             }
         }
 
-        private static void CheckMuteRemoval(object sender, ElapsedEventArgs elapsedEventArgs)
+        private async static void CheckMuteRemoval(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             foreach (var mute in GuildConfigs.SelectMany(g => g.Value.ChannelMutes))
             {
                 if (mute.RemovealTime < DateTime.UtcNow)
                 {
-                    (DiscordClient.GetChannel(mute.ChannelId) as SocketTextChannel)
+                    await (DiscordClient.GetChannel(mute.ChannelId) as SocketTextChannel)
                         .RemovePermissionOverwriteAsync(DiscordClient.GetUser(mute.UserId));
                     GuildConfigs[((SocketGuildChannel)DiscordClient.GetChannel(mute.ChannelId)).Guild.Id].ChannelMutes
                         .Remove(mute);
                     GuildConfigs[((SocketGuildChannel)DiscordClient.GetChannel(mute.ChannelId)).Guild.Id].Save();
-                    GenericBot.Logger.LogGenericMessage($"Unmuted {mute.UserId} from {mute.ChannelId}");
+                    await GenericBot.Logger.LogGenericMessage($"Unmuted {mute.UserId} from {mute.ChannelId}");
                 }
             }
 
@@ -202,7 +202,7 @@ namespace GenericBot
                         gc.Save();
                         var user = DiscordClient.GetGuild(ban.GuildId).GetBansAsync().Result
                             .First(b => b.User.Id == ban.Id).User;
-                        DiscordClient.GetGuild(ban.GuildId).RemoveBanAsync(ban.Id);
+                        await DiscordClient.GetGuild(ban.GuildId).RemoveBanAsync(ban.Id);
                         var builder = new EmbedBuilder()
                             .WithTitle("User Unbanned")
                             .WithDescription($"Banned for: {ban.Reason}")
@@ -218,7 +218,7 @@ namespace GenericBot
                             })
                             .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
                                 new DBGuild(ban.GuildId).GetUser(ban.Id).Warnings.SumAnd()));
-                        ((SocketTextChannel)DiscordClient.GetChannel(gc.UserLogChannelId))
+                        await ((SocketTextChannel)DiscordClient.GetChannel(gc.UserLogChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }
                 }
