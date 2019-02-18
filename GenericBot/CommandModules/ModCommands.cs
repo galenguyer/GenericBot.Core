@@ -349,6 +349,11 @@ namespace GenericBot.CommandModules
                                 .WithText($"By {msg.Author} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
                         });
 
+                    var warnedDbUser = guildDb.Users.Find(u => u.ID.Equals(uid));
+
+                    EmbedFieldBuilder warningCountField = new EmbedFieldBuilder().WithName("Warning Count").WithValue(warnedDbUser.Warnings.Count).WithIsInline(true);
+                    builder.AddField(warningCountField);
+
                     try
                     {
                         var user = client.GetUser(uid);
@@ -428,6 +433,12 @@ namespace GenericBot.CommandModules
                             footer
                                 .WithText($"By {msg.Author} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
                         });
+
+                    var warnedDbUser = guildDb.Users.Find(u => u.ID.Equals(user.Id));
+
+                    EmbedFieldBuilder warningCountField = new EmbedFieldBuilder().WithName("Warning Count").WithValue(warnedDbUser.Warnings.Count).WithIsInline(true);
+                    builder.AddField(warningCountField);
+
                     builder.Author = new EmbedAuthorBuilder().WithName(user.ToString()).WithIconUrl(user.GetAvatarUrl());
 
                     await msg.Channel.SendMessageAsync("", embed: builder.Build());
