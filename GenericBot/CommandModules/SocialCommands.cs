@@ -606,6 +606,105 @@ namespace GenericBot.CommandModules
 
             SocialCommands.Add(findGroup);
 
+            Command everyonegay = new Command("everyonegay");
+            everyonegay.ToExecute += async (client, msg, parameters) =>
+            {
+                string filename = "";
+                List<IMessage> messagesToDelete = new List<IMessage>();
+
+                if (parameters.Empty())
+                {
+                    var user = msg.Author;
+
+                    using (WebClient webClient = new WebClient())
+                    {
+                        await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl().Replace("size=128", "size=512")), $"files/img/{user.AvatarId}.png");
+                    }
+
+                    filename = $"files/img/{user.AvatarId}.png";
+                }
+                else if (Uri.IsWellFormedUriString(parameters[0], UriKind.RelativeOrAbsolute) && (parameters[0].EndsWith(".png") || parameters[0].EndsWith(".jpg") || parameters[0].EndsWith("jpeg") || parameters[0].EndsWith(".gif")))
+                {
+                    filename = $"files/img/{msg.Id}.{parameters.reJoin().Split('.').Last()}";
+
+                    using (WebClient webclient = new WebClient())
+                    {
+                        await webclient.DownloadFileTaskAsync(new Uri(parameters.reJoin()), filename);
+                    }
+
+                    messagesToDelete.Add(msg);
+                }
+                else if (msg.GetMentionedUsers().Any())
+                {
+                    var user = msg.GetMentionedUsers().First();
+
+                    using (WebClient webClient = new WebClient())
+                    {
+                        await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl().Replace("size=128", "size=512")),
+                            $"files/img/{user.AvatarId}.png");
+                    }
+
+                    filename = $"files/img/{user.AvatarId}.png";
+                }
+
+                {
+                    int targetWidth = 720;
+                    int targetHeight = 1280; //height and width of the finished image
+                    Image baseImage = Image.FromFile("files/img/everyonegay.png");
+                    Image avatar = Image.FromFile(filename);
+
+                    //be sure to use a pixelformat that supports transparency
+                    using (var bitmap = new Bitmap(targetWidth, targetHeight, PixelFormat.Format32bppArgb))
+                    {
+                        using (var canvas = Graphics.FromImage(bitmap))
+                        {
+                            //this ensures that the backgroundcolor is transparent
+                            canvas.Clear(Color.Transparent);
+
+                            //this paints the frontimage with a offset at the given coordinates
+                            int avatarWidth = 1280 * avatar.Width / avatar.Height;
+                            canvas.DrawImage(avatar, targetWidth / 2 - avatarWidth / 2, 0, avatarWidth, 1280);
+
+                            //this selects the entire backimage and and paints
+                            //it on the new image in the same size, so its not distorted.
+                            canvas.DrawImage(baseImage, 0, 0, targetWidth, targetHeight);
+                            canvas.Save();
+                        }
+
+                        bitmap.Save($"files/img/everyone_gay_{msg.Id}.png", System.Drawing.Imaging.ImageFormat.Png);
+                    }
+
+                    await Task.Delay(100);
+                    await msg.Channel.SendFileAsync($"files/img/everyone_gay_{msg.Id}.png");
+                    baseImage.Dispose();
+                    avatar.Dispose();
+                    File.Delete(filename);
+                    File.Delete($"files/img/everyone_gay_{msg.Id}.png");
+                }
+
+                // this only removes the initial message if it contains a link to prevent the duplicate bc discord likes previewing images
+                await Task.Delay(5 * 1000);
+                try
+                {
+                    messagesToDelete.ForEach(m => GenericBot.ClearedMessageIds.Add(m.Id));
+                    messagesToDelete.Add(msg);
+                    await (msg.Channel as ITextChannel).DeleteMessagesAsync(messagesToDelete);
+                }
+                catch
+                {
+                    try
+                    {
+                        foreach (var m in messagesToDelete)
+                        {
+                            await m.DeleteAsync();
+                        }
+                    }
+                    catch { }
+                }
+            };
+
+            SocialCommands.Add(everyonegay);
+
             return SocialCommands;
         }
     }
