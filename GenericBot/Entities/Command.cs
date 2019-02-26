@@ -44,8 +44,8 @@ namespace GenericBot.Entities
         {
             if (GetPermissions(msg.Author, (msg.Channel as SocketGuildChannel).Guild.Id) < RequiredPermission)
                 return;
-         
-            // if (SendTyping)  await msg.Channel.TriggerTypingAsync();
+
+            if (SendTyping) await msg.Channel.TriggerTypingAsync();
             if (Delete)
             {
                 try
