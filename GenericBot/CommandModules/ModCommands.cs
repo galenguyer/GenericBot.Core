@@ -80,7 +80,7 @@ namespace GenericBot.CommandModules
                                 Timestamp = m.CreatedAt
                             })
                         }, Formatting.Indented));
-                        await msg.GetGuild().GetTextChannel(logChannelId).SendFileAsync(fileName, "");
+                        msg.GetGuild().GetTextChannel(logChannelId).SendFileAsync(fileName, "");
                         File.Delete(fileName);
                     }
                     msgs.ForEach(m => GenericBot.ClearedMessageIds.Add(m.Id));
