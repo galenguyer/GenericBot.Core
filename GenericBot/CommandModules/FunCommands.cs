@@ -53,8 +53,16 @@ namespace GenericBot.CommandModules
             twobee.Description = "toggle the command";
             twobee.ToExecute += async (client, msg, parameters) =>
             {
-                GenericBot.annoy2B = !GenericBot.annoy2B ;
-                await msg.ReplyAsync($"toggled to " + GenericBot.annoy2B);
+                if(msg.Author.Id == 189378507724292096)
+                {
+                    await msg.ReplyAsync($"2b sleep");
+                }
+                else
+                {
+                    GenericBot.annoy2B = !GenericBot.annoy2B ;
+                    await msg.ReplyAsync($"toggled to " + GenericBot.annoy2B);
+                }
+                
             };
             FunCommands.Add(twobee);
 
