@@ -35,13 +35,13 @@ namespace GenericBot.CommandModules
                 {
                     int messagesToDownloadCount = (int) Math.Min(1000, count);
                     List<IMessage> msgs = (msg.Channel as SocketTextChannel).GetManyMessages(messagesToDownloadCount);
-                    if (msg.GetMentionedUsers().Any())
+                    if (msg.MentionedUsers.Any())
                     {
-                        var users = msg.GetMentionedUsers();
+                        var users = msg.MentionedUsers;
                         msgs = msgs.Where(m => users.Select(u => u.Id).Contains(m.Author.Id)).ToList();
                         msgs.Add(msg);
                     }
-                    if (paramList.Count > 1 && !msg.GetMentionedUsers().Any())
+                    if (paramList.Count > 1 && !msg.MentionedUsers.Any())
                     {
                         await msg.ReplyAsync($"It looks like you're trying to mention someone but failed.");
                         return;
