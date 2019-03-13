@@ -50,10 +50,11 @@ namespace GenericBot.CommandModules
             FunCommands.Add(wat);
 
             Command twobee = new Command("2b");
-            twobee.Description = "sleep omg";
+            twobee.Description = "toggle the command";
             twobee.ToExecute += async (client, msg, parameters) =>
             {
-                await msg.ReplyAsync($"**-2b-**\n2b sleep");
+                GenericBot.annoy2B = !GenericBot.annoy2B ;
+                await msg.ReplyAsync($"toggled to " + GenericBot.annoy2B);
             };
             FunCommands.Add(twobee);
 
