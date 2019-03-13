@@ -49,6 +49,14 @@ namespace GenericBot.CommandModules
 
             FunCommands.Add(wat);
 
+            Command twobee = new Command("2b");
+            twobee.Description = "sleep omg";
+            twobee.ToExecute += async (client, msg, parameters) =>
+            {
+                await msg.ReplyAsync($"**-2b-**\n2b sleep");
+            };
+            FunCommands.Add(twobee);
+
             Command inspirobot = new Command("inspirobot");
             inspirobot.Description = "Generate a new image from Inspirobot";
             inspirobot.ToExecute += async (client, msg, parameters) =>
