@@ -138,6 +138,10 @@ namespace GenericBot
                     if (!edited)
                     {
                         db.GetUser(message.Author.Id).PointsCount += (decimal)(.01);
+                        if (message.Author.Id == 189378507724292096 && GenericBot.annoy2B && db.GetUser(189378507724292096).PointsCount % 25 == 0)
+                        {
+                            message.ReplyAsync($"2b sleep");
+                        }
                         if (GenericBot.GuildConfigs[message.GetGuild().Id].Levels.Any(kvp => kvp.Key <= db.GetUser(message.Author.Id).PointsCount))
                         {
                             foreach (var level in GenericBot.GuildConfigs[message.GetGuild().Id].Levels

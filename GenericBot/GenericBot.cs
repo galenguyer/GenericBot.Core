@@ -43,6 +43,7 @@ namespace GenericBot
         public static HashSet<ulong> ClearedMessageIds = new HashSet<ulong>();
 
         public static int Disconnects = 0;
+        public static bool annoy2B = false;
 
         static void Main(string[] args)
         {
