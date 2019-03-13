@@ -28,10 +28,13 @@ namespace GenericBot.CommandModules
                     return;
                 }
 
-                int count;
-                if (int.TryParse(paramList[0], out count))
+                ulong count;
+               
+
+                if (ulong.TryParse(paramList[0], out count))
                 {
-                    List<IMessage> msgs = (msg.Channel as SocketTextChannel).GetManyMessages(count);
+                    int messagesToDownloadCount = (int) Math.Min(1000, count);
+                    List<IMessage> msgs = (msg.Channel as SocketTextChannel).GetManyMessages(messagesToDownloadCount);
                     if (msg.GetMentionedUsers().Any())
                     {
                         var users = msg.GetMentionedUsers();
@@ -43,7 +46,11 @@ namespace GenericBot.CommandModules
                         await msg.ReplyAsync($"It looks like you're trying to mention someone but failed.");
                         return;
                     }
-                    msgs = msgs.Where(m => DateTime.Now - m.CreatedAt < TimeSpan.FromDays(14)).ToList();
+                    if(count > 1000) // If the input number was probably an ID
+                    {
+                        msgs = msgs.Where(m => m.Id >= count).ToList(); // Only keep messages sent after that ID
+                    }
+                    msgs = msgs.Where(m => DateTime.Now - m.CreatedAt < TimeSpan.FromDays(14)).ToList(); // Only keep last 2 weeks of messages (API Limits)
                     var logChannelId = GenericBot.GuildConfigs[msg.GetGuild().Id].UserLogChannelId;
                     if(msg.GetGuild().Channels.Any(c => c.Id == logChannelId))
                     {
