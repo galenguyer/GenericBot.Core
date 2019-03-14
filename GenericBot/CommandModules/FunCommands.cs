@@ -241,7 +241,7 @@ namespace GenericBot.CommandModules
                 string floofstring;
                 using (var wc = new System.Net.WebClient())
                     floofstring = wc.DownloadString(baseURL + "list.php");
-                var floofarray = floofstring.Split().ToList();
+                var floofarray = floofstring.Split("<br>").ToList();
                 floofstring = floofarray.GetRandomItem();
                 await msg.ReplyAsync(baseURL + floofstring);
             };
