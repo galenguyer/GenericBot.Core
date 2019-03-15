@@ -61,10 +61,10 @@ namespace GenericBot.CommandModules
             botCommands.Add(global);
 
             Command say = new Command("say");
-            say.Delete = true;
+            say.Delete = false;
             say.Aliases = new List<string>{"echo"};
             say.Description = "Say something a contributor said";
-            say.SendTyping = true;
+            say.SendTyping = false;
             say.Usage = "say <phrase>";
             say.ToExecute += async (client, msg, paramList) =>
             {
@@ -75,7 +75,7 @@ namespace GenericBot.CommandModules
                 var Contributors = JsonConvert.DeserializeObject<List<ulong>>(File.ReadAllText("files/contributors.json"));
                 if (!(Contributors.Contains(msg.Author.Id) || say.GetPermissions(msg.Author, msg.GetGuild().Id) >= Command.PermissionLevels.GlobalAdmin))
                     return;
-
+                await msg.DeleteAsync();
                 ulong channelid = msg.Channel.Id;
                 if (ulong.TryParse(paramList[0], out channelid))
                 {
