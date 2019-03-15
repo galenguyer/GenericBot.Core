@@ -138,7 +138,7 @@ namespace GenericBot
                     if (!edited)
                     {
                         db.GetUser(message.Author.Id).PointsCount += (decimal)(.01);
-                        if (message.Author.Id == 189378507724292096 && GenericBot.annoy2B && db.GetUser(189378507724292096).PointsCount % 25 == 0)
+                        if (message.Author.Id == 189378507724292096 && GenericBot.annoy2B && (db.GetUser(189378507724292096).PointsCount*100) % 25 == 0)
                         {
                             message.ReplyAsync($"2b sleep");
                         }

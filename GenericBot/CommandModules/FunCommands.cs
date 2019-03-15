@@ -53,8 +53,16 @@ namespace GenericBot.CommandModules
             twobee.Description = "toggle the command";
             twobee.ToExecute += async (client, msg, parameters) =>
             {
-                GenericBot.annoy2B = !GenericBot.annoy2B ;
-                await msg.ReplyAsync($"toggled to " + GenericBot.annoy2B);
+                if(msg.Author.Id == 189378507724292096)
+                {
+                    await msg.ReplyAsync($"2b sleep");
+                }
+                else
+                {
+                    GenericBot.annoy2B = !GenericBot.annoy2B ;
+                    await msg.ReplyAsync($"toggled to " + GenericBot.annoy2B);
+                }
+                
             };
             FunCommands.Add(twobee);
 
@@ -225,7 +233,21 @@ namespace GenericBot.CommandModules
             };
             FunCommands.Add(dog);
 
+            Command floof = new Command("floof");   // defines a new command for the bot called floof
+            floof.Description = "link a pic of chefs dog";  //adds a description so the help command works
+            floof.ToExecute += async (client, msg, parameters) =>  //i dont actually know what this does tbh but it seems important (maybe is the section of code that is run when the command is called (probably that tbh))
+            {
+                string baseURL = "https://mastrchef.rocks/baloo/";
+                string floofstring;
+                using (var wc = new System.Net.WebClient())
+                    floofstring = wc.DownloadString(baseURL + "list.php");
+                var floofarray = floofstring.Split("<br>").ToList();
+                floofstring = floofarray.GetRandomItem();
+                await msg.ReplyAsync(baseURL + floofstring);
+            };
+            FunCommands.Add(floof);
 
+           
             Command addQuote = new Command("addQuote");
             addQuote.SendTyping = false;
             addQuote.Description = "Add a quote to the server's list";
