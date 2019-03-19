@@ -350,7 +350,7 @@ namespace GenericBot.CommandModules
 
 
 
-                if (!parameters.Any())
+                if (!parameters.Empty())
                 {
                     await msg.ReplyAsync("I can either `save` your roles, or `restore` them");
                 }
