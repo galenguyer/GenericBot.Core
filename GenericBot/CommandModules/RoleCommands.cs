@@ -347,7 +347,14 @@ namespace GenericBot.CommandModules
             roleStore.Usage = "rolestore [save|restore]";
             roleStore.ToExecute += async (client, msg, parameters) =>
             {
-                if (parameters[0].ToLower().Equals("save"))
+
+
+
+                if (!parameters.Any())
+                {
+                    await msg.ReplyAsync("I can either `save` your roles, or `restore` them");
+                }
+                else if (parameters[0].ToLower().Equals("save"))
                 {
                     var guildDb = new DBGuild(msg.GetGuild().Id);
                     var dbUser = guildDb.Users.First(u => u.ID.Equals(msg.Author.Id));
@@ -402,7 +409,7 @@ namespace GenericBot.CommandModules
                 }
                 else
                 {
-                    await msg.ReplyAsync("Invalid option");
+                    await msg.ReplyAsync("invalid option");
                 }
             };
 
