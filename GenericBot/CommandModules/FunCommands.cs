@@ -51,6 +51,7 @@ namespace GenericBot.CommandModules
 
             Command twobee = new Command("2b");
             twobee.Description = "toggle the command";
+            twobee.RequiredPermission = Command.PermissionLevels.Admin;
             twobee.ToExecute += async (client, msg, parameters) =>
             {
                 if(msg.Author.Id == 189378507724292096)
