@@ -243,7 +243,15 @@ namespace GenericBot.CommandModules
                     floofstring = wc.DownloadString(baseURL + "list.php");
                 var floofarray = floofstring.Split("<br>").ToList();
                 floofstring = floofarray.GetRandomItem();
-                await msg.ReplyAsync(baseURL + floofstring);
+                if(floofstring.Contains("https"))
+                {
+                    await msg.ReplyAsync(floofstring);
+                }
+                else
+                {
+                    await msg.ReplyAsync(baseURL + floofstring);
+                }
+                
             };
             FunCommands.Add(floof);
 
