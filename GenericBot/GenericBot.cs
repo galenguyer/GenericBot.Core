@@ -11,6 +11,7 @@ using Discord;
 using Discord.WebSocket;
 using GenericBot.Entities;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using Timer = System.Timers.Timer;
 
@@ -26,16 +27,13 @@ namespace GenericBot
         public static string BuildNumber = "Unknown";
         public static Animols Animols = new Animols();
 
-
-        public static ConcurrentDictionary<ulong, DBGuild> LoadedGuildDbs = new ConcurrentDictionary<ulong, DBGuild>();
         public static ConcurrentDictionary<ulong, GuildMessageStats> LoadedGuildMessageStats = new ConcurrentDictionary<ulong, GuildMessageStats>();
-        public static LiteDB.LiteDatabase GlobalDatabase;
+        public static MongoClient mongoClient;
 
         public static Timer Updater = new Timer();
 
         public static Dictionary<ulong, List<IMessage>> MessageDeleteQueue = new Dictionary<ulong, List<IMessage>>();
         public static Timer MessageDeleteTimer = new Timer();
-        public static bool Test = true;
         public static Stopwatch QuickWatch = new Stopwatch();
         public static ParsedCommand LastCommand;
 
@@ -53,7 +51,7 @@ namespace GenericBot
                 BuildNumber = File.ReadAllText("version.txt").Trim();
             }
             GlobalConfiguration = new GlobalConfiguration().Load();
-            GlobalDatabase = new LiteDB.LiteDatabase(@"Filename=files/guildDatabase.db; Mode=Shared; Async=true; Password=" + GlobalConfiguration.DatabasePassword);
+            GlobalDatabase = new MongoClient(GlobalConfiguration.DbConnectionString);
             GuildConfigs = new Dictionary<ulong, GuildConfig>();
 
             #region Timers
@@ -141,8 +139,6 @@ namespace GenericBot
 
         private async Task OnGuildConnected(SocketGuild guild)
         {
-            bool f = LoadedGuildDbs.TryAdd(guild.Id, new DBGuild(guild.Id));
-            await Logger.LogGenericMessage($"Loaded DB for {guild.Name} ({guild.Id}): {f}");
             if (!File.Exists($"files/guildConfigs/{guild.Id}.json"))
             {
                 new GuildConfig(guild.Id).Save();
