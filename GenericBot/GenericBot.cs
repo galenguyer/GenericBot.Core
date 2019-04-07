@@ -26,7 +26,6 @@ namespace GenericBot
         public static string BuildNumber = "Unknown";
         public static Animols Animols = new Animols();
 
-        public static Timer StatusPollingTimer = new Timer();
 
         public static ConcurrentDictionary<ulong, DBGuild> LoadedGuildDbs = new ConcurrentDictionary<ulong, DBGuild>();
         public static ConcurrentDictionary<ulong, GuildMessageStats> LoadedGuildMessageStats = new ConcurrentDictionary<ulong, GuildMessageStats>();
@@ -62,14 +61,6 @@ namespace GenericBot
             Updater.AutoReset = true;
             Updater.Interval = 5 * 1000;
             Updater.Elapsed += CheckMuteRemoval;
-
-            if (!string.IsNullOrEmpty(GlobalConfiguration.StatusAuthKey))
-            {
-                StatusPollingTimer.AutoReset = true;
-                StatusPollingTimer.Interval = 1 * 1000;
-                StatusPollingTimer.Elapsed += StatusPollingTimerOnElapsed;
-                StatusPollingTimer.Start();
-            }
 
             #endregion Timers
 
@@ -160,21 +151,6 @@ namespace GenericBot
             {
                 GuildConfigs.Add(guild.Id, JsonConvert.DeserializeObject<GuildConfig>(
                     File.ReadAllText($"files/guildConfigs/{guild.Id}.json")));
-            }
-        }
-
-        private static void StatusPollingTimerOnElapsed(object sender, ElapsedEventArgs e)
-        {
-            if (GenericBot.DiscordClient.GetShard(0).ConnectionState == ConnectionState.Disconnecting || GenericBot.DiscordClient.GetShard(0).ConnectionState == ConnectionState.Disconnected)
-            {
-                if (StatusPollingTimer.Interval == 15 * 1000)
-                {
-                    Logger.LogErrorMessage("Disconnecting timed out, forcing exit");
-                    Environment.Exit(1);
-                }
-                else
-                    StatusPollingTimer.Interval = 15 * 1000;
-                return;
             }
         }
 
