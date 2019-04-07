@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Discord.WebSocket;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace GenericBot.Entities
 {
     public class DBUser
     {
+        [BsonId]
         public ulong ID { get; set; }
         public List<string> Nicknames { get; set; }
         public List<string> Usernames { get; set; }
