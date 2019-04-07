@@ -137,16 +137,7 @@ namespace GenericBot.CommandModules
                 {
                     roles += $"`{role.Name}`, ";
                 }
-                DBUser dbUser;
-                DBGuild guildDb = new DBGuild(msg.GetGuild().Id);
-                if (guildDb.Users.Any(u => u.ID.Equals(user.Id))) // if already exists
-                {
-                    dbUser = guildDb.Users.First(u => u.ID.Equals(user.Id));
-                }
-                else
-                {
-                    dbUser = new DBUser(user);
-                }
+                DBUser dbUser = new DBGuild(msg.GetGuild().Id).GetUser(user.Id);
 
                 string nicks = "", usernames = "";
                 if (!dbUser.Usernames.Empty())
@@ -187,7 +178,6 @@ namespace GenericBot.CommandModules
                 {
                     await msg.ReplyAsync(str.TrimStart(','));
                 }
-                guildDb.Save();
             };
 
             ModCommands.Add(whois);
@@ -210,7 +200,7 @@ namespace GenericBot.CommandModules
                 {
                     dbUsers.Add(guildDb.GetUser(id));
                 }
-                else if (input.Length < 3 && guildDb.Users.Count > 100)
+                else if (input.Length < 3)
                 {
                     await msg.ReplyAsync($"I can't search for that, it's dangerously short and risks a crash.");
                     return;
