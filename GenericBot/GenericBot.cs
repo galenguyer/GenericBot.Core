@@ -51,7 +51,7 @@ namespace GenericBot
                 BuildNumber = File.ReadAllText("version.txt").Trim();
             }
             GlobalConfiguration = new GlobalConfiguration().Load();
-            GlobalDatabase = new MongoClient(GlobalConfiguration.DbConnectionString);
+            mongoClient = new MongoClient(GlobalConfiguration.DbConnectionString);
             GuildConfigs = new Dictionary<ulong, GuildConfig>();
 
             #region Timers
