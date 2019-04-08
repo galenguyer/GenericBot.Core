@@ -327,15 +327,7 @@ namespace GenericBot.CommandModules
                     string warning = parameters.reJoin();
                     warning += $" (Added By `{msg.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
                     DBGuild guildDb = new DBGuild(msg.GetGuild().Id);
-                    if (guildDb.Users.Any(u => u.ID.Equals(uid))) // if already exists
-                    {
-                        guildDb.Users.Find(u => u.ID.Equals(uid)).AddWarning(warning);
-                    }
-                    else
-                    {
-                        guildDb.AddOrUpdateUser(new DBUser { ID = uid, Warnings = new List<string> { warning } });
-                    }
-
+                    guildDb.AddOrUpdateUser(guildDb.GetOrCreateUser(uid).AddWarning(warning));
                     var builder = new EmbedBuilder()
                         .WithTitle("Warning Added")
                         .WithDescription(warning)
