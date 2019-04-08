@@ -269,7 +269,6 @@ namespace GenericBot.CommandModules
                     return;
                 }
                 var q = dbGuild.AddQuote(parameters.reJoin());
-                dbGuild.Save();
                 await msg.ReplyAsync($"Added {q.ToString()}");
             };
             FunCommands.Add(addQuote);
@@ -303,7 +302,6 @@ namespace GenericBot.CommandModules
                 {
                     await msg.ReplyAsync("You must pass in a number");
                 }
-                dbGuild.Save();
             };
             FunCommands.Add(removeQuote);
 
