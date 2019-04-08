@@ -190,7 +190,7 @@ namespace GenericBot
                                     .WithIconUrl(user.GetAvatarUrl());
                             })
                             .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
-                                new DBGuild(ban.GuildId).GetUser(ban.Id).Warnings.SumAnd()));
+                                new DBGuild(ban.GuildId).GetOrCreateUser(ban.Id).Warnings.SumAnd()));
                         await ((SocketTextChannel)DiscordClient.GetChannel(gc.UserLogChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }

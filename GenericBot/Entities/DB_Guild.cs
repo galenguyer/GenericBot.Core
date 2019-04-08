@@ -11,6 +11,24 @@ namespace GenericBot.Entities
     public class DBGuild
     {
         public ulong ID { get; set; }
+        public List<DBUser> Users
+        {
+            get
+            {
+                var gDb = GenericBot.mongoClient.GetDatabase($"{this.ID}");
+                var users = gDb.GetCollection<DBUser>("users");
+                return users.AsQueryable().ToList();
+            }
+        }
+        public List<Quote> Quotes
+        {
+            get
+            {
+                var gDb = GenericBot.mongoClient.GetDatabase($"{this.ID}");
+                var quotes = gDb.GetCollection<Quote>("users");
+                return quotes.AsQueryable().ToList();
+            }
+        }
 
         public DBGuild()
         {
@@ -22,7 +40,19 @@ namespace GenericBot.Entities
             this.ID = guildId;
         }
 
-        public DBUser GetUser(ulong userId)
+        public void AddOrUpdateUser(DBUser user)
+        {
+
+            var gDb = GenericBot.mongoClient.GetDatabase($"{this.ID}");
+            var users = gDb.GetCollection<DBUser>("users");
+            if(users.CountDocuments(Builders<DBUser>.Filter.Eq("ID" ,user.ID)) == 1)
+            {
+                users.DeleteOne(Builders<DBUser>.Filter.Eq("ID", user.ID));
+            }
+            users.InsertOne(user);
+        }
+
+        public DBUser GetOrCreateUser(ulong userId)
         {
             var gDb = GenericBot.mongoClient.GetDatabase($"{this.ID}");
             var users = gDb.GetCollection<DBUser>("users");
@@ -37,8 +67,8 @@ namespace GenericBot.Entities
                 else
                     users.InsertOne(new DBUser() { ID = userId });
 
-                return GetUser(userId);
-            };
+                return GetOrCreateUser(userId);
+            }
         }
 
         public Quote AddQuote(string content)
@@ -52,7 +82,7 @@ namespace GenericBot.Entities
                 Id = Quotes.CountDocuments(new BsonDocument()) == 0 ? 1 : (int)Quotes.CountDocuments(new BsonDocument()) + 1,
                 Active = true
             };
-            Quotes.InsertMany(q);
+            Quotes.InsertOne(q);
 
             return q;
         }

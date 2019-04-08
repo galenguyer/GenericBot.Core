@@ -302,7 +302,6 @@ namespace GenericBot.CommandModules
                 {
                     await msg.ReplyAsync("You must pass in a number");
                 }
-                dbGuild.Save();
             };
             FunCommands.Add(removeQuote);
 
