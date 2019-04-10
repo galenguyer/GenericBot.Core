@@ -294,7 +294,7 @@ namespace GenericBot.CommandModules
                 {
                     Process proc = new System.Diagnostics.Process();
                     proc.StartInfo.FileName = "/bin/bash";
-                    proc.StartInfo.Arguments = "-c \"" + parameters.reJoin() + " > results\"";
+                    proc.StartInfo.Arguments = "-c \"" + parameters.reJoin() + " ";
                     proc.StartInfo.RedirectStandardOutput = true;
                     proc.StartInfo.RedirectStandardError = true;
                     proc.StartInfo.CreateNoWindow = true;
@@ -303,11 +303,8 @@ namespace GenericBot.CommandModules
                     proc.Start();
                     proc.WaitForExit();
 
-                    Console.WriteLine(proc.StandardOutput.ReadToEnd());
-                    foreach (string str in File.ReadAllText("results").SplitSafe('\n'))
-                    {
-                        await msg.ReplyAsync($"```\n{str}\n```");
-                    }
+                    string output = proc.StandardOutput.ReadToEnd() + proc.StandardError.ReadToEnd();
+                    await msg.ReplyAsync($"```\n{output}\n```");
                 }
                 else
                 {
