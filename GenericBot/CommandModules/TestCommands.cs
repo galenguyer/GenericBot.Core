@@ -296,6 +296,7 @@ namespace GenericBot.CommandModules
                     proc.StartInfo.FileName = "/bin/bash";
                     proc.StartInfo.Arguments = "-c \"" + parameters.reJoin() + " > results\"";
                     proc.StartInfo.RedirectStandardOutput = true;
+                    proc.StartInfo.RedirectStandardError = true;
                     proc.StartInfo.CreateNoWindow = true;
                     proc.StartInfo.UseShellExecute = false;
 
