@@ -132,7 +132,7 @@ namespace GenericBot
                     var dbUser = db.GetOrCreateUser(message.Author.Id);
                     if (!edited)
                     {
-                        db.AddOrUpdateUser(dbUser.AddPoints((decimal)0.1));
+                        db.AddOrUpdateUser(dbUser.AddPoints((decimal)0.01));
                         if (message.Author.Id == 189378507724292096 && GenericBot.annoy2B && (db.GetOrCreateUser(189378507724292096).PointsCount*100) % 25 == 0)
                         {
                             message.ReplyAsync($"2b sleep");
