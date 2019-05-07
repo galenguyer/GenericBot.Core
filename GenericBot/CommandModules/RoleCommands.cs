@@ -62,6 +62,7 @@ namespace GenericBot.CommandModules
                 {
                     await msg.ReplyAsync(str);
                 }
+                message += $"\n _\\You can also use `{prefix}rolestore save` to backup your assigned roles";
             };
 
             RoleCommands.Add(UserRoles);
