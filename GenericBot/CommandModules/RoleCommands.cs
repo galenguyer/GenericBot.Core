@@ -57,12 +57,12 @@ namespace GenericBot.CommandModules
                     message += $"`{role.Name}`, ";
                 }
                 message = message.Trim(' ', ',');
+                message += $"\n You can also use `{prefix}rolestore save` to backup your assigned roles";
 
                 foreach (var str in message.SplitSafe())
                 {
                     await msg.ReplyAsync(str);
                 }
-                message += $"\n You can also use `{prefix}rolestore save` to backup your assigned roles";
             };
 
             RoleCommands.Add(UserRoles);
