@@ -256,6 +256,29 @@ namespace GenericBot.CommandModules
             };
             FunCommands.Add(floof);
 
+            Command keysmash = new Command("keysmash");
+            keysmash.Description = "Generates a keysmash";
+            keysmash.SendTyping = false;
+            keysmash.ToExecute += async (client, msg, parameters) =>
+            {
+                List<string> Letters1 = new List<string>{ "a", "s", "d", "f", "j", "k", "l", ";" };
+                
+                string ToSend = "ad";
+                
+                for (int i = 1; i < 16; i++)
+                {
+                    Letters1.Remove(ToSend[ToSend.Length - 1].ToString());
+                    ToSend += Letters1.GetRandomItem();
+                    Letters1.Add(ToSend[ToSend.Length - 2].ToString());
+
+
+                }
+                await msg.ReplyAsync(ToSend);
+
+
+            };
+            FunCommands.Add(keysmash);
+
            
             Command addQuote = new Command("addQuote");
             addQuote.SendTyping = false;
