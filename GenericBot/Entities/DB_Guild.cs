@@ -94,7 +94,7 @@ namespace GenericBot.Entities
 
             try
             {
-                if ( dbQuotes == null || dbQuotes.CountDocuments(new BsonDocument("Active", false)) == 0)
+                if ( dbQuotes == null || dbQuotes.CountDocuments(new BsonDocument("Active", true)) == 0)
                 {
                     return new Quote { Content = "This server has no quotes", Id = -1 };
                 }
