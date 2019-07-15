@@ -156,7 +156,7 @@ namespace GenericBot.Entities
 
             try
             {
-                dbQuotes.UpdateOne(new BsonDocument("ID", id), Builders<Quote>.Update.Set("Active", false));
+                dbQuotes.UpdateOne(new BsonDocument("_id", id), Builders<Quote>.Update.Set("Active", false));
                 return true;
             }
             catch
