@@ -26,7 +26,7 @@ namespace GenericBot.Entities
             {
                 var gDb = GenericBot.mongoClient.GetDatabase($"{this.ID}");
                 var quotes = gDb.GetCollection<Quote>("quotes");
-                return quotes.AsQueryable().ToList();
+                return quotes.Find(new BsonDocument()).ToList();
             }
         }
 
