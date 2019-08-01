@@ -21,42 +21,47 @@ namespace GenericBot.Entities
             ActiveRaid = 16
         }
         [BsonId]
-        public ulong GuildId;
-        public List<ulong> AdminRoleIds;
-        public List<ulong> ModRoleIds;
-        public List<ulong> UserRoleIds;
-        public List<ulong> AutoRoleIds;
-        public ulong UserLogChannelId;
-        public List<ulong> MessageLoggingIgnoreChannels = new List<ulong>();
-        public ulong VerifiedRole = 0;
-        public string VerifiedMessage;
-        public AntiSpamLevel AntispamLevel = GuildConfig.AntiSpamLevel.None;
+        public ulong GuildId { get; set; }
+        public List<ulong> AdminRoleIds { get; set; }
+        public List<ulong> ModRoleIds { get; set; }
+        public List<ulong> UserRoleIds { get; set; }
+        public List<ulong> AutoRoleIds { get; set; }
+        public ulong UserLogChannelId { get; set; }
+        public List<ulong> MessageLoggingIgnoreChannels { get; set; }
+        public ulong VerifiedRole { get; set; }
+        public string VerifiedMessage { get; set; }
+        public AntiSpamLevel AntispamLevel { get; set; }
 
-        public string PointsName = "point";
-        public string PointsVerb = "used";
-        public bool PointsEnabled = false;
-        public Dictionary<decimal, ulong> Levels = new Dictionary<decimal, ulong>();
+        public string PointsName { get; set; }
+        public string PointsVerb { get; set; }
+        public bool PointsEnabled { get; set; }
+        public Dictionary<decimal, ulong> Levels { get; set; }
 
-        public bool GlobalBanOptOut = false;
+        public bool GlobalBanOptOut { get; set; }
 
-        public ulong FourChannelId;
-        public string Prefix;
-        public bool AllowTwitter = false;
-        public Giveaway Giveaway;
+        public ulong FourChannelId { get; set; }
+        public string Prefix { get; set; }
+        public Giveaway Giveaway { get; set; }
 
-        public List<ChannelMute> ChannelMutes = new List<ChannelMute>();
-        public List<CustomCommand> CustomCommands;
-        public List<CustomAlias> CustomAliases;
+        public List<ChannelMute> ChannelMutes { get; set; }
+        public List<CustomCommand> CustomCommands { get; set; }
+        public List<CustomAlias> CustomAliases { get; set; }
 
-        public List<ulong> ProbablyMutedUsers = new List<ulong>();
-        public ulong MutedRoleId = 0;
-        public List<GenericBan> Bans = new List<GenericBan>();
+        public List<ulong> ProbablyMutedUsers { get; set; }
+        public ulong MutedRoleId { get; set; }
+        public List<GenericBan> Bans { get; set; }
 
-        public Dictionary<ulong, Discord.OverwritePermissions> ChannelOverrideDefaults = new Dictionary<ulong, Discord.OverwritePermissions>();
+        public Dictionary<ulong, Discord.OverwritePermissions> ChannelOverrideDefaults { get; set; }
 
         public GuildConfig(ulong id)
         {
             GuildId = id;
+            VerifiedRole = 0;
+            AntispamLevel = AntiSpamLevel.None;
+            MessageLoggingIgnoreChannels = new List<ulong>();
+            PointsName = "point";
+            PointsVerb = "used";
+            PointsEnabled = false;
             AdminRoleIds = new List<ulong>();
             ModRoleIds = new List<ulong>();
             UserRoleIds = new List<ulong>();
@@ -64,7 +69,10 @@ namespace GenericBot.Entities
             CustomCommands = new List<CustomCommand>();
             CustomAliases = new List<CustomAlias>();
             Bans = new List<GenericBan>();
-
+            ChannelMutes = new List<ChannelMute>();
+            ProbablyMutedUsers = new List<ulong>();
+            Levels = new Dictionary<decimal, ulong>();
+            ChannelOverrideDefaults = new Dictionary<ulong, Discord.OverwritePermissions>();
             Prefix = "";
         }
 
