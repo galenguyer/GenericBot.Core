@@ -179,28 +179,6 @@ namespace GenericBot.CommandModules
 
                 #endregion UserRoles
 
-                #region Twitter
-
-                else if (paramList[0].ToLower().Equals("twitter"))
-                {
-                    if (paramList[1].ToLower() == "true")
-                    {
-                        GenericBot.GuildConfigs[msg.GetGuild().Id].AllowTwitter = true;
-                        await msg.ReplyAsync("Tweeting on this server has been enabled");
-                    }
-                    else if (paramList[1].ToLower() == "false")
-                    {
-                        GenericBot.GuildConfigs[msg.GetGuild().Id].AllowTwitter = false;
-                        await msg.ReplyAsync("Tweeting on this server has been disabled");
-                    }
-                    else
-                    {
-                        await msg.ReplyAsync("That's not a valid option");
-                    }
-                }
-
-                #endregion Twitter
-
                 #region Prefix
 
                 else if (paramList[0].ToLower().Equals("prefix"))
