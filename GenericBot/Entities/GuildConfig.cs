@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace GenericBot.Entities
@@ -17,6 +20,7 @@ namespace GenericBot.Entities
             Aggressive = 8,
             ActiveRaid = 16
         }
+        [BsonId]
         public ulong GuildId;
         public List<ulong> AdminRoleIds;
         public List<ulong> ModRoleIds;
@@ -75,6 +79,9 @@ namespace GenericBot.Entities
                 GenericBot.GuildConfigs[GuildId] = this;
             }
             File.WriteAllText($"files/guildConfigs/{this.GuildId}.json", JsonConvert.SerializeObject(this, Formatting.Indented));
+            var gDb = GenericBot.mongoClient.GetDatabase($"{this.GuildId}");
+            var coll = gDb.GetCollection<GuildConfig>("config");
+            coll.InsertOne(this);
             return this;
         }
 
