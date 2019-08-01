@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 
@@ -34,6 +35,7 @@ namespace GenericBot.Entities
         public string PointsName { get; set; }
         public string PointsVerb { get; set; }
         public bool PointsEnabled { get; set; }
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         public Dictionary<decimal, ulong> Levels { get; set; }
 
         public bool GlobalBanOptOut { get; set; }
@@ -50,6 +52,7 @@ namespace GenericBot.Entities
         public ulong MutedRoleId { get; set; }
         public List<GenericBan> Bans { get; set; }
 
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
         public Dictionary<ulong, Discord.OverwritePermissions> ChannelOverrideDefaults { get; set; }
 
         public GuildConfig(ulong id)
