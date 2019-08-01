@@ -20,7 +20,6 @@ namespace GenericBot.Entities
             Aggressive = 8,
             ActiveRaid = 16
         }
-        [BsonId]
         public ulong GuildId { get; set; }
         public List<ulong> AdminRoleIds { get; set; }
         public List<ulong> ModRoleIds { get; set; }
