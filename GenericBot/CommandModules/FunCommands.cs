@@ -30,13 +30,13 @@ namespace GenericBot.CommandModules
 
                 int averageLength = messages.Sum(m => m.Split(' ').Length) / 150;
                 averageLength = averageLength > 10 ? averageLength * 2: averageLength * 5;
-                averageLength = averageLength * new Random().Next();
+                averageLength = (int) (averageLength * new Random().NextDouble());
 
                 IMarkovGenerator markovGenerator;
                 if (parameters.Count >= 1 && parameters[0].ToLower() == "complex")
-                    markovGenerator = new SimpleMarkov();
-                else
                     markovGenerator = new LookbackMarkov();
+                else
+                    markovGenerator = new SimpleMarkov();
 
                 markovGenerator.Train(messages.ToArray());
 
