@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Discord;
 using GenericBot.Entities;
+using SharperMark;
 
 namespace GenericBot.CommandModules
 {
@@ -29,8 +30,14 @@ namespace GenericBot.CommandModules
 
                 int averageLength = messages.Sum(m => m.Split(' ').Length) / 150;
                 averageLength = averageLength > 10 ? averageLength * 2: averageLength * 5;
+                averageLength = averageLength * new Random().Next();
 
-                var markovGenerator = new SharperMark.SimpleMarkov();
+                IMarkovGenerator markovGenerator;
+                if (parameters.Count >= 1 && parameters[0].ToLower() == "complex")
+                    markovGenerator = new SimpleMarkov();
+                else
+                    markovGenerator = new LookbackMarkov();
+
                 markovGenerator.Train(messages.ToArray());
 
                 await msg.ReplyAsync(markovGenerator.GenerateWords(averageLength));

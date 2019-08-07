@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 
 namespace SharperMark
 {
-    public class SimpleMarkov
+    public class SimpleMarkov : IMarkovGenerator
     {
         internal int AverageSentenceLength = 0;
         internal List<MarkovNode> Nodes = new List<MarkovNode>();

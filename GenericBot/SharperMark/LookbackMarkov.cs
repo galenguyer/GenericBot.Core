@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SharperMark
 {
-    public class LookbackMarkov
+    public class LookbackMarkov : IMarkovGenerator
     {
         private int AverageSentenceLength = 0;
         private List<MarkovNode> Nodes = new List<MarkovNode>();
