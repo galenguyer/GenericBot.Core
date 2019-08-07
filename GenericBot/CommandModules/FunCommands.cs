@@ -26,13 +26,11 @@ namespace GenericBot.CommandModules
             {
                 var messages = msg.Channel.GetMessagesAsync().Flatten().Reverse().Select(m => m.Content).ToList().Result;
                 messages.ToList().AddRange(messages.TakeLast(50));
-                messages.ToList().AddRange(messages.TakeLast(25));
-                messages.ToList().AddRange(messages.TakeLast(10));
 
-                int averageLength = messages.Sum(m => m.Split(' ').Length) / 185;
-                averageLength = averageLength > 10 ? averageLength : averageLength * 2;
+                int averageLength = messages.Sum(m => m.Split(' ').Length) / 150;
+                averageLength = averageLength > 10 ? averageLength * 2: averageLength * 5;
 
-                var markovGenerator = new SharperMark.LookbackMarkov();
+                var markovGenerator = new SharperMark.SimpleMarkov();
                 markovGenerator.Train(messages.ToArray());
 
                 await msg.ReplyAsync(markovGenerator.GenerateWords(averageLength));
