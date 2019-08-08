@@ -63,18 +63,21 @@ namespace GenericBot.CommandModules
                     message += "\n";
                 }
 
-                message += $"**Ungrouped:** ";
-                foreach (var role in msg.GetGuild().Roles
-                    .Where(r => config.UserRoles[""].Contains(r.Id))
-                    .OrderBy(r => r.Name))
+                if (config.UserRoles[""].Count > 0)
                 {
-                    if ((msg.Author as SocketGuildUser).Roles.Contains(role))
-                        message += "\\✔ ";
-                    else
-                        message += "✘";
-                    message += $"`{role.Name}`, ";
+                    message += $"**Ungrouped:** ";
+                    foreach (var role in msg.GetGuild().Roles
+                        .Where(r => config.UserRoles[""].Contains(r.Id))
+                        .OrderBy(r => r.Name))
+                    {
+                        if ((msg.Author as SocketGuildUser).Roles.Contains(role))
+                            message += "\\✔ ";
+                        else
+                            message += "✘";
+                        message += $"`{role.Name}`, ";
+                    }
+                    message += "\n";
                 }
-                message += "\n";
 
                 message = message.Trim(' ', ',', '\n');
                 message += $"\n You can also use `{prefix}rolestore save` to backup your assigned roles";
