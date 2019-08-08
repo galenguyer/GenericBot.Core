@@ -105,7 +105,7 @@ namespace GenericBot.CommandModules
                     if (string.IsNullOrWhiteSpace(roleName))
                         continue;
                     var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower().Trim()))
-                        .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id));
+                        .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.Any(rg => rg.Value.Contains(r.Id)));
                     if (!roles.Any())
                     {
                         messagesToDelete.Add(msg.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"Could not find any user roles matching `{roleName}`").WithColor(new Color(0xFFFF00)).Build()).Result);
@@ -175,7 +175,7 @@ namespace GenericBot.CommandModules
                     if (string.IsNullOrWhiteSpace(roleName))
                         continue;
                     var roles = msg.GetGuild().Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower().Trim()))
-                        .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id));
+                        .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.Any(rg => rg.Value.Contains(r.Id)));
                     if (!roles.Any())
                     {
                         messagesToDelete.Add(msg.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"Could not find any user roles matching `{roleName}`").WithColor(new Color(0xFFFF00)).Build()).Result);
