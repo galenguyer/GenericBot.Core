@@ -93,9 +93,9 @@ namespace GenericBot.Entities
                 GenericBot.GuildConfigs[GuildId] = this;
             }
             File.WriteAllText($"files/guildConfigs/{this.GuildId}.json", JsonConvert.SerializeObject(this, Formatting.Indented));
-            var gDb = GenericBot.mongoClient.GetDatabase($"{this.GuildId}");
-            var coll = gDb.GetCollection<GuildConfig>("config");
-            coll.InsertOne(this);
+            //var gDb = GenericBot.mongoClient.GetDatabase($"{this.GuildId}");
+            //var coll = gDb.GetCollection<GuildConfig>("config");
+            //coll.InsertOne(this);
             return this;
         }
 
