@@ -47,7 +47,7 @@ namespace GenericBot.CommandModules
                 ? GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix : GenericBot.GlobalConfiguration.DefaultPrefix;
                 string message = $"You can use `{prefix}iam` and `{prefix}iamnot` with any of these roles:\n _\\*(Pro tip: You can add/remove more than one role at a time by seperating each role with a comma like `{prefix}iam role0, role1, role2, etc`)*_\n";
                 var config = GenericBot.GuildConfigs[msg.GetGuild().Id];
-                foreach (var group in config.UserRoles.Where(g => !string.IsNullOrEmpty(g.Key)).OrderBy(g => g.Key))
+                foreach (var group in config.UserRoles.Where(g => !string.IsNullOrEmpty(g.Key) && g.Value.Count > 0).OrderBy(g => g.Key))
                 {
                     message += $"**{group.Key}:** ";
                     foreach (var role in msg.GetGuild().Roles
