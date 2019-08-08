@@ -46,8 +46,26 @@ namespace GenericBot.CommandModules
                 string prefix = (!String.IsNullOrEmpty(GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix))
                 ? GenericBot.GuildConfigs[(msg.Channel as SocketGuildChannel).Guild.Id].Prefix : GenericBot.GlobalConfiguration.DefaultPrefix;
                 string message = $"You can use `{prefix}iam` and `{prefix}iamnot` with any of these roles:\n _\\*(Pro tip: You can add/remove more than one role at a time by seperating each role with a comma like `{prefix}iam role0, role1, role2, etc`)*_\n";
+                var config = GenericBot.GuildConfigs[msg.GetGuild().Id];
+                foreach (var group in config.UserRoles.Where(g => !string.IsNullOrEmpty(g.Key)).OrderBy(g => g.Key))
+                {
+                    message += $"**{group.Key}:** ";
+                    foreach (var role in msg.GetGuild().Roles
+                        .Where(r => group.Value.Contains(r.Id))
+                        .OrderBy(r => r.Name))
+                    {
+                        if ((msg.Author as SocketGuildUser).Roles.Contains(role))
+                            message += "\\✔ ";
+                        else
+                            message += "✘";
+                        message += $"`{role.Name}`, ";
+                    }
+                    message += "\n";
+                }
+
+                message += $"**Ungrouped:** ";
                 foreach (var role in msg.GetGuild().Roles
-                    .Where(r => GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(r.Id))
+                    .Where(r => config.UserRoles[""].Contains(r.Id))
                     .OrderBy(r => r.Name))
                 {
                     if ((msg.Author as SocketGuildUser).Roles.Contains(role))
@@ -56,7 +74,9 @@ namespace GenericBot.CommandModules
                         message += "✘";
                     message += $"`{role.Name}`, ";
                 }
-                message = message.Trim(' ', ',');
+                message += "\n";
+
+                message = message.Trim(' ', ',', '\n');
                 message += $"\n You can also use `{prefix}rolestore save` to backup your assigned roles";
 
                 foreach (var str in message.SplitSafe())

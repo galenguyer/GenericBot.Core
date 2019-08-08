@@ -21,10 +21,13 @@ namespace GenericBot.Entities
             Aggressive = 8,
             ActiveRaid = 16
         }
+        [BsonId]
         public ulong GuildId { get; set; }
         public List<ulong> AdminRoleIds { get; set; }
         public List<ulong> ModRoleIds { get; set; }
         public List<ulong> UserRoleIds { get; set; }
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
+        public Dictionary<string, List<ulong>> UserRoles { get; set; }
         public List<ulong> AutoRoleIds { get; set; }
         public ulong UserLogChannelId { get; set; }
         public List<ulong> MessageLoggingIgnoreChannels { get; set; }
@@ -67,6 +70,7 @@ namespace GenericBot.Entities
             AdminRoleIds = new List<ulong>();
             ModRoleIds = new List<ulong>();
             UserRoleIds = new List<ulong>();
+            UserRoles = new Dictionary<string, List<ulong>>();
             AutoRoleIds = new List<ulong>();
             CustomCommands = new List<CustomCommand>();
             CustomAliases = new List<CustomAlias>();
