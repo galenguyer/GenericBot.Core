@@ -148,10 +148,30 @@ namespace GenericBot.CommandModules
                         {
                             if (paramList[1].ToLower().Equals("add"))
                             {
-                                if (!GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(id))
+                                if (!GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.Any(rg => rg.Value.Contains(id)))
                                 {
-                                    GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Add(id);
-                                    await msg.ReplyAsync($"Added {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name} to User Roles");
+                                    paramList.RemoveRange(0, 3);
+                                    if(paramList.Count != 0)
+                                    {
+                                        if (GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.Any(rg => rg.Key.ToLower() == paramList.reJoin().ToLower()))
+                                        {
+                                            string groupName = GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.First(rg => rg.Key.ToLower() == paramList.reJoin().ToLower()).Key;
+                                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles[groupName].Add(id);
+
+                                        }
+                                        else
+                                        {
+                                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.Add(paramList.reJoin(), new List<ulong>());
+                                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles[paramList.reJoin()].Add(id);
+                                        }
+                                        await msg.ReplyAsync($"Added {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name} to User Roles in group {GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.First(rg => rg.Key.ToLower() == paramList.reJoin().ToLower()).Key}");
+                                    }
+                                    else
+                                    {
+
+                                        GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles[""].Add(id);
+                                        await msg.ReplyAsync($"Added {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name} to User Roles");
+                                    }
                                 }
                                 else
                                 {
@@ -160,10 +180,10 @@ namespace GenericBot.CommandModules
                             }
                             else if (paramList[1].ToLower().Equals("remove"))
                             {
-                                if (GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Contains(id))
+                                if (GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.Any(rg => rg.Value.Contains(id)))
                                 {
                                     {
-                                        GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoleIds.Remove(id);
+                                        GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.First(rg => rg.Value.Contains(id)).Value.Remove(id);
                                         await msg.ReplyAsync(
                                             $"Removed {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name} from User Roles");
                                     }
