@@ -551,7 +551,7 @@ namespace GenericBot.CommandModules
                 }
             };
 
-            SocialCommands.Add(generateInvite);
+            //SocialCommands.Add(generateInvite);
 
             Command hug = new Command("hug");
             hug.Delete = true;
