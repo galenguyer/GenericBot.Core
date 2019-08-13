@@ -168,7 +168,12 @@ namespace GenericBot.CommandModules
                                     }
                                     else
                                     {
-
+                                        try
+                                        {
+                                            GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles.Add("", new List<ulong>());
+                                        }
+                                        catch(ArgumentException ex) { }
+                                        
                                         GenericBot.GuildConfigs[msg.GetGuild().Id].UserRoles[""].Add(id);
                                         await msg.ReplyAsync($"Added {msg.GetGuild().Roles.FirstOrDefault(r => r.Id == id).Name} to User Roles");
                                     }
