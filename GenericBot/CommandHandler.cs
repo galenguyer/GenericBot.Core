@@ -28,7 +28,7 @@ namespace GenericBot
             GenericBot.Commands.AddRange(new PointsCommands().GetPointsCommands());
             GenericBot.Commands.AddRange(new InfoCommands().GetInfoCommands());
             GenericBot.Commands.AddRange(new AnalyticsCommandLoader().GetAnalyticsCommand());
-            GenericBot.Commands.AddRange(new NoPolymer().GetPolyCommands());
+            //GenericBot.Commands.AddRange(new NoPolymer().GetPolyCommands());
 
             Console.WriteLine(GenericBot.Commands.Select(c => c.Name).Aggregate((i, j) => i + ", " + j));
         }
