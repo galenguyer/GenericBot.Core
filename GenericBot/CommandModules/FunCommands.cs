@@ -346,7 +346,7 @@ namespace GenericBot.CommandModules
                     System.IO.File.Delete("quotes.txt");
                     return;
                 }
-                await msg.ReplyAsync(new DBGuild(msg.GetGuild().Id).GetQuote(parameters.reJoin()));
+                await msg.ReplyAsync(new DBGuild(msg.GetGuild().Id).GetQuote(parameters));
             };
             FunCommands.Add(quote);
 

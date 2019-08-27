@@ -87,7 +87,7 @@ namespace GenericBot.Entities
             return q;
         }
 
-        public Quote GetQuote(string identifer)
+        public Quote GetQuote(List<string> identifer)
         {
             var gDb = GenericBot.mongoClient.GetDatabase($"{this.ID}");
             var dbQuotes = gDb.GetCollection<Quote>("quotes");
@@ -101,7 +101,7 @@ namespace GenericBot.Entities
 
                 var Quotes = dbQuotes.Find(new BsonDocument()).ToList();
 
-                if (string.IsNullOrEmpty(identifer))
+                if (identifer.Count() == 0)
                 {
                     var ql = Quotes.Where(q => q.Active);
                     int max = ql.Count();
@@ -109,7 +109,7 @@ namespace GenericBot.Entities
                 }
                 else
                 {
-                    if (int.TryParse(identifer.Trim(), out int id))
+                    if (int.TryParse(identifer[0].Trim(), out int id))
                     {
                         if (Quotes.Last(q => q.Active).Id >= id)
                         {
@@ -130,8 +130,8 @@ namespace GenericBot.Entities
                     }
                     else
                     {
-                        var ql = Quotes.Where(q => q.Active)
-                            .Where(q => !string.IsNullOrEmpty(q.Content.Trim())).Where(q => q.Content.ToLower().Contains(identifer.ToLower()));
+                        var ql = Quotes.Where(q => q.Active).Where(
+                                q => identifer.All(i => q.Content.ToLower().Contains(i.ToLower())));
                         if (ql.Count() == 0)
                         {
                             return new Quote { Content = "Could not find quote", Id = -1 };
