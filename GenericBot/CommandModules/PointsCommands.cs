@@ -38,7 +38,7 @@ namespace GenericBot.CommandModules
                     {
                         result += $"{i++}: {sgu.GetDisplayName().Escape()}: `{Math.Floor(user.PointsCount)}` {config.PointsName}s\n";
                     }
-                    if (i >= 10)
+                    if (i > 10)
                         break;
                 }
                 await msg.ReplyAsync(result);
