@@ -42,23 +42,32 @@ namespace GenericBot.Entities
 
         public void AddOrUpdateUser(DBUser user)
         {
-
             var gDb = GenericBot.mongoClient.GetDatabase($"{this.ID}");
             var users = gDb.GetCollection<DBUser>("users");
-            if(users.CountDocuments(Builders<DBUser>.Filter.Eq("ID" ,user.ID)) == 1)
+            if (users.CountDocuments(Builders<DBUser>.Filter.Eq("ID", user.ID)) == 1)
             {
-                users.DeleteOne(Builders<DBUser>.Filter.Eq("ID", user.ID));
+                users.UpdateOne(Builders<DBUser>.Filter.Eq("ID", user.ID), Builders<DBUser>.Update
+                    .Set("Nicknames", user.Nicknames)
+                    .Set("Usernames", user.Usernames)
+                    .Set("Warnings", user.Warnings)
+                    .Set("LastThanks", user.PointsCount)
+                    .Set("LastThanks", user.LastThanks)
+                    .Set("SavedRoles", user.SavedRoles)
+                    );
             }
-            users.InsertOne(user);
+            else
+            {
+                users.InsertOne(user);
+            }
         }
 
         public DBUser GetOrCreateUser(ulong userId)
         {
             var gDb = GenericBot.mongoClient.GetDatabase($"{this.ID}");
-            var users = gDb.GetCollection<DBUser>("users");
-            if (users.CountDocuments(u => u.ID == userId) > 0)
+            var users = gDb.GetCollection<DBUser>("users").Find(new BsonDocument()).ToList();
+            if (users.Count(u => u.ID == userId) > 0)
             {
-                return users.Find(Builders<DBUser>.Filter.Eq("ID", userId)).ToList().First();
+                return users.First(u => u.ID == userId);
             }
             else
             {
