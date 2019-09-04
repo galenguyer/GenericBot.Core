@@ -72,9 +72,9 @@ namespace GenericBot.Entities
             else
             {
                 if(GenericBot.DiscordClient.GetGuild(this.ID).GetUser(userId) != null)
-                    users.InsertOne(new DBUser(GenericBot.DiscordClient.GetGuild(this.ID).GetUser(userId)));
+                    gDb.GetCollection<DBUser>("users").InsertOne(new DBUser(GenericBot.DiscordClient.GetGuild(this.ID).GetUser(userId)));
                 else
-                    users.InsertOne(new DBUser() { ID = userId });
+                    gDb.GetCollection<DBUser>("users").InsertOne(new DBUser() { ID = userId });
 
                 return GetOrCreateUser(userId);
             }
