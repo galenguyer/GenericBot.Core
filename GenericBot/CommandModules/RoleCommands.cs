@@ -369,6 +369,7 @@ namespace GenericBot.CommandModules
             Command roleStore = new Command("roleStore");
             roleStore.Description = "Store your roles so you can restore them later";
             roleStore.Usage = "rolestore [save|restore]";
+            roleStore.Delete = true;
             roleStore.ToExecute += async (client, msg, parameters) =>
             { 
                 if (parameters.Empty())
@@ -388,7 +389,9 @@ namespace GenericBot.CommandModules
                     dbUser.SavedRoles = roles;
                     guildDb.AddOrUpdateUser(dbUser);
 
-                    await msg.ReplyAsync($"I've saved `{dbUser.SavedRoles.Count}` roles for you!");
+                    var rep = msg.ReplyAsync($"I've saved `{dbUser.SavedRoles.Count}` roles for you!").Result;
+                    await Task.Delay(5000);
+                    await rep.DeleteAsync();
                 }
                 else if (parameters[0].ToLower().Equals("restore"))
                 {
