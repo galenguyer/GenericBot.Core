@@ -26,7 +26,7 @@ namespace GenericBot.CommandModules
                     uid = msg.GetMentionedUsers()[0].Id;
 
                 var user = new DBGuild(msg.GetGuild().Id).GetOrCreateUser(uid);
-                await msg.ReplyAsync($"{msg.Author.Mention}, you have `{Math.Floor(user.PointsCount)}` {GenericBot.GuildConfigs[msg.GetGuild().Id].PointsName}s!");
+                await msg.ReplyAsync($"<@{uid}> has `{Math.Floor(user.PointsCount)}` {GenericBot.GuildConfigs[msg.GetGuild().Id].PointsName}s!");
             };
             pointCommands.Add(points);
 
