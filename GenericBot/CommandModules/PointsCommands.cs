@@ -28,7 +28,7 @@ namespace GenericBot.CommandModules
             leaderboard.ToExecute += async (client, msg, parameters) =>
             {
                 var db = new DBGuild(msg.GetGuild().Id);
-                var topUsers = db.Users.OrderByDescending(u => u.PointsCount).Take(10);
+                var topUsers = db.Users.OrderByDescending(u => u.PointsCount).Take(25);
                 string result = $"Top 10 users in {msg.GetGuild().Name}\n";
                 int i = 1;
                 var config = GenericBot.GuildConfigs[msg.GetGuild().Id];
@@ -38,10 +38,8 @@ namespace GenericBot.CommandModules
                     {
                         result += $"{i++}: {sgu.GetDisplayName().Escape()}: `{Math.Floor(user.PointsCount)}` {config.PointsName}s\n";
                     }
-                    else
-                    {
-                        result += $"{i++}: Unknown User (ID: `{user.ID}`): `{Math.Floor(user.PointsCount)}` {config.PointsName}s\n";
-                    }
+                    if (i >= 10)
+                        break;
                 }
                 await msg.ReplyAsync(result);
             };
