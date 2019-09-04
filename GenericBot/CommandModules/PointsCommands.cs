@@ -8,18 +8,24 @@ namespace GenericBot.CommandModules
 {
     class PointsCommands
     {
-        public List<Command> GetPointsCommands()
+        public List<Command> GetPointsCommands()    
         {
             var pointCommands = new List<Command>();
 
             Command points = new Command("points");
             points.Description = "Show the number of points the user has";
+            points.SendTyping = false;
             points.ToExecute += async (client, msg, parameters) =>
             {
                 if (!GenericBot.GuildConfigs[msg.GetGuild().Id].PointsEnabled)
                     return;
 
-                var user = new DBGuild(msg.GetGuild().Id).GetOrCreateUser(msg.Author.Id);
+                ulong uid = msg.Author.Id;
+
+                if (msg.GetMentionedUsers().Any())
+                    uid = msg.GetMentionedUsers()[0].Id;
+
+                var user = new DBGuild(msg.GetGuild().Id).GetOrCreateUser(uid);
                 await msg.ReplyAsync($"{msg.Author.Mention}, you have `{Math.Floor(user.PointsCount)}` {GenericBot.GuildConfigs[msg.GetGuild().Id].PointsName}s!");
             };
             pointCommands.Add(points);
@@ -48,6 +54,7 @@ namespace GenericBot.CommandModules
 
             Command award = new Command("award");
             award.Description = "Give a user one of your points";
+            award.SendTyping = false;
             award.ToExecute += async (client, msg, parameters) =>
             {
                 var config = GenericBot.GuildConfigs[msg.GetGuild().Id];
