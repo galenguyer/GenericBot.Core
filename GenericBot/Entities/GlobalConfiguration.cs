@@ -70,5 +70,11 @@ namespace GenericBot.Entities
                 }
             }
         }
+        
+        public GlobalConfiguration Save(string filePath = "./files/config.json")
+        {
+            File.WriteAllText(filePath, JsonConvert.SerializeObject(this, Formatting.Indented));
+            return this;
+        }
     }
 }
