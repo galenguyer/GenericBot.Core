@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using GenericBot.CommandModules;
+using GenericBot.Database;
 using GenericBot.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace GenericBot
         public static DiscordShardedClient DiscordClient { get; private set; }
         public static List<Command> Commands { get; set; }
         public static Logger Logger { get; private set; }
+        public static MongoEngine MongoEngine { get; private set; }
 
         static Core()
         {
@@ -21,6 +23,7 @@ namespace GenericBot
             Logger = new Logger();
             Commands = new List<Command>();
             LoadCommands(GlobalConfig.CommandsToExclude);
+            MongoEngine = new MongoEngine();
 
             // Configure Client
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
