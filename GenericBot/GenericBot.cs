@@ -1,12 +1,15 @@
-﻿using System;
+﻿using GenericBot.Entities;
+using System;
 
 namespace GenericBot
 {
     class GenericBot
     {
+        private static GlobalConfiguration globalConfig;
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            globalConfig = new GlobalConfiguration().Load();
+
         }
     }
 }
