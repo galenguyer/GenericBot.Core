@@ -38,6 +38,7 @@ namespace GenericBot
         {
             // Hook into Discord Client events
             DiscordClient.Log += Logger.LogClientMessage;
+            DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
 
             try
             {

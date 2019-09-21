@@ -38,5 +38,11 @@ namespace GenericBot
                 Console.WriteLine($"{ex.StackTrace}");
             }
         }
+
+        public static async Task MessageRecieved(SocketMessage arg)
+        {
+            await MessageRecieved(arg, edited: false);
+        }
+
     }
 }
