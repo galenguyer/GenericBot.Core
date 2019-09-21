@@ -19,11 +19,8 @@ namespace GenericBot
             try
             {
                 var command = new Command("t").ParseMessage(parameterMessage);
-                await command.Command.ExecuteCommand(command);
-            }
-            catch (NullReferenceException nullRefEx)
-            {
-                Console.WriteLine($"Probably ignore nullref: \n{nullRefEx.StackTrace}");
+                if(command != null)
+                    await command.Execute();
             }
             catch (Exception ex)
             {

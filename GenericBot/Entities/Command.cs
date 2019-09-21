@@ -107,11 +107,11 @@ namespace GenericBot.Entities
 
             if (GenericBot.Commands.HasElement(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)), out Command cmd))
             {
-                parsedCommand.Command = cmd;
+                parsedCommand.RawCommand = cmd;
             }
             else
             {
-                parsedCommand.Command = null;
+                parsedCommand.RawCommand = null;
             }
 
             try
