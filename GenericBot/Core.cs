@@ -16,6 +16,8 @@ namespace GenericBot
         public static Logger Logger { get; private set; }
         public static MongoEngine MongoEngine { get; private set; }
 
+        private static List<GuildConfig> LoadedGuildConfigs;
+
         static Core()
         {
             // Load global configs
@@ -24,6 +26,7 @@ namespace GenericBot
             Commands = new List<Command>();
             LoadCommands(GlobalConfig.CommandsToExclude);
             MongoEngine = new MongoEngine();
+            LoadedGuildConfigs = new List<GuildConfig>();
 
             // Configure Client
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
@@ -34,6 +37,7 @@ namespace GenericBot
             });
             DiscordClient.Log += Logger.LogClientMessage;
             DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
+            DiscordClient.GuildAvailable += GuildEventHandler.GuildLoaded;
         }
 
         private static void LoadCommands(List<string> CommandsToExclude = null)
@@ -52,5 +56,25 @@ namespace GenericBot
         public static string GetPrefix() => GlobalConfig.DefaultPrefix;
         public static bool CheckGlobalAdmin(ulong UserId) => GlobalConfig.GlobalAdminIds.Contains(UserId);
         public static SocketGuild GetGuid(ulong GuildId) => DiscordClient.GetGuild(GuildId);
+
+        public static GuildConfig GetGuildConfig(ulong GuildId)
+        {
+            if (LoadedGuildConfigs.Any(c => c.Id == GuildId))
+            {
+                return LoadedGuildConfigs.Find(c => c.Id == GuildId);
+            }
+            else
+            {
+                return MongoEngine.GetGuildConfig(GuildId);
+            }
+        }
+        public static GuildConfig SaveGuildConfig(GuildConfig guildConfig)
+        {
+            if (LoadedGuildConfigs.Any(c => c.Id == guildConfig.Id))
+                LoadedGuildConfigs.RemoveAll(c => c.Id == guildConfig.Id);
+            LoadedGuildConfigs.Add(guildConfig);
+
+            return MongoEngine.SaveGuildConfig(guildConfig);
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace GenericBot
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine(message);
             }
-            File.AppendAllText($"files/sessions/{SessionId.Substring(0, 8)}.log", message + "\n");
+            File.AppendAllText($"files/sessions/{SessionId}.log", message + "\n");
             return Task.FromResult(1);
         }
 

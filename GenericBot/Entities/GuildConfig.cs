@@ -37,7 +37,7 @@ namespace GenericBot.Entities
 
         public GuildConfig(ulong id)
         {
-            GuildId = id;
+            Id = id;
             VerifiedRole = 0;
             AntispamLevel = AntiSpamLevel.None;
             MessageLoggingIgnoreChannels = new List<ulong>();
