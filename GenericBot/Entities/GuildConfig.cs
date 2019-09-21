@@ -22,7 +22,7 @@ namespace GenericBot.Entities
             ActiveRaid = 16
         }
         [BsonId]
-        public ulong GuildId { get; set; }
+        public ulong Id { get; set; }
         public List<ulong> AdminRoleIds { get; set; }
         public List<ulong> ModRoleIds { get; set; }
         public List<ulong> UserRoleIds { get; set; }
