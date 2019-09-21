@@ -20,7 +20,7 @@ namespace GenericBot
             GlobalConfig = new GlobalConfiguration().Load();
             Logger = new Logger();
             Commands = new List<Command>();
-            LoadCommands();
+            LoadCommands(GlobalConfig.CommandsToExclude);
 
             // Configure Client
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
@@ -35,6 +35,7 @@ namespace GenericBot
 
         private static void LoadCommands(List<string> CommandsToExclude = null)
         {
+            Commands.Clear();
             Commands.AddRange(new BaseCommands().Load());
 
             if (CommandsToExclude == null)

@@ -38,6 +38,10 @@ namespace GenericBot.Entities
         /// List of naughty people who aren't allowed to use the bot
         /// </summary>
         public List<ulong> BlacklistedIds { get; set; }
+        /// <summary>
+        /// Commands to remove from the list on startup
+        /// </summary>
+        public List<string> CommandsToExclude { get; set; }
 
         /// <summary>
         /// Load the config file if it exists, otherwise create a blank one and save it
