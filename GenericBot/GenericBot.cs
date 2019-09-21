@@ -60,6 +60,9 @@ namespace GenericBot
         public static ulong GetCurrentUserId() => DiscordClient.CurrentUser.Id;
         public static ulong GetOwnerId() => DiscordClient.GetApplicationInfoAsync().Result.Owner.Id;
         public static string GetPrefix() => globalConfig.DefaultPrefix;
+        public static bool CheckGlobalAdmin(ulong UserId) =>
+            globalConfig.GlobalAdminIds.Contains(UserId);
+        public static SocketGuild GetGuid(ulong GuildId) => DiscordClient.GetGuild(GuildId);
 
     }
 }
