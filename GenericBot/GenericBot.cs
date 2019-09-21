@@ -53,5 +53,12 @@ namespace GenericBot
             // Block until exited
             await Task.Delay(-1);
         }
+
+        public static bool CheckBlacklisted(ulong UserId) =>        
+            globalConfig.BlacklistedIds.Contains(UserId);
+        public static ulong GetCurrentUserId() => DiscordClient.CurrentUser.Id;
+        public static ulong GetOwnerId() => DiscordClient.GetApplicationInfoAsync().Result.Owner.Id;
+        public static string GetPrefix() => globalConfig.DefaultPrefix;
+
     }
 }
