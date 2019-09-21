@@ -32,38 +32,38 @@ namespace GenericBot.Entities
             this.Usage = this.Name;
         }
 
-        public delegate Task ExecuteDelegate(DiscordShardedClient client, SocketMessage msg, List<string> parameters);
+        public delegate Task ExecuteDelegate(ParsedCommand command);
 
         public ExecuteDelegate ToExecute = null;
 
-        public async Task ExecuteCommand(DiscordShardedClient client, SocketMessage msg, List<string> parameters = null)
+        public async Task ExecuteCommand(ParsedCommand command)
         {
-            if (GetPermissions(msg.Author, msg.GetGuild().Id) < RequiredPermission)
+            if (GetPermissions((command.Message as SocketMessage).Author, (command.Message as SocketMessage).GetGuild().Id) < RequiredPermission)
                 return;
 
-            if (SendTyping) await msg.Channel.TriggerTypingAsync();
+            if (SendTyping) await command.Message.Channel.TriggerTypingAsync();
             if (Delete)
             {
                 try
                 {
-                    await msg.DeleteAsync();
+                    await command.Message.DeleteAsync();
                 }
                 catch (Discord.Net.HttpException httpException)
                 {
                     await GenericBot.Logger.LogErrorMessage(
-                        $"Could Not Delete Message {msg.Id} CHANNELID {msg.Channel.Id}");
+                        $"Could Not Delete Message {command.Message.Id} CHANNELID {command.Message.Channel.Id}");
                 }
             }
 
             try
             {
-                await ToExecute(client, msg, parameters);
+                await ToExecute(command);
             }
             catch (Exception ex)
             {
-                if (msg.Author.Id == GenericBot.GetOwnerId())
+                if (command.Message.Author.Id == GenericBot.GetOwnerId())
                 {
-                    await msg.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1600) +
+                    await (command.Message as SocketMessage).ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1600) +
                                                       "\n```");
                 }
                 await GenericBot.Logger.LogErrorMessage(ex.Message+"\n"+ex.StackTrace);
@@ -91,6 +91,41 @@ namespace GenericBot.Entities
             else if (guild.GetUser(user.Id).Roles.Any(r => r.Permissions.Administrator))
                 return true;
             return false;
+        }
+
+        public ParsedCommand ParseMessage(SocketMessage msg)
+        {
+            ParsedCommand parsedCommand = new ParsedCommand();
+            parsedCommand.Message = msg;
+            string message = msg.Content;
+            string pref = GenericBot.GetPrefix();
+
+            if (!message.StartsWith(pref)) return null;
+            message = message.Substring(pref.Length);
+            string commandId = message.Split(' ')[0].ToLower();
+                        parsedCommand.Name = commandId;
+
+            if (GenericBot.Commands.HasElement(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)), out Command cmd))
+            {
+                parsedCommand.Command = cmd;
+            }
+            else
+            {
+                parsedCommand.Command = null;
+            }
+
+            try
+            {
+                string param = message.Substring(commandId.Length);
+                parsedCommand.ParameterString = param.Trim();
+                parsedCommand.Parameters = param.Split().Where(p => !string.IsNullOrEmpty(p.Trim())).ToList();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return parsedCommand;
         }
     }
 }

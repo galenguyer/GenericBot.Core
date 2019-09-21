@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using GenericBot.Entities;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -14,10 +15,12 @@ namespace GenericBot
 
         public static Logger Logger;
         public static string BuildId;
+        public static List<Command> Commands;
         static void Main(string[] args)
         {
             Logger = new Logger();
             globalConfig = new GlobalConfiguration().Load();
+            Commands = new List<Command>();
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
             {
                 LogLevel = LogSeverity.Verbose,
