@@ -21,6 +21,7 @@ namespace GenericBot
             Logger = new Logger();
             globalConfig = new GlobalConfiguration().Load();
             Commands = new List<Command>();
+            new CommandLoader().Load();
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
             {
                 LogLevel = LogSeverity.Verbose,

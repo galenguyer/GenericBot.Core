@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
+using Discord.WebSocket;
 
 namespace GenericBot.Entities
 {
@@ -10,7 +11,7 @@ namespace GenericBot.Entities
         public string Name;
         public List<string> Parameters;
         public string ParameterString;
-        public IMessage Message;
+        public SocketMessage Message;
 
         public Task Execute()
         {

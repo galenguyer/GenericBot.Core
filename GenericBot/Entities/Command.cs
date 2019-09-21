@@ -103,7 +103,7 @@ namespace GenericBot.Entities
             if (!message.StartsWith(pref)) return null;
             message = message.Substring(pref.Length);
             string commandId = message.Split(' ')[0].ToLower();
-                        parsedCommand.Name = commandId;
+            parsedCommand.Name = commandId;
 
             if (GenericBot.Commands.HasElement(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)), out Command cmd))
             {

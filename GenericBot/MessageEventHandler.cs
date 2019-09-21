@@ -19,7 +19,7 @@ namespace GenericBot
             try
             {
                 var command = new Command("t").ParseMessage(parameterMessage);
-                if(command != null)
+                if(command != null && command.RawCommand != null)
                     await command.Execute();
             }
             catch (Exception ex)
