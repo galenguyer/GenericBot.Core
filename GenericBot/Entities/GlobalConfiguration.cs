@@ -8,7 +8,7 @@ namespace GenericBot.Entities
     /// <summary>
     /// Configuration settings for the entire bot
     /// </summary>
-    class GlobalConfiguration
+    public class GlobalConfiguration
     {       
         /// <summary>
         /// Discord API Token

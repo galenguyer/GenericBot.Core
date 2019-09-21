@@ -6,6 +6,9 @@ using Discord.WebSocket;
 
 namespace GenericBot.Entities
 {
+    /// <summary>
+    /// Raw Command object to build
+    /// </summary>
     public class Command
     {
         public enum PermissionLevels
@@ -48,9 +51,11 @@ namespace GenericBot.Entities
                 {
                     await command.Message.DeleteAsync();
                 }
+                #pragma warning disable CS0168 // Variable is declared but never used
                 catch (Discord.Net.HttpException httpException)
-                {
-                    await GenericBot.Logger.LogErrorMessage(
+                #pragma warning restore CS0168 // Variable is declared but never used
+                { 
+                    await Core.Logger.LogErrorMessage(
                         $"Could Not Delete Message {command.Message.Id} CHANNELID {command.Message.Channel.Id}");
                 }
             }
@@ -61,19 +66,19 @@ namespace GenericBot.Entities
             }
             catch (Exception ex)
             {
-                if (command.Message.Author.Id == GenericBot.GetOwnerId())
+                if (command.Message.Author.Id == Core.GetOwnerId())
                 {
                     await (command.Message as SocketMessage).ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1600) +
                                                       "\n```");
                 }
-                await GenericBot.Logger.LogErrorMessage(ex.Message+"\n"+ex.StackTrace);
+                await Core.Logger.LogErrorMessage(ex.Message+"\n"+ex.StackTrace);
             }
         }
 
         public PermissionLevels GetPermissions(SocketUser user, ulong guildId)
         {
-            if (user.Id.Equals(GenericBot.GetOwnerId())) return PermissionLevels.BotOwner;
-            else if (GenericBot.CheckGlobalAdmin(user.Id))
+            if (user.Id.Equals(Core.GetOwnerId())) return PermissionLevels.BotOwner;
+            else if (Core.CheckGlobalAdmin(user.Id))
                 return PermissionLevels.GlobalAdmin;
             else if(IsGuildAdmin(user, guildId))
                 return PermissionLevels.GuildOwner;
@@ -85,7 +90,7 @@ namespace GenericBot.Entities
         }
         private bool IsGuildAdmin(SocketUser user, ulong guildId)
         {
-            var guild = GenericBot.GetGuid(guildId);
+            var guild = Core.GetGuid(guildId);
             if (guild.Owner.Id == user.Id)
                 return true;
             else if (guild.GetUser(user.Id).Roles.Any(r => r.Permissions.Administrator))
@@ -98,14 +103,14 @@ namespace GenericBot.Entities
             ParsedCommand parsedCommand = new ParsedCommand();
             parsedCommand.Message = msg;
             string message = msg.Content;
-            string pref = GenericBot.GetPrefix();
+            string pref = Core.GetPrefix();
 
             if (!message.StartsWith(pref)) return null;
             message = message.Substring(pref.Length);
             string commandId = message.Split(' ')[0].ToLower();
             parsedCommand.Name = commandId;
 
-            if (GenericBot.Commands.HasElement(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)), out Command cmd))
+            if (Core.Commands.HasElement(c => commandId.Equals(c.Name) || c.Aliases.Any(a => commandId.Equals(a)), out Command cmd))
             {
                 parsedCommand.RawCommand = cmd;
             }
