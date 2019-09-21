@@ -44,7 +44,7 @@ namespace GenericBot
 
         public static Task<RestUserMessage> ReplyAsync(this SocketMessage msg, object text, bool sanitize = true)
         {
-            return msg.Channel.SendMessageAsync(text.ToString());
+            return msg.Channel.SendMessageAsync(Sanitize(text.ToString(), sanitize));
         }
         private static string Sanitize(string input, bool doSanitize)
         {
@@ -56,13 +56,13 @@ namespace GenericBot
                     .Replace("@here", "@-here");
         }
 
-        public static bool Empty(this List<string> list)
+        public static bool IsEmpty(this List<string> list)
         {
             if (list == null) return true;
             return list.All(i => string.IsNullOrEmpty(i.Trim()));
         }
 
-        public static string reJoin(this List<string> list, string joinChar = " ")
+        public static string Rejoin(this List<string> list, string joinChar = " ")
         {
             if (list.Count == 0) return "";
             return list.Aggregate((i, j) => i + joinChar + j);
