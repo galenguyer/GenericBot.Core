@@ -5,6 +5,7 @@ using GenericBot.Database;
 using GenericBot.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GenericBot
 {
@@ -68,7 +69,7 @@ namespace GenericBot
                 return MongoEngine.GetGuildConfig(GuildId);
             }
         }
-        public static GuildConfig SaveGuildConfig(GuildConfig guildConfig)
+        public static async Task<GuildConfig> SaveGuildConfig(GuildConfig guildConfig)
         {
             if (LoadedGuildConfigs.Any(c => c.Id == guildConfig.Id))
                 LoadedGuildConfigs.RemoveAll(c => c.Id == guildConfig.Id);
