@@ -33,10 +33,12 @@ namespace GenericBot
             DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
         }
 
-        private static void LoadCommands(List<string> CommandsToExclude = new List<string>{ })
+        private static void LoadCommands(List<string> CommandsToExclude = null)
         {
             Commands.AddRange(new BaseCommands().Load());
 
+            if (CommandsToExclude == null)
+                return;
             Commands = Commands.Where(c => !CommandsToExclude.Contains(c.Name)).ToList();
         }
 
