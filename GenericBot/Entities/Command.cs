@@ -82,10 +82,10 @@ namespace GenericBot.Entities
                 return PermissionLevels.GlobalAdmin;
             else if(IsGuildAdmin(user, guildId))
                 return PermissionLevels.GuildOwner;
-            //else if (((SocketGuildUser) user).Roles.Select(r => r.Id).Intersect(GenericBot.GuildConfigs[guildId].AdminRoleIds).Any())
-            //    return PermissionLevels.Admin;
-            //else if (((SocketGuildUser) user).Roles.Select(r => r.Id).Intersect(GenericBot.GuildConfigs[guildId].ModRoleIds).Any())
-            //    return PermissionLevels.Moderator;
+            else if (((SocketGuildUser)user).Roles.Select(r => r.Id).Intersect(Core.GetGuildConfig(guildId).AdminRoleIds).Any())
+                return PermissionLevels.Admin;
+            else if (((SocketGuildUser)user).Roles.Select(r => r.Id).Intersect(Core.GetGuildConfig(guildId).ModRoleIds).Any())
+                return PermissionLevels.Moderator;
             else return PermissionLevels.User;
         }
         private bool IsGuildAdmin(SocketUser user, ulong guildId)
