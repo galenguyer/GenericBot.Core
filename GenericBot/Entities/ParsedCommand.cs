@@ -20,6 +20,7 @@ namespace GenericBot.Entities
                 else return (Message.Channel as SocketGuildChannel).Guild;
             }
         }
+        public ISocketMessageChannel Channel { get { return Message.Channel; } }
 
         public Task Execute()
         {

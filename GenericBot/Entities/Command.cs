@@ -103,7 +103,7 @@ namespace GenericBot.Entities
             ParsedCommand parsedCommand = new ParsedCommand();
             parsedCommand.Message = msg;
             string message = msg.Content;
-            string pref = Core.GetPrefix();
+            string pref = Core.GetPrefix(parsedCommand);
 
             if (!message.StartsWith(pref)) return null;
             message = message.Substring(pref.Length);
