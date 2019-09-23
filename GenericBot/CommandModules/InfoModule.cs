@@ -2,6 +2,7 @@
 using GenericBot.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace GenericBot.CommandModules
@@ -48,11 +49,131 @@ namespace GenericBot.CommandModules
                 var embed = builder.Build();
 
                 await context.Channel.SendMessageAsync("", embed: embed);
-
             };
             commands.Add(info);
 
+
+            Command help = new Command("help");
+            help.Description = "The help command, duh";
+            help.RequiredPermission = Command.PermissionLevels.User;
+            help.Aliases = new List<string> { "halp" };
+            help.ToExecute += async (context) =>
+            {
+                string commandList = "";
+                var guildConfig = Core.GetGuildConfig(context.Guild.Id);
+                string[] levels = { "User Commands", "Moderator Commands", "Admin Commands", "Guild Owner Commands", "Global Admin Commands", "Bot Owner Commands" };
+
+                if (string.IsNullOrEmpty(context.ParameterString))
+                {
+                    commandList += "Bot Commands:\n";
+                    for (int i = 0; i <= GetIntFromPerm(help.GetPermissions(context.Author, context.Guild.Id)); i++)
+                    {
+                        commandList += $"\n{levels[i]}: ";
+                        commandList += Core.Commands
+                            .Where(c => c.RequiredPermission == GetPermFromInt(i))
+                            .OrderBy(c => c.RequiredPermission)
+                            .ThenBy(c => c.Name)
+                            .Select(c => $"`{c.Name}`")
+                            .ToList().SumAnd();
+                    }
+                }
+                else
+                {
+                    string param = context.ParameterString.ToLower();
+                    int cmdCount = 0;
+                    cmdCount += Core.Commands
+                        .Where(c => c.RequiredPermission <= help.GetPermissions(context.Author, context.Guild.Id))
+                        .Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
+
+                    if (cmdCount > 10)
+                    {
+                        commandList += "Bot Commands:\n";
+                        for (int i = 0; i <= GetIntFromPerm(help.GetPermissions(context.Author, context.Guild.Id)); i++)
+                        {
+                            commandList += $"\n{levels[i]}: ";
+                            commandList += Core.Commands
+                                .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                                .Where(c => c.RequiredPermission == GetPermFromInt(i))
+                                .OrderBy(c => c.RequiredPermission)
+                                .ThenBy(c => c.Name)
+                                .Select(c => $"`{c.Name}`")
+                                .ToList().SumAnd();
+                        }
+                    }
+                    else
+                    {
+                        var cmds = Core.Commands
+                            .Where(c => c.RequiredPermission <= help.GetPermissions(context.Author, context.Guild.Id))
+                            .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                            .OrderBy(c => c.RequiredPermission)
+                            .ThenBy(c => c.Name);
+
+                        foreach (var cmd in cmds)
+                        {
+                            commandList += $"`{cmd.Name}`: {cmd.Description} (`{cmd.Usage}`)\n";
+                            if (cmd.Aliases.Any())
+                            {
+                                commandList += $"\tAliases: {cmd.Aliases.Select(c => $"`{c}`").ToList().SumAnd()}\n";
+                            }
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(commandList))
+                {
+                    await context.Message.ReplyAsync($"Could not find any commands matching `{context.ParameterString}`");
+                    return;
+                }
+
+                foreach (var str in commandList.SplitSafe())
+                {
+                    await context.Message.ReplyAsync(str);
+                }
+            };
+            commands.Add(help);
+
             return commands;
+        }
+
+        private Command.PermissionLevels GetPermFromInt(int inp)
+        {
+            switch (inp)
+            {
+                case 0:
+                    return Command.PermissionLevels.User;
+                case 1:
+                    return Command.PermissionLevels.Moderator;
+                case 2:
+                    return Command.PermissionLevels.Admin;
+                case 3:
+                    return Command.PermissionLevels.GuildOwner;
+                case 4:
+                    return Command.PermissionLevels.GlobalAdmin;
+                case 5:
+                    return Command.PermissionLevels.BotOwner;
+                default:
+                    return Command.PermissionLevels.User;
+            }
+        }
+        private int GetIntFromPerm(Command.PermissionLevels inp)
+        {
+            switch (inp)
+            {
+                case Command.PermissionLevels.User:
+                    return 0;
+                case Command.PermissionLevels.Moderator:
+                    return 1;
+                case Command.PermissionLevels.Admin:
+                    return 2;
+                case Command.PermissionLevels.GuildOwner:
+                    return 3;
+                case Command.PermissionLevels.GlobalAdmin:
+                    return 4;
+                case Command.PermissionLevels.BotOwner:
+                    return 5;
+                default:
+                    return 0;
+            }
         }
     }
 }
