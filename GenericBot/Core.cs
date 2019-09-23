@@ -54,7 +54,13 @@ namespace GenericBot
         public static bool CheckBlacklisted(ulong UserId) => GlobalConfig.BlacklistedIds.Contains(UserId);
         public static ulong GetCurrentUserId() => DiscordClient.CurrentUser.Id;
         public static ulong GetOwnerId() => DiscordClient.GetApplicationInfoAsync().Result.Owner.Id;
-        public static string GetPrefix() => GlobalConfig.DefaultPrefix;
+        public static string GetGlobalPrefix() => GlobalConfig.DefaultPrefix;
+        public static string GetPrefix(ParsedCommand context)
+        {
+            if (context.Guild == null || !string.IsNullOrEmpty(GetGuildConfig(context.Guild.Id).Prefix))
+                return GetGuildConfig(context.Guild.Id).Prefix;
+            return GetGlobalPrefix();
+        }
         public static bool CheckGlobalAdmin(ulong UserId) => GlobalConfig.GlobalAdminIds.Contains(UserId);
         public static SocketGuild GetGuid(ulong GuildId) => DiscordClient.GetGuild(GuildId);
 
@@ -66,7 +72,8 @@ namespace GenericBot
             }
             else
             {
-                return MongoEngine.GetGuildConfig(GuildId);
+                LoadedGuildConfigs.Add(MongoEngine.GetGuildConfig(GuildId));
+                return GetGuildConfig(GuildId); // Now that it's cached
             }
         }
         public static async Task<GuildConfig> SaveGuildConfig(GuildConfig guildConfig)

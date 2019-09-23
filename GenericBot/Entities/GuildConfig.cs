@@ -23,6 +23,7 @@ namespace GenericBot.Entities
         }
         [BsonId]
         public ulong Id { get; set; }
+        public string Prefix { get; set; }
         public List<ulong> AdminRoleIds { get; set; }
         public List<ulong> ModRoleIds { get; set; }
         public List<ulong> UserRoleIds { get; set; }
