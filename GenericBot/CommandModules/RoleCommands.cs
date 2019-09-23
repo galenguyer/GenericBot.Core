@@ -325,7 +325,7 @@ namespace GenericBot.CommandModules
                 await msg.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}` and added it to the user roles");
             };
 
-            RoleCommands.Add(createUserRole);
+            //RoleCommands.Add(createUserRole);
 
             Command roleeveryone = new Command("roleeveryone");
             roleeveryone.Aliases = new List<string> { "roleveryone" };
