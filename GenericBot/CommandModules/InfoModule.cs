@@ -12,6 +12,7 @@ namespace GenericBot.CommandModules
             List<Command> commands = new List<Command>();
 
             Command ping = new Command("ping");
+            ping.Description = "Make sure the bot is up";
             ping.ToExecute += async (context) =>
             {
                 await context.Message.ReplyAsync("Pong!");
