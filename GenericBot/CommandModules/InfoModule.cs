@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GenericBot.CommandModules
 {
-    public class BaseCommands : Module
+    public class InfoModule : Module
     {
         public List<Command> Load()
         {

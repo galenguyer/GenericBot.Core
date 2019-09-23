@@ -44,7 +44,7 @@ namespace GenericBot
         private static void LoadCommands(List<string> CommandsToExclude = null)
         {
             Commands.Clear();
-            Commands.AddRange(new BaseCommands().Load());
+            Commands.AddRange(new InfoModule().Load());
 
             if (CommandsToExclude == null)
                 return;
