@@ -52,6 +52,38 @@ namespace GenericBot.CommandModules
             };
             commands.Add(info);
 
+            Command configinfo = new Command("configinfo");
+            configinfo.RequiredPermission = Command.PermissionLevels.Admin;
+            configinfo.Description = "Show all the options to configure with syntax for each";
+            configinfo.ToExecute += async (context) =>
+            {
+                string prefix = Core.GetPrefix(context);
+
+                var builder = new EmbedBuilder()
+                    .WithTitle("GenericBot: Config Information")
+                    .WithDescription($"The `{prefix}config` command is huge and confusing. This aims to make it a bit simpler (For more general assistance, try `{prefix}info`)")
+                    .WithUrl("https://github.com/MasterChief-John-117/GenericBot")
+                    .WithColor(new Color(0xEF4347))
+                    .WithFooter(footer =>
+                    {
+                        footer
+                            .WithText($"If you have questions or notice any errors, please contact {Core.DiscordClient.GetUser(169918990313848832).ToString()}");
+                    })
+                    .WithThumbnailUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Gear_1.svg/1000px-Gear_1.svg.png")
+                    .AddField("AdminRoles", $"Add or remove Admin Roles by ID\nSyntax: `{prefix}config adminroles <add/remove> [roleId]`")
+                    .AddField("ModeratorRoles (ModRoles)", $"Add or remove Moderator Roles by ID\nSyntax: `{prefix}config modroles <add/remove> [roleId]`")
+                    .AddField("UserRoles", $"Add or remove User-Assignable Roles by ID\nSyntax: `{prefix}config userroles <add/remove> [roleId]`")
+                    .AddField("Prefix", $"Set the prefix to a given string. If [prefixString] is empty it gets set to the default of `{Core.GetGlobalPrefix()}`\nSyntax: `{prefix}config prefix [prefixString]`")
+                    .AddField("Logging", $"Set the channel for logging by Id\nSyntax: `{prefix}config logging channelId [channelId]`\n\nToggle ignoring channels for logging by Id. Lists all ignored channels if channelId is empty\nSyntax`{prefix}config logging ignoreChannel [channelId]`")
+                    .AddField("MutedRoleId", $"Set the role assigned by the `{prefix}mute` command. Set [roleId] to `0` to disable muting\nSyntax: `{prefix}config mutedRoleId [roleId]`")
+                    .AddField("Verification", $"Get or Set the RoleId assigned for verification. Leave [roleId] empty to get the current role. Use `0` for the [roleId] to disable verification\nSyntax: `{prefix}config verification roleId [roleId]`\n\nGet or set the message sent for verification. Leave [message] empty to get the current message\nSyntax: `{prefix}config verification message [message]`")
+                    .AddField("AutoRole", $"Add or remove a role to be automatically granted by Id\nSyntax: `{prefix}config autorole <add/remove> [roleId]`");
+                var embed = builder.Build();
+
+                await context.Channel.SendMessageAsync("", embed: embed);
+            };
+
+            commands.Add(configinfo);
 
             Command help = new Command("help");
             help.Description = "The help command, duh";
