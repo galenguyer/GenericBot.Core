@@ -12,6 +12,7 @@ namespace GenericBot
     class GenericBot
     {
         public static string BuildId;
+        public static List<ulong> ClearedMessageIds = new List<ulong>();
         static void Main(string[] args)
         {
             if (File.Exists("version.txt"))

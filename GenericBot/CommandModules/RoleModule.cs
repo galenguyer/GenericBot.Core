@@ -66,6 +66,75 @@ namespace GenericBot.CommandModules
             };
             commmands.Add(UserRoles);
 
+            Command iam = new Command("iam");
+            iam.Description = "Join a User Role";
+            iam.Usage = "iam <role name>";
+            iam.Aliases = new List<string> { "join" };
+            iam.ToExecute += async (context) =>
+            {
+                List<IMessage> messagesToDelete = new List<IMessage>();
+
+                if (context.Parameters.IsEmpty())
+                {
+                    messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription("Please select a role to join").WithColor(new Color(0xFFFF00)).Build()).Result);
+                }
+
+                foreach (var roleName in context.ParameterString.Trim(',', ' ').Split(','))
+                {
+                    if (string.IsNullOrWhiteSpace(roleName))
+                        continue;
+                    var roles = context.Guild.Roles.Where(r => r.Name.ToLower().Contains(roleName.ToLower().Trim()))
+                        .Where(r => Core.GetGuildConfig(context.Guild.Id).UserRoles.Any(rg => rg.Value.Contains(r.Id)));
+                    if (!roles.Any())
+                    {
+                        messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"Could not find any user roles matching `{roleName}`").WithColor(new Color(0xFFFF00)).Build()).Result);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var role = roles.Any(r => r.Name.ToLower() == roleName.ToLower())
+                                ? roles.First(r => r.Name.ToLower() == roleName.ToLower())
+                                : roles.First();
+                            if (context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                            {
+                                messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"You already have that role!").WithColor(new Color(0xFFFF00)).Build()).Result);
+                            }
+                            else
+                            {
+                                await context.Guild.GetUser(context.Author.Id).AddRoleAsync(role);
+                                messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"Assigned you `{role.Name}`").WithColor(new Color(0x9B00)).Build()).Result);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            await Core.Logger.LogErrorMessage(e.Message);
+                            messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"I may not have permissions to do that").WithColor(new Color(0xFFFF00)).Build()).Result);
+                        }
+                    }
+                }
+
+                await Task.Delay(15 * 1000);
+                try
+                {
+                    messagesToDelete.ForEach(m => GenericBot.ClearedMessageIds.Add(m.Id));
+                    messagesToDelete.Add(context.Message);
+                    await (context.Channel as ITextChannel).DeleteMessagesAsync(messagesToDelete);
+                }
+                catch
+                {
+                    try
+                    {
+                        foreach (var m in messagesToDelete)
+                        {
+                            await m.DeleteAsync();
+                        }
+                    }
+                    catch { }
+                }
+            };
+            commmands.Add(iam);
+
             return commmands;
         }
     }
