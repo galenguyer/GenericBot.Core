@@ -253,6 +253,39 @@ namespace GenericBot.CommandModules
 
             };
             commmands.Add(membersOf);
+
+            Command createRole = new Command("createRole");
+            createRole.Description = "Create a new role with default permissions";
+            createRole.Usage = "createRole <name>";
+            createRole.RequiredPermission = Command.PermissionLevels.Admin;
+            createRole.ToExecute += async (context) =>
+            {
+                RestRole role;
+
+                role = context.Guild.CreateRoleAsync(context.ParameterString, GuildPermissions.None).Result;
+                await context.Message.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}`");
+            };
+            commmands.Add(createRole);
+
+            Command createUserRole = new Command("createUserRole");
+            createUserRole.Description = "Create a new role with default permissions and add it to the public role list";
+            createUserRole.Usage = "createUserRole <name>";
+            createUserRole.RequiredPermission = Command.PermissionLevels.Admin;
+            createUserRole.ToExecute += async (context) =>
+            {
+                RestRole role;
+
+                role = context.Guild.CreateRoleAsync(context.ParameterString, GuildPermissions.None).Result;
+                var gc = Core.GetGuildConfig(context.Guild.Id);
+                if (gc.UserRoles.ContainsKey(""))
+                    gc.UserRoles[""].Add(role.Id);
+                else
+                    gc.UserRoles.Add("", new List<ulong> { role.Id });
+                gc.Save();
+                await context.Message.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}` and added it to the user roles");
+            };
+            commmands.Add(createUserRole);
+
             return commmands;
         }
     }
