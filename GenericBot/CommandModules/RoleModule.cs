@@ -203,6 +203,25 @@ namespace GenericBot.CommandModules
                 }
             };
             commmands.Add(iamnot);
+
+            Command getrole = new Command("getrole");
+            getrole.Description = "Get the ID of a role";
+            getrole.Usage = "getrole <role name>";
+            getrole.RequiredPermission = Command.PermissionLevels.Moderator;
+            getrole.ToExecute += async (context) =>
+            {
+                string message = $"Roles matching `{context.ParameterString}`:\n";
+                foreach (var role in context.Guild.Roles.Where(r => Regex.IsMatch(r.Name, context.ParameterString, RegexOptions.IgnoreCase)).OrderBy(r => r.Name))
+                {
+                    message += $"{role.Name} (`{role.Id}`)\n";
+                }
+
+                foreach (var str in message.SplitSafe())
+                {
+                    await context.Message.ReplyAsync(str);
+                }
+            };
+            commmands.Add(getrole);
             return commmands;
         }
     }
