@@ -57,7 +57,7 @@ namespace GenericBot.CommandModules
                 }
 
                 message = message.Trim(' ', ',', '\n');
-                message += $"\n You can also use `{prefix}rolestore save` to backup your assigned roles";
+                //message += $"\n You can also use `{prefix}rolestore save` to backup your assigned roles";
 
                 foreach (var str in message.SplitSafe())
                 {
