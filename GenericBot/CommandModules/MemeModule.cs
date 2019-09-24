@@ -32,6 +32,14 @@ namespace GenericBot.CommandModules
             };
             commands.Add(mock);
 
+            Command clap = new Command("clap");
+            clap.Usage = "Put the clap emoji between each word";
+            clap.ToExecute += async (context) =>
+            {
+                await context.Message.ReplyAsync(context.Parameters.Rejoin(" :clap: ") + " :clap:");
+            }
+            commands.Add(clap);
+
             return commands;
         }
     }
