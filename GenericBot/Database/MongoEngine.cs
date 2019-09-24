@@ -68,5 +68,9 @@ namespace GenericBot.Database
             var list = _collection.Find(new BsonDocument()).ToList();
             return list;
         }
+        public List<string> GetGuildIdsFromDb()
+        {
+            return mongoClient.ListDatabaseNames().ToList();
+        }
     }
 }

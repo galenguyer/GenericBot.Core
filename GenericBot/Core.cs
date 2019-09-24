@@ -30,6 +30,7 @@ namespace GenericBot
             LoadCommands(GlobalConfig.CommandsToExclude);
             MongoEngine = new MongoEngine();
             LoadedGuildConfigs = new List<GuildConfig>();
+            InitializeCache();
 
             // Configure Client
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
@@ -111,6 +112,20 @@ namespace GenericBot
             }
             MongoEngine.SaveCustomCommand(command, guildId);
             return command;
+        }
+
+        private static void InitializeCache()
+        {
+            foreach (var stringId in MongoEngine.GetGuildIdsFromDb())
+            {
+                if (ulong.TryParse(stringId, out ulong guildId))
+                {
+                    LoadedGuildConfigs.Add(GetGuildConfig(guildId));
+                    Logger.LogGenericMessage($"Loaded GuildConfig for {stringId}");
+                    CustomCommands.Add(guildId, GetCustomCommands(guildId).Result);
+                    Logger.LogGenericMessage($"Loaded Custom Commands for {stringId}");
+                }
+            }
         }
     }
 }

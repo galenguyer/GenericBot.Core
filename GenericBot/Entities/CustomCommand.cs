@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 
 namespace GenericBot.Entities
 {
+    [BsonIgnoreExtraElements]
     public class CustomCommand
     {
         public string Name { get; set; }
