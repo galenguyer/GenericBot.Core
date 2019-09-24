@@ -14,6 +14,7 @@ namespace GenericBot
         public static GlobalConfiguration GlobalConfig { get; private set; }
         public static DiscordShardedClient DiscordClient { get; private set; }
         public static List<Command> Commands { get; set; }
+        public static Dictionary<ulong, List<CustomCommand>> CustomCommands;
         public static Logger Logger { get; private set; }
         public static MongoEngine MongoEngine { get; private set; }
 
@@ -25,6 +26,7 @@ namespace GenericBot
             GlobalConfig = new GlobalConfiguration().Load();
             Logger = new Logger();
             Commands = new List<Command>();
+            CustomCommands = new Dictionary<ulong, List<CustomCommand>>();
             LoadCommands(GlobalConfig.CommandsToExclude);
             MongoEngine = new MongoEngine();
             LoadedGuildConfigs = new List<GuildConfig>();
@@ -85,6 +87,30 @@ namespace GenericBot
             LoadedGuildConfigs.Add(guildConfig);
 
             return MongoEngine.SaveGuildConfig(guildConfig);
+        }
+        public static async Task<List<CustomCommand>> GetCustomCommands(ulong guildId)
+        {
+            if (CustomCommands.ContainsKey(guildId))
+                return CustomCommands[guildId];
+            else
+                return MongoEngine.GetCustomCommands(guildId);
+        }
+        public static async Task<CustomCommand> SaveCustomCommand(CustomCommand command, ulong guildId)
+        {
+            if (CustomCommands.ContainsKey(guildId))
+            {
+                if (CustomCommands[guildId].Any(c => c.Name == command.Name))
+                {
+                    CustomCommands[guildId].RemoveAll(c => c.Name == command.Name);
+                }
+                CustomCommands[guildId].Add(command);
+            }
+            else
+            {
+                CustomCommands.Add(guildId, new List<CustomCommand> { command });
+            }
+            MongoEngine.SaveCustomCommand(command, guildId);
+            return command;
         }
     }
 }

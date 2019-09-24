@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -18,7 +19,17 @@ namespace GenericBot
                 return;
             try
             {
+                ulong guildId = parameterMessage.GetGuild().Id;
                 var command = new Command("t").ParseMessage(parameterMessage);
+
+                if (Core.GetCustomCommands(guildId).Result.HasElement(c => c.Name == command.Name || c.Aliases.Any(a => a == command.Name), 
+                    out CustomCommand customCommand))
+                {
+                    if (customCommand.Delete)
+                        await parameterMessage.DeleteAsync();
+                    await parameterMessage.ReplyAsync(customCommand.Response);
+                }
+
                 if(command != null && command.RawCommand != null)
                     await command.Execute();
             }

@@ -4,10 +4,10 @@ namespace GenericBot.Entities
 {
     public class CustomCommand
     {
-        public string Name;
-        public List<string> Aliases;
-        public bool Delete;
-        public string Response;
+        public string Name { get; set; }
+        public List<string> Aliases { get; set; }
+        public bool Delete { get; set; }
+        public string Response { get; set; }
 
         public CustomCommand()
         {
