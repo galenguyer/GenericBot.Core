@@ -26,11 +26,11 @@ namespace GenericBot.Entities
         public string Prefix { get; set; }
         public List<ulong> AdminRoleIds { get; set; }
         public List<ulong> ModRoleIds { get; set; }
-        public List<ulong> UserRoleIds { get; set; }
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         public Dictionary<string, List<ulong>> UserRoles { get; set; }
+        public ulong MutedRoleId { get; set; }
         public List<ulong> AutoRoleIds { get; set; }
-        public ulong UserLogChannelId { get; set; }
+        public ulong LoggingChannelId { get; set; }
         public List<ulong> MessageLoggingIgnoreChannels { get; set; }
         public ulong VerifiedRole { get; set; }
         public string VerifiedMessage { get; set; }
@@ -44,7 +44,6 @@ namespace GenericBot.Entities
             MessageLoggingIgnoreChannels = new List<ulong>();
             AdminRoleIds = new List<ulong>();
             ModRoleIds = new List<ulong>();
-            UserRoleIds = new List<ulong>();
             UserRoles = new Dictionary<string, List<ulong>>();
             AutoRoleIds = new List<ulong>();
         }
