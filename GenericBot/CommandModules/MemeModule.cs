@@ -37,7 +37,7 @@ namespace GenericBot.CommandModules
             clap.ToExecute += async (context) =>
             {
                 await context.Message.ReplyAsync(context.Parameters.Rejoin(" :clap: ") + " :clap:");
-            }
+            };
             commands.Add(clap);
 
             return commands;
