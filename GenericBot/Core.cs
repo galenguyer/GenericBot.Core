@@ -41,7 +41,7 @@ namespace GenericBot
             });
             DiscordClient.Log += Logger.LogClientMessage;
             DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
-            DiscordClient.GuildAvailable += GuildEventHandler.GuildLoaded;
+            //DiscordClient.GuildAvailable += GuildEventHandler.GuildLoaded;
         }
 
         private static void LoadCommands(List<string> CommandsToExclude = null)
