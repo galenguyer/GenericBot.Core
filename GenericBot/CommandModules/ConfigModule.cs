@@ -367,12 +367,19 @@ namespace GenericBot.CommandModules
 
                         string message = context.ParameterString.Replace("  ", " ").Remove(0, "verification message".Length);
 
-                        if (!string.IsNullOrEmpty(message)) _guildConfig.VerifiedMessage = message;
-
+                        if (string.IsNullOrEmpty(message) && string.IsNullOrEmpty(_guildConfig.VerifiedMessage))
+                        {
+                            await context.Message.ReplyAsync("Verification is disabled on this srever. Please make sure you have a roleid and message set.");
+                            return;
+                        }
+                        else if (!string.IsNullOrEmpty(message))
+                        {
+                            _guildConfig.VerifiedMessage = message;
+                        }
                         await context.Message.ReplyAsync("Example verification message:");
 
                         string vm = $"Hey {context.Author.Username}! To get verified on **{context.Guild.Name}** reply to this message with the hidden code in the message below\n\n"
-                                         + _guildConfig.VerifiedMessage;
+                                            + _guildConfig.VerifiedMessage;
 
                         string verificationMessage =
                             VerificationEngine.InsertCodeInMessage(vm, VerificationEngine.GetVerificationCode(context.Author.Id, context.Guild.Id));
