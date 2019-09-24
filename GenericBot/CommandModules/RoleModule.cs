@@ -222,6 +222,37 @@ namespace GenericBot.CommandModules
                 }
             };
             commmands.Add(getrole);
+
+            Command membersOf = new Command("membersof");
+            membersOf.Description = "List all members of a role";
+            membersOf.Usage = "membersof <rolename>";
+            membersOf.RequiredPermission = Command.PermissionLevels.Moderator;
+            membersOf.ToExecute += async (context) =>
+            {
+                if (context.Parameters.IsEmpty())
+                {
+                    await context.Message.ReplyAsync($"You need to specify a role");
+                    return;
+                }
+                string result = "";
+                foreach (var role in context.Guild.Roles.OrderByDescending(r => r.Position).Where(r => new Regex(context.ParameterString, RegexOptions.IgnoreCase).IsMatch(r.Name) && r.Name != "@everyone"))
+                {
+                    result += $"\n**`{role.Name}` ({role.Members.Count()} Members)**\n";
+                    foreach (var user in role.Members.OrderBy(u => u.Username))
+                    {
+                        if (!string.IsNullOrEmpty(user.Nickname)) result += $"{user.Nickname.Replace('`', '\'').Replace("_", "\\_")} ";
+                        else result += $"{user.Username.Replace('`', '\'').Replace("_", "\\_")} ";
+                        result += $"(`{user.ToString().Replace('`', '\'')}`)\n";
+                    }
+                }
+
+                foreach (var str in result.SplitSafe('\n'))
+                {
+                    await context.Message.ReplyAsync(str);
+                }
+
+            };
+            commmands.Add(membersOf);
             return commmands;
         }
     }
