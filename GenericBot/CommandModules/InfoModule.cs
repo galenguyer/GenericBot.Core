@@ -108,6 +108,11 @@ namespace GenericBot.CommandModules
                             .Select(c => $"`{c.Name}`")
                             .ToList().SumAnd();
                     }
+                    commandList += "\n\nCustom Commands:\n";
+                    commandList += Core.GetCustomCommands(context.Guild.Id).Result
+                        .OrderBy(c => c.Name)
+                        .Select(c => $"`{c.Name}`")
+                        .ToList().SumAnd();
                 }
                 else
                 {
@@ -115,6 +120,8 @@ namespace GenericBot.CommandModules
                     int cmdCount = 0;
                     cmdCount += Core.Commands
                         .Where(c => c.RequiredPermission <= help.GetPermissions(context.Author, context.Guild.Id))
+                        .Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
+                    cmdCount += Core.GetCustomCommands(context.Guild.Id).Result
                         .Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
 
                     if (cmdCount > 10)
@@ -131,6 +138,12 @@ namespace GenericBot.CommandModules
                                 .Select(c => $"`{c.Name}`")
                                 .ToList().SumAnd();
                         }
+                        commandList += "\n\nCustom Commands:\n";
+                        Core.GetCustomCommands(context.Guild.Id).Result
+                            .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                            .OrderBy(c => c.Name)
+                            .Select(c => $"`{c.Name}`")
+                            .ToList().SumAnd();
                     }
                     else
                     {
@@ -139,10 +152,21 @@ namespace GenericBot.CommandModules
                             .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
                             .OrderBy(c => c.RequiredPermission)
                             .ThenBy(c => c.Name);
+                        var ccmds = Core.GetCustomCommands(context.Guild.Id).Result
+                            .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                            .OrderBy(c => c.Name);
 
                         foreach (var cmd in cmds)
                         {
                             commandList += $"`{cmd.Name}`: {cmd.Description} (`{cmd.Usage}`)\n";
+                            if (cmd.Aliases.Any())
+                            {
+                                commandList += $"\tAliases: {cmd.Aliases.Select(c => $"`{c}`").ToList().SumAnd()}\n";
+                            }
+                        }
+                        foreach(var cmd in ccmds)
+                        {
+                            commandList += $"`{cmd.Name}`: Custom Command\n";
                             if (cmd.Aliases.Any())
                             {
                                 commandList += $"\tAliases: {cmd.Aliases.Select(c => $"`{c}`").ToList().SumAnd()}\n";
