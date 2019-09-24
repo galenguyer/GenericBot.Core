@@ -46,6 +46,7 @@ namespace GenericBot
             Commands.Clear();
             Commands.AddRange(new InfoModule().Load());
             Commands.AddRange(new ConfigModule().Load());
+            Commands.AddRange(new RoleModule().Load());
 
             if (CommandsToExclude == null)
                 return;
