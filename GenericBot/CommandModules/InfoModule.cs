@@ -122,7 +122,7 @@ namespace GenericBot.CommandModules
                         .Where(c => c.RequiredPermission <= help.GetPermissions(context.Author, context.Guild.Id))
                         .Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
                     cmdCount += Core.GetCustomCommands(context.Guild.Id).Result
-                        .Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
+                        .Count(c => c.Name.ToLower().Contains(param));
 
                     if (cmdCount > 10)
                     {
