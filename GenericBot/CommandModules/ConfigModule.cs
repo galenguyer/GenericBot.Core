@@ -25,7 +25,7 @@ namespace GenericBot.CommandModules
                 if (context.Parameters.IsEmpty())
                 {
                     string currentConfig = 
-                    $"Prefix: `{_guildConfig.Prefix}`" +
+                    $"Prefix: `{Core.GetPrefix(context)}`\n" +
                     $"Admin Roles: `{JsonConvert.SerializeObject(_guildConfig.AdminRoleIds)}`\n" +
                     $"Mod Roles: `{JsonConvert.SerializeObject(_guildConfig.ModRoleIds)}`\n" +
                     $"User Roles: `{JsonConvert.SerializeObject(_guildConfig.UserRoles)}`\n" +
@@ -35,8 +35,10 @@ namespace GenericBot.CommandModules
                     $"Muted Role Id: `{_guildConfig.MutedRoleId}`\n" +
                     $"Verification:\n" +
                     $"    Role Id: `{_guildConfig.VerifiedRole}`\n" +
-                    $"    Message: Do >config verification message to see the message\n" +
+                    $"    Message: Do `{Core.GetPrefix(context)}config verification message` to see the message\n" +
                     $"Auto Roles: `{JsonConvert.SerializeObject(_guildConfig.AutoRoleIds)}`";
+
+                    await context.Message.ReplyAsync(currentConfig);
                 }
 
                 #region AdminRoles
