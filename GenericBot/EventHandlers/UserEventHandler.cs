@@ -12,8 +12,10 @@ namespace GenericBot
 {
     public static class UserEventHandler
     {
-        public static Task UserUpdated(SocketGuildUser beforeUser, SocketGuildUser afterUser)
+        public static async Task UserUpdated(SocketUser bUser, SocketUser aUser)
         {
+            SocketGuildUser beforeUser = bUser as SocketGuildUser;
+            SocketGuildUser afterUser = aUser as SocketGuildUser;
             if (beforeUser.Username != afterUser.Username || beforeUser.Nickname != afterUser.Nickname)
             {
                 var user = Core.MongoEngine.GetUserFromGuild(afterUser.Id, afterUser.Guild.Id);
@@ -23,7 +25,6 @@ namespace GenericBot
                 user.AddNickname(afterUser);
                 Core.MongoEngine.SaveUserToGuild(user, afterUser.Guild.Id);
             }
-            return Task.CompletedTask;
         }
 
         public static async Task UserJoined(SocketGuildUser user)
