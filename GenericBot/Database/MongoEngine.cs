@@ -23,7 +23,7 @@ namespace GenericBot.Database
         /// <returns></returns>
         public GuildConfig GetGuildConfig(ulong GuildId)
         {
-            var _configDb = mongoClient.GetDatabase(GuildId.ToString());
+            var _configDb = GetDatabaseFromGuildId(GuildId);
             var _collection = _configDb.GetCollection<GuildConfig>("config");
 
             if (_collection.Find(c => c.Id == GuildId).Any())
@@ -38,7 +38,7 @@ namespace GenericBot.Database
         /// <returns></returns>
         public GuildConfig SaveGuildConfig(GuildConfig guildConfig)
         {
-            var _configDb = mongoClient.GetDatabase(guildConfig.Id.ToString());
+            var _configDb = GetDatabaseFromGuildId(guildConfig.Id);
             var _collection = _configDb.GetCollection<GuildConfig>("config");
             if (_collection.Find(c => c.Id == guildConfig.Id).Any())
                 _collection.ReplaceOne(c => c.Id == guildConfig.Id, guildConfig);
@@ -54,7 +54,7 @@ namespace GenericBot.Database
         /// <returns></returns>
         public CustomCommand SaveCustomCommand(CustomCommand command, ulong guildId)
         {
-            var _configDb = mongoClient.GetDatabase(guildId.ToString());
+            var _configDb = GetDatabaseFromGuildId(guildId);
             var _collection = _configDb.GetCollection<CustomCommand>("customCommands");
             if (_collection.Find(c => c.Name == command.Name).Any())
                 _collection.ReplaceOne(c => c.Name == command.Name, command);
@@ -63,7 +63,7 @@ namespace GenericBot.Database
         }
         public List<CustomCommand> GetCustomCommands(ulong guildId)
         {
-            var _configDb = mongoClient.GetDatabase(guildId.ToString());
+            var _configDb = GetDatabaseFromGuildId(guildId);
             var _collection = _configDb.GetCollection<CustomCommand>("customCommands");
             var list = _collection.Find(new BsonDocument()).ToList();
             return list;
@@ -71,6 +71,10 @@ namespace GenericBot.Database
         public List<string> GetGuildIdsFromDb()
         {
             return mongoClient.ListDatabaseNames().ToList();
+        }
+        private IMongoDatabase GetDatabaseFromGuildId(ulong GuildId)
+        {
+            return mongoClient.GetDatabase(GuildId.ToString());
         }
     }
 }
