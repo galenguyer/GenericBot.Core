@@ -68,6 +68,25 @@ namespace GenericBot.Database
             var list = _collection.Find(new BsonDocument()).ToList();
             return list;
         }
+        public DatabaseUser GetUserFromGuild(ulong userId, ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<DatabaseUser>("users");
+            if (_collection.Find(u => u.Id == userId).Any())
+                return _collection.Find(u => u.Id == userId).First();
+            else return new DatabaseUser(userId);
+        }
+        public DatabaseUser SaveUserToGuild(DatabaseUser user, ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<DatabaseUser>("users");
+            if (_collection.Find(u => u.Id == user.Id).Any())
+                _collection.FindOneAndReplace(u => u.Id == user.Id, user);
+            _collection.InsertOne(user);
+
+            return user;
+        }
+
         public List<string> GetGuildIdsFromDb()
         {
             return mongoClient.ListDatabaseNames().ToList();

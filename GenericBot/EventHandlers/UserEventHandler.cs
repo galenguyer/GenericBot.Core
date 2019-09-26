@@ -16,13 +16,12 @@ namespace GenericBot
         {
             if (beforeUser.Username != afterUser.Username || beforeUser.Nickname != afterUser.Nickname)
             {
-                var guildDb = new DBGuild(afterUser.Guild.Id);
-                var user = guildDb.GetOrCreateUser(afterUser.Id);
+                var user = Core.MongoEngine.GetUserFromGuild(afterUser.Id, afterUser.Guild.Id);
                 user.AddUsername(beforeUser.Username);
                 user.AddNickname(beforeUser);
                 user.AddUsername(afterUser.Username);
                 user.AddNickname(afterUser);
-                guildDb.AddOrUpdateUser(user);
+                Core.MongoEngine.SaveUserToGuild(user, afterUser.Guild.Id);
             }
             return Task.CompletedTask;
         }
