@@ -140,7 +140,7 @@ namespace GenericBot.CommandModules
                         }
                         commandList += "\n\nCustom Commands:\n";
                         Core.GetCustomCommands(context.Guild.Id).Result
-                            .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                            .Where(c => c.Name.ToLower().Contains(param))
                             .OrderBy(c => c.Name)
                             .Select(c => $"`{c.Name}`")
                             .ToList().SumAnd();
@@ -153,7 +153,7 @@ namespace GenericBot.CommandModules
                             .OrderBy(c => c.RequiredPermission)
                             .ThenBy(c => c.Name);
                         var ccmds = Core.GetCustomCommands(context.Guild.Id).Result
-                            .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
+                            .Where(c => c.Name.ToLower().Contains(param))
                             .OrderBy(c => c.Name);
 
                         foreach (var cmd in cmds)
@@ -167,10 +167,6 @@ namespace GenericBot.CommandModules
                         foreach(var cmd in ccmds)
                         {
                             commandList += $"`{cmd.Name}`: Custom Command\n";
-                            if (cmd.Aliases.Any())
-                            {
-                                commandList += $"\tAliases: {cmd.Aliases.Select(c => $"`{c}`").ToList().SumAnd()}\n";
-                            }
                         }
                     }
                 }
