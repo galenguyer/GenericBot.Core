@@ -50,14 +50,14 @@ namespace GenericBot.CommandModules
                 var time = new DateTimeOffset();
                 try
                 {
-                    if (context.Parameters.Any() && context.Parameters[0] == "0" || context.Parameters[0] == "0d")
+                    if ((context.Parameters[0] == "0" || context.Parameters[0] == "0d"))
                         time = DateTimeOffset.MaxValue;
                     else
                         time = context.Parameters[0].ParseTimeString();
                     context.Parameters.RemoveAt(0);
                 }
                 // In case no time was specified
-                catch (System.FormatException ex)
+                catch (Exception ex)
                 { time = DateTimeOffset.MaxValue; }
                 string timeMessage = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`";
 
