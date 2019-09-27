@@ -50,7 +50,7 @@ namespace GenericBot.CommandModules
                 var time = new DateTimeOffset();
                 try
                 {
-                    if (context.Parameters[0] == "0" || context.Parameters[0] == "0d")
+                    if (context.Parameters.Any() && context.Parameters[0] == "0" || context.Parameters[0] == "0d")
                         time = DateTimeOffset.MaxValue;
                     else
                         time = context.Parameters[0].ParseTimeString();
