@@ -91,8 +91,9 @@ namespace GenericBot.Database
         {
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<GenericBan>("bans");
+            if (_collection.Find(u => u.Id == ban.Id).Any())
+                _collection.FindOneAndReplace(u => u.Id == ban.Id, ban);
             _collection.InsertOne(ban);
-
             return ban;
         }
 
