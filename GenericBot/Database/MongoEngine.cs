@@ -87,6 +87,15 @@ namespace GenericBot.Database
             return user;
         }
 
+        public DatabaseUser SaveBanToGuild(GenericBan ban, ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<GenericBan>("bans");
+            _collection.InsertOne(ban);
+
+            return ban;
+        }
+
         public List<string> GetGuildIdsFromDb()
         {
             return mongoClient.ListDatabaseNames().ToList();
