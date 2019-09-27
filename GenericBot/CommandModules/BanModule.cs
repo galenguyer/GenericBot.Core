@@ -144,7 +144,6 @@ namespace GenericBot.CommandModules
                     await (Core.DiscordClient.GetChannel(guildconfig.LoggingChannelId) as SocketTextChannel)
                         .SendMessageAsync("", embed: builder.Build());
                 }
-            
             };
             commands.Add(ban);
 
