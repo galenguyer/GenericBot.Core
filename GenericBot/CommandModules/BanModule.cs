@@ -147,6 +147,112 @@ namespace GenericBot.CommandModules
             };
             commands.Add(ban);
 
+            Command kick = new Command("kick");
+            kick.Description = "kick a user from the server, whether or not they're on it";
+            kick.Delete = false;
+            kick.RequiredPermission = Command.PermissionLevels.Moderator;
+            kick.Usage = $"{kick.Name} <user> <reason>";
+            kick.ToExecute += async (context) =>
+            {
+                // Check for commands
+                if (context.Parameters.IsEmpty())
+                {
+                    await context.Message.ReplyAsync($"You need to add some arguments. A user, perhaps?");
+                    return;
+                }
+
+                // Parse out UserId
+                ulong userId;
+                if (!ulong.TryParse(context.Parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out userId))
+                {
+                    await context.Message.ReplyAsync("Try specifying someone to kick first");
+                    return;
+                }
+
+                // Prevent kicking me
+                if (userId == Core.DiscordClient.GetApplicationInfoAsync().Result.Owner.Id)
+                {
+                    await context.Message.ReplyAsync("Haha lol no");
+                    return;
+                }
+
+                // Remove UserId from param stack
+                context.Parameters.RemoveAt(0);
+
+                string reason = context.Parameters.IsEmpty() ? "No Reason Given" : context.Parameters.Rejoin();
+
+                bool dmSuccess = true;
+                string dmMessage = $"You have been kicked from **{context.Guild.Name}** for the following reason: \n\n{reason}\n\n";
+
+                // Try to DM the user the message, set a flag and continue if they're blocking DMs
+                try
+                {
+                    await context.Guild.GetUser(userId).GetOrCreateDMChannelAsync().Result
+                        .SendMessageAsync(dmMessage);
+                }
+                catch
+                {
+                    dmSuccess = false;
+                }
+
+                var user = context.Guild.GetUser(userId);
+                try
+                {
+                    // We have to do some stuff to make the Discord audit log
+                    // happy with what we send it
+                    string auditReason = reason.Replace("\"", "'");
+                    if (auditReason.Length > 256)
+                    {
+                        auditReason = auditReason.Substring(0, 250) + "...";
+                    }
+                    await user.KickAsync(auditReason);
+                }
+                catch
+                {
+                    await context.Message.ReplyAsync($"Could not kick the given user. Try checking role hierarchy and permissions");
+                    return;
+                }
+
+                string banMessage = $"Kicked `{user}` (`{user.Id}`)";
+                if (string.IsNullOrEmpty(reason))
+                    banMessage += $" 👌";
+                else
+                    banMessage += $" for `{reason}`";
+
+                if (!dmSuccess) banMessage += "\nThe user could not be messaged";
+
+                var builder = new EmbedBuilder()
+                    .WithTitle("User Kicked")
+                    .WithDescription(banMessage)
+                    .WithColor(new Color(0xFFFF00))
+                    .WithFooter(footer => {
+                        footer
+                            .WithText($"By {context.Author} at {DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                    })
+                    .WithAuthor(author => {
+                        author
+                            .WithName(user.ToString())
+                            .WithIconUrl(user.GetAvatarUrl());
+                    });
+
+
+                var guildconfig = Core.GetGuildConfig(context.Guild.Id);
+
+                var kickedUser = Core.MongoEngine.GetUserFromGuild(user.Id, context.Guild.Id)
+                    .AddWarning(
+                        $"Kicked {user} for `{reason}` (By `{context.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
+                Core.MongoEngine.SaveUserToGuild(kickedUser, context.Guild.Id);
+
+                // Send the kick logs
+                await context.Channel.SendMessageAsync("", embed: builder.Build());
+                if (guildconfig.LoggingChannelId != 0)
+                {
+                    await (Core.DiscordClient.GetChannel(guildconfig.LoggingChannelId) as SocketTextChannel)
+                        .SendMessageAsync("", embed: builder.Build());
+                }
+            };
+            commands.Add(kick);
+
             return commands;
         }
     }
