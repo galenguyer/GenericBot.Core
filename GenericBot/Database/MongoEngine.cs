@@ -82,8 +82,7 @@ namespace GenericBot.Database
             var _collection = _userDb.GetCollection<DatabaseUser>("users");
             if (_collection.Find(u => u.Id == user.Id).Any())
                 _collection.FindOneAndReplace(u => u.Id == user.Id, user);
-            _collection.InsertOne(user);
-
+            else _collection.InsertOne(user);
             return user;
         }
 
@@ -93,7 +92,7 @@ namespace GenericBot.Database
             var _collection = _userDb.GetCollection<GenericBan>("bans");
             if (_collection.Find(u => u.Id == ban.Id).Any())
                 _collection.FindOneAndReplace(u => u.Id == ban.Id, ban);
-            _collection.InsertOne(ban);
+            else _collection.InsertOne(ban);
             return ban;
         }
 
