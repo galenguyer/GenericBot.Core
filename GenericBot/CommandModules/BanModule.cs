@@ -8,7 +8,7 @@ using System.Text;
 
 namespace GenericBot.CommandModules
 {
-    class ModerationModule : Module
+    class BanModule : Module
     {
         public List<Command> Load()
         {
