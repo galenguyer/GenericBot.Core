@@ -15,6 +15,7 @@ namespace GenericBot.CommandModules
             List<Command> commands = new List<Command>();
 
             Command ping = new Command("ping");
+            ping.WorksInDms = true;
             ping.Description = "Make sure the bot is up";
             ping.ToExecute += async (context) =>
             {
@@ -23,6 +24,7 @@ namespace GenericBot.CommandModules
             commands.Add(ping);
 
             Command info = new Command("info");
+            info.WorksInDms = true;
             info.Description = "Provides some general info about the bot";
             info.ToExecute += async (context) =>
             {
@@ -54,6 +56,7 @@ namespace GenericBot.CommandModules
             commands.Add(info);
 
             Command configinfo = new Command("configinfo");
+            configinfo.WorksInDms = true;
             configinfo.RequiredPermission = Command.PermissionLevels.Admin;
             configinfo.Description = "Show all the options to configure with syntax for each";
             configinfo.ToExecute += async (context) =>
@@ -90,6 +93,7 @@ namespace GenericBot.CommandModules
             help.Description = "The help command, duh";
             help.RequiredPermission = Command.PermissionLevels.User;
             help.Aliases = new List<string> { "halp" };
+            help.WorksInDms = true;
             help.ToExecute += async (context) =>
             {
                 string commandList = "";

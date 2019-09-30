@@ -12,6 +12,7 @@ namespace GenericBot.CommandModules
             List<Command> commands = new List<Command>();
 
             Command mock = new Command("mock");
+            mock.WorksInDms = true;
             mock.Description = "MOcKinG sPoNgeBoB TeXt";
             mock.ToExecute += async (context) =>
             {
@@ -33,6 +34,7 @@ namespace GenericBot.CommandModules
             commands.Add(mock);
 
             Command clap = new Command("clap");
+            clap.WorksInDms = true;
             clap.Usage = "Put the clap emoji between each word";
             clap.ToExecute += async (context) =>
             {
