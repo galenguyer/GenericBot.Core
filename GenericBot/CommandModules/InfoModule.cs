@@ -92,7 +92,6 @@ namespace GenericBot.CommandModules
             help.ToExecute += async (context) =>
             {
                 string commandList = "";
-                var guildConfig = Core.GetGuildConfig(context.Guild.Id);
                 string[] levels = { "User Commands", "Moderator Commands", "Admin Commands", "Guild Owner Commands", "Global Admin Commands", "Bot Owner Commands" };
 
                 if (string.IsNullOrEmpty(context.ParameterString))
