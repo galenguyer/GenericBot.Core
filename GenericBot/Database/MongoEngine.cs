@@ -95,6 +95,46 @@ namespace GenericBot.Database
             else _collection.InsertOne(ban);
             return ban;
         }
+        
+        public Quote AddQuote(string quote, ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<Quote>("quotes");
+
+            var q = new Quote
+            {
+                Content = quote,
+                Id = _collection.CountDocuments(new BsonDocument()) == 0 ? 1 : (int)_collection.CountDocuments(new BsonDocument()) + 1,
+                Active = true
+            };
+            _collection.InsertOne(q);
+
+            return q;
+        }
+
+        public bool RemoveQuote(int id, ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<Quote>("quotes");
+
+            try
+            {
+                _collection.UpdateOne(new BsonDocument("_id", id), Builders<Quote>.Update.Set("Active", false));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        
+        public List<Quote> GetAllQuotes(ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<Quote>("quotes");
+
+            return _collection.Find(new BsonDocument("Active", true)).ToList();
+        }
 
         public List<string> GetGuildIdsFromDb()
         {

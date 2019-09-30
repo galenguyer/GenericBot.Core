@@ -58,6 +58,7 @@ namespace GenericBot
             Commands.AddRange(new MemeModule().Load());
             Commands.AddRange(new CustomCommandModule().Load());
             Commands.AddRange(new BanModule().Load());
+            Commands.AddRange(new QuoteModule().Load());
             Commands.AddRange(new QuickCommands().GetQuickCommands());
 
             if (CommandsToExclude == null)
@@ -121,6 +122,27 @@ namespace GenericBot
             }
             MongoEngine.SaveCustomCommand(command, guildId);
             return command;
+        }
+        public static Quote AddQuote(string quote, ulong guildId)
+        {
+            return MongoEngine.AddQuote(quote, guildId);
+        }
+        public static bool RemoveQuote(int id, ulong guildId)
+        {
+            return MongoEngine.RemoveQuote(id, guildId);
+        }
+        public static Quote GetQuote(string quote, ulong guildId)
+        {
+            var quotes = MongoEngine.GetAllQuotes(guildId);
+
+            if (string.IsNullOrEmpty(quote))
+            {
+                return quotes.GetRandomItem();
+            }
+            else
+            {
+                return quotes.Where(q => q.Content.ToLower().Contains(quote.ToLower())).ToList().GetRandomItem();
+            }
         }
 
         private static void InitializeCache()
