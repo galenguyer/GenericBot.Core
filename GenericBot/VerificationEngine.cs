@@ -15,14 +15,21 @@ namespace GenericBot
 
         public static SocketGuild GetGuildFromCode(string code, ulong userId)
         {
-            var pid = int.Parse(userId.ToString().Substring(7, 6));
-            var sum = Convert.ToInt32(StringToHex(code.ToLower()), 16);
-            var gid = sum - pid;
+            try
+            {
+                var pid = int.Parse(userId.ToString().Substring(7, 6));
+                var sum = Convert.ToInt32(StringToHex(code.ToLower()), 16);
+                var gid = sum - pid;
 
-            if (Core.DiscordClient.Guilds.HasElement(g => g.Id.ToString().Contains(gid.ToString()),
-                out SocketGuild guild))
-                return guild;
-            return null;
+                if (Core.DiscordClient.Guilds.HasElement(g => g.Id.ToString().Contains(gid.ToString()),
+                    out SocketGuild guild))
+                    return guild;
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static string InsertCodeInMessage(string message, string code)
