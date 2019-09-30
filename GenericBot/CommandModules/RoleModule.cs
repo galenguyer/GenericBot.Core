@@ -286,7 +286,87 @@ namespace GenericBot.CommandModules
             };
             commands.Add(createUserRole);
 
-            return commmands;
+
+            Command verify = new Command("verify");
+            verify.RequiredPermission = Command.PermissionLevels.User;
+            verify.ToExecute += async (context) =>
+            {
+                List<SocketUser> users = new List<SocketUser>();
+                var guildConfig = Core.GetGuildConfig(context.Guild.Id);
+
+                if (context.Parameters.IsEmpty())
+                {
+                    if ((context.Author as SocketGuildUser).Roles.Any(r => r.Id == guildConfig.VerifiedRole))
+                    {
+                        await context.Message.ReplyAsync("You're already verified");
+                        return;
+                    }
+                    users.Add(context.Author);
+                }
+                else
+                {
+                    foreach (var user in context.Message.GetMentionedUsers())
+                    {
+                        if ((user as SocketGuildUser).Roles.Any(r => r.Id == guildConfig.VerifiedRole))
+                        {
+                            await context.Message.ReplyAsync($"{user.Username} is already verified");
+                        }
+                        else
+                        {
+                            users.Add(user);
+                        }
+                    }
+                }
+
+
+                if (guildConfig.VerifiedRole == 0)
+                {
+                    await context.Message.ReplyAsync($"Verification is disabled on this server");
+                    return;
+                }
+
+                if ((string.IsNullOrEmpty(guildConfig.VerifiedMessage) || guildConfig.VerifiedMessage.Split().Length < 32 || !context.Guild.Roles.Any(r => r.Id == guildConfig.VerifiedRole)))
+                {
+                    await context.Message.ReplyAsync(
+                        $"It looks like verifiction is configured improperly (either the message is too short or the role does not exist.) Please contact your server administrator to resolve it.");
+                    return;
+                }
+
+                List<SocketUser> failed = new List<SocketUser>();
+                List<SocketUser> success = new List<SocketUser>();
+                foreach (var user in users)
+                {
+                    string message = $"Hey {user.Username}! To get verified on **{context.Guild.Name}** reply to this message with the hidden code in the message below\n\n"
+                                     + Core.GetGuildConfig(context.Guild.Id).VerifiedMessage;
+
+                    string verificationMessage =
+                        VerificationEngine.InsertCodeInMessage(message, VerificationEngine.GetVerificationCode(user.Id, context.Guild.Id));
+
+                    try
+                    {
+                        await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
+                        success.Add(user);
+                    }
+                    catch
+                    {
+                        failed.Add(user);
+                    }
+                }
+
+                string reply = "";
+                if (success.Any())
+                {
+                    reply += $"I've sent {success.Select(u => u.Username).ToList().SumAnd()} instructions!";
+                }
+                if (failed.Any())
+                {
+                    reply += $" {failed.Select(u => u.Username).ToList().SumAnd()} could not be messaged.";
+                }
+                await context.Message.ReplyAsync(reply);
+            };
+            commands.Add(verify);
+
+            return commands;
         }
     }
 }
