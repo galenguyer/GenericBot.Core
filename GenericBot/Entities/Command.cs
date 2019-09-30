@@ -42,8 +42,17 @@ namespace GenericBot.Entities
 
         public async Task ExecuteCommand(ParsedCommand command)
         {
-            if (GetPermissions((command.Message as SocketMessage).Author, (command.Message as SocketMessage).GetGuild().Id) < RequiredPermission)
-                return;
+            // Permission checking
+            if (command.Message.Channel is SocketDMChannel)
+            {
+                if (PermissionLevels.Admin < RequiredPermission)
+                    return;
+            }
+            else
+            {
+                if (GetPermissions(command.Author, command.Guild.Id) < RequiredPermission)
+                    return;
+            }
 
             if (SendTyping) await command.Message.Channel.TriggerTypingAsync();
             if (Delete)
