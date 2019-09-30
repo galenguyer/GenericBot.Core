@@ -14,7 +14,7 @@ namespace GenericBot.CommandModules
     {
         public List<Command> Load()
         {
-            List<Command> commmands = new List<Command>();
+            List<Command> commands = new List<Command>();
 
             Command UserRoles = new Command("userroles");
             UserRoles.Description = $"Show all user roles on this server";
@@ -64,7 +64,7 @@ namespace GenericBot.CommandModules
                     await context.Message.ReplyAsync(str);
                 }
             };
-            commmands.Add(UserRoles);
+            commands.Add(UserRoles);
 
             Command iam = new Command("iam");
             iam.Description = "Join a User Role";
@@ -133,7 +133,7 @@ namespace GenericBot.CommandModules
                     catch { }
                 }
             };
-            commmands.Add(iam);
+            commands.Add(iam);
 
             Command iamnot = new Command("iamnot");
             iamnot.Description = "Leave a User Role";
@@ -202,7 +202,7 @@ namespace GenericBot.CommandModules
                     catch { }
                 }
             };
-            commmands.Add(iamnot);
+            commands.Add(iamnot);
 
             Command getrole = new Command("getrole");
             getrole.Description = "Get the ID of a role";
@@ -221,7 +221,7 @@ namespace GenericBot.CommandModules
                     await context.Message.ReplyAsync(str);
                 }
             };
-            commmands.Add(getrole);
+            commands.Add(getrole);
 
             Command membersOf = new Command("membersof");
             membersOf.Description = "List all members of a role";
@@ -252,7 +252,7 @@ namespace GenericBot.CommandModules
                 }
 
             };
-            commmands.Add(membersOf);
+            commands.Add(membersOf);
 
             Command createRole = new Command("createRole");
             createRole.Description = "Create a new role with default permissions";
@@ -265,7 +265,7 @@ namespace GenericBot.CommandModules
                 role = context.Guild.CreateRoleAsync(context.ParameterString, GuildPermissions.None).Result;
                 await context.Message.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}`");
             };
-            commmands.Add(createRole);
+            commands.Add(createRole);
 
             Command createUserRole = new Command("createUserRole");
             createUserRole.Description = "Create a new role with default permissions and add it to the public role list";
@@ -284,7 +284,7 @@ namespace GenericBot.CommandModules
                 gc.Save();
                 await context.Message.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}` and added it to the user roles");
             };
-            commmands.Add(createUserRole);
+            commands.Add(createUserRole);
 
             return commmands;
         }
