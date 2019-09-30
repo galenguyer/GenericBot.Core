@@ -20,19 +20,31 @@ namespace GenericBot
                 return;
             try
             {
-                ulong guildId = parameterMessage.GetGuild().Id;
-                var command = new Command("t").ParseMessage(parameterMessage);
+                ParsedCommand command;
 
-                if (Core.GetCustomCommands(guildId).Result.HasElement(c => c.Name == command.Name, 
-                    out CustomCommand customCommand))
+                if (parameterMessage.Channel is SocketDMChannel)
                 {
-                    if (customCommand.Delete)
-                        await parameterMessage.DeleteAsync();
-                    await parameterMessage.ReplyAsync(customCommand.Response);
+                    command = new Command("t").ParseMessage(parameterMessage);
+
+                    await Core.Logger.LogGenericMessage($"Recieved DM: {parameterMessage.Content}");
+                }
+                else
+                {
+                    ulong guildId = parameterMessage.GetGuild().Id;
+                    command = new Command("t").ParseMessage(parameterMessage);
+
+                    if (Core.GetCustomCommands(guildId).Result.HasElement(c => c.Name == command.Name,
+                        out CustomCommand customCommand))
+                    {
+                        if (customCommand.Delete)
+                            await parameterMessage.DeleteAsync();
+                        await parameterMessage.ReplyAsync(customCommand.Response);
+                    }
                 }
 
-                if(command != null && command.RawCommand != null)
+                if (command != null && command.RawCommand != null)
                     await command.Execute();
+
             }
             catch (Exception ex)
             {
