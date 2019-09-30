@@ -27,6 +27,36 @@ namespace GenericBot
                     command = new Command("t").ParseMessage(parameterMessage);
 
                     await Core.Logger.LogGenericMessage($"Recieved DM: {parameterMessage.Content}");
+
+                    if (command != null && command.RawCommand != null && command.RawCommand.WorksInDms)
+                    {
+                        await command.Execute();
+                    }
+                    else
+                    {
+                        var msg = Core.DiscordClient.GetApplicationInfoAsync().Result.Owner.GetOrCreateDMChannelAsync().Result
+                            .SendMessageAsync($"```\nDM from: {parameterMessage.Author}({parameterMessage.Author.Id})\nContent: {parameterMessage.Content}\n```").Result;
+                        if (parameterMessage.Content.Trim().Split().Length == 1)
+                        {
+                            var guild = VerificationEngine.GetGuildFromCode(parameterMessage.Content, parameterMessage.Author.Id);
+                            if (guild == null)
+                            {
+                                await parameterMessage.ReplyAsync("Invalid verification code");
+                            }
+                            else
+                            {
+                                await guild.GetUser(parameterMessage.Author.Id)
+                                    .AddRoleAsync(guild.GetRole(Core.GetGuildConfig(guild.Id).VerifiedRole));
+                                if (guild.TextChannels.HasElement(c => c.Id == (Core.GetGuildConfig(guild.Id).LoggingChannelId), out SocketTextChannel logChannel))
+                                {
+                                    await logChannel.SendMessageAsync($"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}`:  `{parameterMessage.Author}` (`{parameterMessage.Author.Id}`) just verified");
+                                }
+                                await parameterMessage.ReplyAsync($"You've been verified on **{guild.Name}**!");
+                                await msg.ModifyAsync(m =>
+                                    m.Content = $"```\nDM from: {parameterMessage.Author}({parameterMessage.Author.Id})\nContent: {parameterMessage.Content.SafeSubstring(1900)}\nVerified on {guild.Name}\n```");
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -40,11 +70,10 @@ namespace GenericBot
                             await parameterMessage.DeleteAsync();
                         await parameterMessage.ReplyAsync(customCommand.Response);
                     }
+
+                    if (command != null && command.RawCommand != null)
+                        await command.Execute();
                 }
-
-                if (command != null && command.RawCommand != null)
-                    await command.Execute();
-
             }
             catch (Exception ex)
             {
