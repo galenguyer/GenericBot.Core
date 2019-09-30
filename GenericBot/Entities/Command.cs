@@ -42,17 +42,8 @@ namespace GenericBot.Entities
 
         public async Task ExecuteCommand(ParsedCommand command)
         {
-            // Permission checking
-            if (command.Message.Channel is SocketDMChannel)
-            {
-                if (PermissionLevels.Admin < RequiredPermission)
+                if (GetPermissions(command) < RequiredPermission)
                     return;
-            }
-            else
-            {
-                if (GetPermissions(command.Author, command.Guild.Id) < RequiredPermission)
-                    return;
-            }
 
             if (SendTyping) await command.Message.Channel.TriggerTypingAsync();
             if (Delete)
@@ -83,16 +74,19 @@ namespace GenericBot.Entities
             }
         }
 
-        public PermissionLevels GetPermissions(SocketUser user, ulong guildId)
+        public PermissionLevels GetPermissions(ParsedCommand context)
         {
-            if (user.Id.Equals(Core.GetOwnerId())) return PermissionLevels.BotOwner;
-            else if (Core.CheckGlobalAdmin(user.Id))
-                return PermissionLevels.GlobalAdmin;
-            else if(IsGuildAdmin(user, guildId))
-                return PermissionLevels.GuildOwner;
-            else if (((SocketGuildUser)user).Roles.Select(r => r.Id).Intersect(Core.GetGuildConfig(guildId).AdminRoleIds).Any())
+            if (context.Channel is SocketDMChannel)
                 return PermissionLevels.Admin;
-            else if (((SocketGuildUser)user).Roles.Select(r => r.Id).Intersect(Core.GetGuildConfig(guildId).ModRoleIds).Any())
+            else if (context.Author.Id.Equals(Core.GetOwnerId()))
+                return PermissionLevels.BotOwner;
+            else if (Core.CheckGlobalAdmin(context.Author.Id))
+                return PermissionLevels.GlobalAdmin;
+            else if(IsGuildAdmin(context.Author, context.Guild.Id))
+                return PermissionLevels.GuildOwner;
+            else if (((SocketGuildUser)context.Author).Roles.Select(r => r.Id).Intersect(Core.GetGuildConfig(context.Guild.Id).AdminRoleIds).Any())
+                return PermissionLevels.Admin;
+            else if (((SocketGuildUser)context.Author).Roles.Select(r => r.Id).Intersect(Core.GetGuildConfig(context.Guild.Id).ModRoleIds).Any())
                 return PermissionLevels.Moderator;
             else return PermissionLevels.User;
         }

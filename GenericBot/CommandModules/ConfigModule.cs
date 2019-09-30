@@ -139,7 +139,7 @@ namespace GenericBot.CommandModules
 
                 else if (context.Parameters[0].ToLower().Equals("userroles"))
                 {
-                    if (config.GetPermissions(context.Author, context.Guild.Id) >= Command.PermissionLevels.Admin)
+                    if (config.GetPermissions(context) >= Command.PermissionLevels.Admin)
                     {
                         if (context.Parameters.Count == 1)
                         {

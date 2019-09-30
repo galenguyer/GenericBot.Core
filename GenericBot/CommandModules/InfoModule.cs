@@ -27,7 +27,7 @@ namespace GenericBot.CommandModules
             {
                 string prefix = Core.GetPrefix(context);
 
-                string config = info.GetPermissions(context.Author, context.Guild.Id) >= Command.PermissionLevels.Admin ? $" Admins can also run `{prefix}confighelp` to see everything you can set up" : "";
+                string config = info.GetPermissions(context) >= Command.PermissionLevels.Admin ? $" Admins can also run `{prefix}confighelp` to see everything you can set up" : "";
 
                 var builder = new EmbedBuilder()
                     .WithTitle("GenericBot: An All-Purpose Almost-Decent Bot")
@@ -97,7 +97,7 @@ namespace GenericBot.CommandModules
                 if (string.IsNullOrEmpty(context.ParameterString))
                 {
                     commandList += "Bot Commands:\n";
-                    for (int i = 0; i <= GetIntFromPerm(help.GetPermissions(context.Author, context.Guild.Id)); i++)
+                    for (int i = 0; i <= GetIntFromPerm(help.GetPermissions(context)); i++)
                     {
                         commandList += $"\n{levels[i]}: ";
                         commandList += Core.Commands
@@ -118,7 +118,7 @@ namespace GenericBot.CommandModules
                     string param = context.ParameterString.ToLower();
                     int cmdCount = 0;
                     cmdCount += Core.Commands
-                        .Where(c => c.RequiredPermission <= help.GetPermissions(context.Author, context.Guild.Id))
+                        .Where(c => c.RequiredPermission <= help.GetPermissions(context))
                         .Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
                     cmdCount += Core.GetCustomCommands(context.Guild.Id).Result
                         .Count(c => c.Name.ToLower().Contains(param));
@@ -126,7 +126,7 @@ namespace GenericBot.CommandModules
                     if (cmdCount > 10)
                     {
                         commandList += "Bot Commands:\n";
-                        for (int i = 0; i <= GetIntFromPerm(help.GetPermissions(context.Author, context.Guild.Id)); i++)
+                        for (int i = 0; i <= GetIntFromPerm(help.GetPermissions(context)); i++)
                         {
                             commandList += $"\n{levels[i]}: ";
                             commandList += Core.Commands
@@ -147,7 +147,7 @@ namespace GenericBot.CommandModules
                     else
                     {
                         var cmds = Core.Commands
-                            .Where(c => c.RequiredPermission <= help.GetPermissions(context.Author, context.Guild.Id))
+                            .Where(c => c.RequiredPermission <= help.GetPermissions(context))
                             .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
                             .OrderBy(c => c.RequiredPermission)
                             .ThenBy(c => c.Name);
