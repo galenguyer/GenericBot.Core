@@ -139,9 +139,14 @@ namespace GenericBot
             {
                 return quotes.GetRandomItem();
             }
+            else if(int.TryParse(quote, out int id))
+            {
+                return quotes.Any(q => q.Id == id) ? quotes.Find(q => q.Id == id) : new Quote("Not Found", 0);
+            }
             else
             {
-                return quotes.Where(q => q.Content.ToLower().Contains(quote.ToLower())).ToList().GetRandomItem();
+                var foundQuotes = quotes.Where(q => q.Content.ToLower().Contains(quote.ToLower())).ToList();
+                return quotes.Any() ? quotes.GetRandomItem() : new Quote("Not Found", 0);
             }
         }
 
