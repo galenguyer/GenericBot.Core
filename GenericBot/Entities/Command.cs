@@ -27,6 +27,7 @@ namespace GenericBot.Entities
         public string Usage;
         public bool Delete = false;
         public bool SendTyping = true;
+        public bool WorksInDms = false;
         public PermissionLevels RequiredPermission = PermissionLevels.User;
 
         public Command(string n)
@@ -51,9 +52,7 @@ namespace GenericBot.Entities
                 {
                     await command.Message.DeleteAsync();
                 }
-                #pragma warning disable CS0168 // Variable is declared but never used
-                catch (Discord.Net.HttpException httpException)
-                #pragma warning restore CS0168 // Variable is declared but never used
+                catch (Discord.Net.HttpException)
                 { 
                     await Core.Logger.LogErrorMessage(
                         $"Could Not Delete Message {command.Message.Id} CHANNELID {command.Message.Channel.Id}");

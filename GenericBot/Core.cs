@@ -71,7 +71,7 @@ namespace GenericBot
         public static string GetGlobalPrefix() => GlobalConfig.DefaultPrefix;
         public static string GetPrefix(ParsedCommand context)
         {
-            if (context.Guild == null || !string.IsNullOrEmpty(GetGuildConfig(context.Guild.Id).Prefix))
+            if (!(context.Message.Channel is SocketDMChannel) && (context.Guild == null || !string.IsNullOrEmpty(GetGuildConfig(context.Guild.Id).Prefix)))
                 return GetGuildConfig(context.Guild.Id).Prefix;
             return GetGlobalPrefix();
         }
