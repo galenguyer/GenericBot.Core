@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using GenericBot.Entities;
 using System;
 using System.Collections.Generic;
@@ -107,11 +108,14 @@ namespace GenericBot.CommandModules
                             .Select(c => $"`{c.Name}`")
                             .ToList().SumAnd();
                     }
-                    commandList += "\n\nCustom Commands:\n";
-                    commandList += Core.GetCustomCommands(context.Guild.Id).Result
-                        .OrderBy(c => c.Name)
-                        .Select(c => $"`{c.Name}`")
-                        .ToList().SumAnd();
+                    if (!(context.Channel is SocketDMChannel))
+                    {
+                        commandList += "\n\nCustom Commands:\n";
+                        commandList += Core.GetCustomCommands(context.Guild.Id).Result
+                            .OrderBy(c => c.Name)
+                            .Select(c => $"`{c.Name}`")
+                            .ToList().SumAnd();
+                    }
                 }
                 else
                 {
@@ -120,8 +124,11 @@ namespace GenericBot.CommandModules
                     cmdCount += Core.Commands
                         .Where(c => c.RequiredPermission <= help.GetPermissions(context))
                         .Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
-                    cmdCount += Core.GetCustomCommands(context.Guild.Id).Result
-                        .Count(c => c.Name.ToLower().Contains(param));
+                    if (!(context.Channel is SocketDMChannel))
+                    {
+                        cmdCount += Core.GetCustomCommands(context.Guild.Id).Result
+                            .Count(c => c.Name.ToLower().Contains(param));
+                    }
 
                     if (cmdCount > 10)
                     {
@@ -137,12 +144,15 @@ namespace GenericBot.CommandModules
                                 .Select(c => $"`{c.Name}`")
                                 .ToList().SumAnd();
                         }
-                        commandList += "\n\nCustom Commands:\n";
-                        Core.GetCustomCommands(context.Guild.Id).Result
-                            .Where(c => c.Name.ToLower().Contains(param))
-                            .OrderBy(c => c.Name)
-                            .Select(c => $"`{c.Name}`")
-                            .ToList().SumAnd();
+                        if (!(context.Channel is SocketDMChannel))
+                        {
+                            commandList += "\n\nCustom Commands:\n";
+                            Core.GetCustomCommands(context.Guild.Id).Result
+                                .Where(c => c.Name.ToLower().Contains(param))
+                                .OrderBy(c => c.Name)
+                                .Select(c => $"`{c.Name}`")
+                                .ToList().SumAnd();
+                        }
                     }
                     else
                     {
@@ -151,9 +161,6 @@ namespace GenericBot.CommandModules
                             .Where(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)))
                             .OrderBy(c => c.RequiredPermission)
                             .ThenBy(c => c.Name);
-                        var ccmds = Core.GetCustomCommands(context.Guild.Id).Result
-                            .Where(c => c.Name.ToLower().Contains(param))
-                            .OrderBy(c => c.Name);
 
                         foreach (var cmd in cmds)
                         {
@@ -163,9 +170,16 @@ namespace GenericBot.CommandModules
                                 commandList += $"\tAliases: {cmd.Aliases.Select(c => $"`{c}`").ToList().SumAnd()}\n";
                             }
                         }
-                        foreach(var cmd in ccmds)
+
+                        if (!(context.Channel is SocketDMChannel))
                         {
-                            commandList += $"`{cmd.Name}`: Custom Command\n";
+                            var ccmds = Core.GetCustomCommands(context.Guild.Id).Result
+                                .Where(c => c.Name.ToLower().Contains(param))
+                                .OrderBy(c => c.Name);
+                            foreach (var cmd in ccmds)
+                            {
+                                commandList += $"`{cmd.Name}`: Custom Command\n";
+                            }
                         }
                     }
                 }
