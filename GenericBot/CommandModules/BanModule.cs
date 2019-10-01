@@ -386,6 +386,55 @@ namespace GenericBot.CommandModules
             };
             commands.Add(kick);
 
+            Command unban = new Command("unban");
+            unban.Description = "Unban a user given their ID";
+            unban.RequiredPermission = Command.PermissionLevels.Moderator;
+            unban.Usage = "unban <userId";
+            unban.ToExecute += async (context) =>
+            {
+                if (context.Parameters.IsEmpty())
+                {
+                    await context.Message.ReplyAsync("Please specify a userid to unban");
+                    return;
+                }
+                if (ulong.TryParse(context.Parameters[0], out ulong bannedUId) && 
+                Core.MongoEngine.GetBansFromGuild(context.Guild.Id).HasElement(b => b.Id == bannedUId, out GenericBan banToRemove))
+                {
+                    Core.MongoEngine.RemoveBanFromGuild(bannedUId, context.Guild.Id);
+                    try
+                    {
+                        var user = context.Guild.GetBansAsync().Result.First(b => b.User.Id == bannedUId).User;
+                        await context.Guild.RemoveBanAsync(bannedUId);
+
+                        await context.Message.ReplyAsync($"Succesfully unbanned `{user}` (`{user.Id}`)");
+
+                        var builder = new EmbedBuilder()
+                            .WithTitle("User Unbanned")
+                            .WithDescription($"Banned for: {banToRemove.Reason}")
+                            .WithColor(new Color(0xFFFF00))
+                            .WithFooter(footer => {
+                                footer
+                                    .WithText($"{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT");
+                            })
+                            .WithAuthor(author => {
+                                author
+                                    .WithName(user.ToString())
+                                    .WithIconUrl(user.GetAvatarUrl());
+                            })
+                            .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
+                                Core.MongoEngine.GetUserFromGuild(banToRemove.Id, context.Guild.Id).Warnings.SumAnd()));
+                        await ((SocketTextChannel)Core.DiscordClient.GetChannel(Core.GetGuildConfig(context.Guild.Id).LoggingChannelId))
+                            .SendMessageAsync("", embed: builder.Build());
+                    }
+                    catch (Discord.Net.HttpException httpException)
+                    {
+                        await Core.Logger.LogErrorMessage(httpException.Message + "\n" + httpException.StackTrace);
+                        await context.Message.ReplyAsync("Could not unban that user. Either I don't have the permissions or they weren't banned");
+                    }
+                }
+            };
+            commands.Add(unban);
+
             return commands;
         }
     }
