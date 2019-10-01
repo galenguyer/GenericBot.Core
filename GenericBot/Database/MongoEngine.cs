@@ -153,6 +153,14 @@ namespace GenericBot.Database
             return _collection.Find(new BsonDocument("Active", true)).ToList();
         }
 
+        public void AddToAuditLog(ParsedCommand command, ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<AuditCommand>("auditlog");
+
+            _collection.InsertOne(new AuditCommand(command));
+        }
+
         public List<string> GetGuildIdsFromDb()
         {
             return mongoClient.ListDatabaseNames().ToList();

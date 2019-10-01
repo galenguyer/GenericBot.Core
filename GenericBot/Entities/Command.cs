@@ -42,8 +42,11 @@ namespace GenericBot.Entities
 
         public async Task ExecuteCommand(ParsedCommand command)
         {
-                if (GetPermissions(command) < RequiredPermission)
-                    return;
+            if (GetPermissions(command) < RequiredPermission)
+                return;
+
+            if (this.RequiredPermission >= PermissionLevels.Moderator && this.RequiredPermission < PermissionLevels.GlobalAdmin)
+                Core.MongoEngine.AddToAuditLog(command, command.Guild.Id);
 
             if (SendTyping) await command.Message.Channel.TriggerTypingAsync();
             if (Delete)
