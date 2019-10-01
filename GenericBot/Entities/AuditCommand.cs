@@ -5,6 +5,7 @@ using System.Text;
 
 namespace GenericBot.Entities
 {
+    [BsonIgnoreExtraElements]
     public class AuditCommand
     {
         public ulong MessageId { get; set; }

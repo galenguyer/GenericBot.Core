@@ -160,6 +160,13 @@ namespace GenericBot.Database
 
             _collection.InsertOne(new AuditCommand(command));
         }
+        public List<AuditCommand> GetAuditLog(ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<AuditCommand>("auditlog");
+
+            return _collection.Find(new BsonDocument()).ToList();
+        }
 
         public List<string> GetGuildIdsFromDb()
         {

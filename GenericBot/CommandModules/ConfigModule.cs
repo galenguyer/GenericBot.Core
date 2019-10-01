@@ -491,6 +491,29 @@ namespace GenericBot.CommandModules
             };
             commands.Add(config);
 
+            Command audit = new Command("audit");
+            audit.Description = "Get the audit log of mod commands for the server";
+            audit.RequiredPermission = Command.PermissionLevels.Admin;
+            audit.ToExecute += async (context) =>
+            {
+                var log = Core.MongoEngine.GetAuditLog(context.Guild.Id);
+                ulong uIdToSearch = 0;
+                if (!context.Parameters.IsEmpty())
+                    if (ulong.TryParse(context.Parameters[0], out uIdToSearch))
+                        log = log.Where(l => l.UserId == uIdToSearch).OrderByDescending(l => l.MessageId).ToList();
+
+                string message = string.Empty;
+                int i = 0;
+                while(message.Length < 2000 && i < log.Count)
+                {
+                    var cmd = log.ElementAt(i++);
+                    message += $"`{cmd.Message}` - <@{cmd.UserId}>\n";
+                }
+
+                await context.Message.ReplyAsync(message);
+            };
+            commands.Add(audit);
+
             return commands;
         }
     }
