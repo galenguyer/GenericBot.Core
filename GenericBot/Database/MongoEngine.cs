@@ -96,6 +96,23 @@ namespace GenericBot.Database
             return ban;
         }
         
+        public List<GenericBan> GetBansFromGuild(ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<GenericBan>("bans");
+            if (_collection.Find(new BsonDocument()).Any())
+                return _collection.Find(new BsonDocument()).ToList();
+            else return new List<GenericBan>();
+        }
+
+        public void RemoveBanFromGuild(ulong banId, ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<GenericBan>("bans");
+            if (_collection.Find(u => u.Id == banId).Any())
+                _collection.DeleteOne(u => u.Id == banId);
+        }
+
         public Quote AddQuote(string quote, ulong guildId)
         {
             var _userDb = GetDatabaseFromGuildId(guildId);
