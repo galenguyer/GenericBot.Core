@@ -31,7 +31,7 @@ namespace GenericBot.CommandModules
             {
                 string prefix = Core.GetPrefix(context);
 
-                string config = info.GetPermissions(context) >= Command.PermissionLevels.Admin ? $" Admins can also run `{prefix}confighelp` to see everything you can set up" : "";
+                string config = info.GetPermissions(context) >= Command.PermissionLevels.Admin ? $" Admins can also run `{prefix}configinfo` to see everything you can set up" : "";
 
                 var builder = new EmbedBuilder()
                     .WithTitle("GenericBot: An All-Purpose Almost-Decent Bot")
@@ -45,7 +45,7 @@ namespace GenericBot.CommandModules
                             .WithIconUrl(Core.DiscordClient.GetUser(169918990313848832).GetAvatarUrl());
                     })
                     .WithThumbnailUrl(Core.DiscordClient.CurrentUser.GetAvatarUrl().Replace("size=128", "size=2048"))
-                    .AddField($"Links", $"GenericBot is currently in a closed state, however if you wish to use it in your own server please get in contact with the developer, whose username is in the footer\nAlso, the source code is public on [github](https://github.com/MasterChief-John-117/GenericBot). You can also open bug reports on GitHub ")
+                    .AddField($"Links", $"GenericBot is, and always will be, free to use. To invite it, click [here](https://discordapp.com/oauth2/authorize?client_id=295329346590343168&scope=bot&permissions=2110258303)\nAlso, the source code is public on [github](https://github.com/MasterChief-John-117/GenericBot). You can also open bug reports on GitHub ")
                     .AddField($"Getting Started", $"See everything you can make me do with `{prefix}help`. {config}")
                     .AddField($"Self Assignable Roles", $"One of the most common public features GenericBot is used for is roles a user can assign to themself. To see all the avaible roles, do `{prefix}userroles`. You can join a role with `{prefix}iam [rolename]` or leave a role with `{prefix}iamnot [rolename]`.")
                     .AddField($"Moderation", $"GenericBot provides a wide range of tools for moderators to track users and infractions. It keeps track of all of a user's usernames, nicknames, and logged infractions, including kicks and timed or permanent bans. Users can be searched for either by ID, or by username or nickname, whether it be current or an old name. (All data is stored in an encrypted database, and data from one server is completely inaccessible by another server)")
