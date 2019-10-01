@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using GenericBot.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -200,6 +201,31 @@ namespace GenericBot.CommandModules
                 }
             };
             commands.Add(help);
+
+            Command global = new Command("global");
+            global.Description = "Get the global information for the bot";
+            global.WorksInDms = true;
+            global.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            global.ToExecute += async (context) =>
+            {
+                string stats = $"**Global Stats:** `{DateTime.Now}`\n" +
+                               $"SessionID: `{Core.Logger.SessionId}`\n" +
+                               //$"Build Number: `{GenericBot.BuildId}`\n\n" +
+                               $"Servers: `{Core.DiscordClient.Guilds.Count}`\n" +
+                               $"Users: `{Core.DiscordClient.Guilds.Sum(g => g.Users.Count)}`\n" +
+                               $"Shards: `{Core.DiscordClient.Shards.Count}`\n" +
+                               //$"CPU Usage: `{Math.Round(GenericBot.CpuCounter.NextValue())}`% \n" +
+                               $"Memory: `{Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB`\n" +
+                               $"Uptime: `{(DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss")}`\n\n";
+
+                foreach (var shard in Core.DiscordClient.Shards)
+                {
+                    stats += $"Shard `{shard.ShardId}`: `{shard.Guilds.Count}` Guilds (`{shard.Guilds.Sum(g => g.Users.Count)}` Users)\n";
+                }
+
+                await context.Message.ReplyAsync(stats);
+            };
+            commands.Add(global);
 
             return commands;
         }
