@@ -31,8 +31,8 @@ namespace GenericBot.CommandModules
                     context.Parameters.RemoveAt(0);
                     string warning = context.Parameters.Rejoin();
                     warning += $" (Added By `{context.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
-                    var finalUser = Core.MongoEngine.GetUserFromGuild(uid, context.Guild.Id).AddWarning(warning);
-                    Core.MongoEngine.SaveUserToGuild(finalUser, context.Guild.Id);
+                    var finalUser = Core.GetUserFromGuild(uid, context.Guild.Id).AddWarning(warning);
+                    Core.SaveUserToGuild(finalUser, context.Guild.Id);
                     var builder = new EmbedBuilder()
                         .WithTitle("Warning Added")
                         .WithDescription(warning)
@@ -95,8 +95,8 @@ namespace GenericBot.CommandModules
                     string warning = context.Parameters.Rejoin();
                     warning += $" (Issued By `{context.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)";
 
-                    var finalUser = Core.MongoEngine.GetUserFromGuild(user.Id, context.Guild.Id).AddWarning(warning);
-                    Core.MongoEngine.SaveUserToGuild(finalUser, context.Guild.Id);
+                    var finalUser = Core.GetUserFromGuild(user.Id, context.Guild.Id).AddWarning(warning);
+                    Core.SaveUserToGuild(finalUser, context.Guild.Id);
 
                     try
                     {
@@ -152,10 +152,10 @@ namespace GenericBot.CommandModules
                 ulong uid;
                 if (ulong.TryParse(context.Parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out uid))
                 {
-                    var user = Core.MongoEngine.GetUserFromGuild(uid, context.Guild.Id); 
+                    var user = Core.GetUserFromGuild(uid, context.Guild.Id); 
                     try
                     {
-                        Core.MongoEngine.SaveUserToGuild(user.RemoveWarning(), context.Guild.Id);
+                        Core.SaveUserToGuild(user.RemoveWarning(), context.Guild.Id);
                         await context.Message.ReplyAsync($"Done!");
                     }
                     catch (DivideByZeroException ex)

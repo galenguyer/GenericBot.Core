@@ -37,7 +37,7 @@ namespace GenericBot
         {
             foreach(var gid in Core.DiscordClient.Guilds.Select(g => g.Id))
             {
-                var bans = Core.MongoEngine.GetBansFromGuild(gid);
+                var bans = Core.GetBansFromGuild(gid);
                 foreach(var ban in bans.Where(b => b.BannedUntil < DateTime.UtcNow))
                 {
                     try
@@ -60,14 +60,14 @@ namespace GenericBot
                                     .WithIconUrl(user.GetAvatarUrl());
                             })
                             .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
-                                Core.MongoEngine.GetUserFromGuild(ban.Id, gid).Warnings.SumAnd()));
+                                Core.GetUserFromGuild(ban.Id, gid).Warnings.SumAnd()));
                         ((SocketTextChannel)Core.DiscordClient.GetChannel(Core.GetGuildConfig(gid).LoggingChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }
                     catch { }
                     try
                     {
-                        Core.MongoEngine.RemoveBanFromGuild(ban.Id, gid);
+                        Core.RemoveBanFromGuild(ban.Id, gid);
                     }
                     catch { }
                 }

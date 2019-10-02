@@ -16,7 +16,7 @@ namespace GenericBot
         public static List<Command> Commands { get; set; }
         public static Dictionary<ulong, List<CustomCommand>> CustomCommands;
         public static Logger Logger { get; private set; }
-        public static MongoEngine MongoEngine { get; private set; }
+        private static MongoEngine MongoEngine { get; set; }
 
         private static List<GuildConfig> LoadedGuildConfigs;
 
@@ -140,14 +140,11 @@ namespace GenericBot
             MongoEngine.DeleteCustomCommand(name, guildId);
         }
 
-        public static Quote AddQuote(string quote, ulong guildId)
-        {
-            return MongoEngine.AddQuote(quote, guildId);
-        }
-        public static bool RemoveQuote(int id, ulong guildId)
-        {
-            return MongoEngine.RemoveQuote(id, guildId);
-        }
+        public static Quote AddQuote(string quote, ulong guildId) => 
+            MongoEngine.AddQuote(quote, guildId);
+        public static bool RemoveQuote(int id, ulong guildId)  => 
+            MongoEngine.RemoveQuote(id, guildId);
+
         public static Quote GetQuote(string quote, ulong guildId)
         {
             var quotes = MongoEngine.GetAllQuotes(guildId);
@@ -167,18 +164,23 @@ namespace GenericBot
             }
         }
 
-        private static void InitializeCache()
-        {
-            foreach (var stringId in MongoEngine.GetGuildIdsFromDb())
-            {
-                if (ulong.TryParse(stringId, out ulong guildId))
-                {
-                    LoadedGuildConfigs.Add(GetGuildConfig(guildId));
-                    Logger.LogGenericMessage($"Loaded GuildConfig for {stringId}");
-                    CustomCommands.Add(guildId, GetCustomCommands(guildId));
-                    Logger.LogGenericMessage($"Loaded Custom Commands for {stringId}");
-                }
-            }
-        }
+        public static DatabaseUser SaveUserToGuild(DatabaseUser user, ulong guildId) =>
+            MongoEngine.SaveUserToGuild(user, guildId);
+        public static DatabaseUser GetUserFromGuild(ulong userId, ulong guildId) =>
+            MongoEngine.GetUserFromGuild(userId, guildId);
+        public static List<DatabaseUser> GetAllUsers(ulong guildId) =>
+            MongoEngine.GetAllUsers(guildId);
+
+        public static GenericBan SaveBanToGuild(GenericBan ban, ulong guildId) =>
+            MongoEngine.SaveBanToGuild(ban, guildId);
+        public static List<GenericBan> GetBansFromGuild(ulong guildId) =>
+            MongoEngine.GetBansFromGuild(guildId);
+        public static void RemoveBanFromGuild(ulong banId, ulong guildId) =>
+            MongoEngine.RemoveBanFromGuild(banId, guildId);
+
+        public static void AddToAuditLog(ParsedCommand command, ulong guildId) =>
+            MongoEngine.AddToAuditLog(command, guildId);
+        public static List<AuditCommand> GetAuditLog(ulong guildId) =>
+            MongoEngine.GetAuditLog(guildId);
     }
 }

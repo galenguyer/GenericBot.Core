@@ -18,12 +18,12 @@ namespace GenericBot
             SocketGuildUser afterUser = aUser as SocketGuildUser;
             if (beforeUser.Username != afterUser.Username || beforeUser.Nickname != afterUser.Nickname)
             {
-                var user = Core.MongoEngine.GetUserFromGuild(afterUser.Id, afterUser.Guild.Id);
+                var user = Core.GetUserFromGuild(afterUser.Id, afterUser.Guild.Id);
                 user.AddUsername(beforeUser.Username);
                 user.AddNickname(beforeUser);
                 user.AddUsername(afterUser.Username);
                 user.AddNickname(afterUser);
-                Core.MongoEngine.SaveUserToGuild(user, afterUser.Guild.Id);
+                Core.SaveUserToGuild(user, afterUser.Guild.Id);
             }
         }
 
@@ -31,10 +31,10 @@ namespace GenericBot
         {
             #region Database
 
-            var dbUser = Core.MongoEngine.GetUserFromGuild(user.Id, user.Guild.Id);
+            var dbUser = Core.GetUserFromGuild(user.Id, user.Guild.Id);
             bool alreadyJoined = dbUser.Usernames != null;
             dbUser.AddUsername(user.Username);
-            Core.MongoEngine.SaveUserToGuild(dbUser, user.Guild.Id);
+            Core.SaveUserToGuild(dbUser, user.Guild.Id);
             
             #endregion Databasae
 

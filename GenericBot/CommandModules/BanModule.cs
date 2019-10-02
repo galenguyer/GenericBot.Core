@@ -131,11 +131,11 @@ namespace GenericBot.CommandModules
 
                 var guildconfig = Core.GetGuildConfig(context.Guild.Id);
 
-                var bannedUser = Core.MongoEngine.GetUserFromGuild(user.Id, context.Guild.Id)
+                var bannedUser = Core.GetUserFromGuild(user.Id, context.Guild.Id)
                     .AddWarning(
                         $"Banned {timeMessage} for `{reason}` (By `{context.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
-                Core.MongoEngine.SaveUserToGuild(bannedUser, context.Guild.Id);
-                Core.MongoEngine.SaveBanToGuild(new GenericBan(user.Id, context.Guild.Id, reason, time), context.Guild.Id);
+                Core.SaveUserToGuild(bannedUser, context.Guild.Id);
+                Core.SaveBanToGuild(new GenericBan(user.Id, context.Guild.Id, reason, time), context.Guild.Id);
 
                 // Send the ban logs
                 await context.Channel.SendMessageAsync("", embed: builder.Build());
@@ -264,11 +264,11 @@ namespace GenericBot.CommandModules
 
                 var guildconfig = Core.GetGuildConfig(context.Guild.Id);
 
-                var bannedUser = Core.MongoEngine.GetUserFromGuild(user.Id, context.Guild.Id)
+                var bannedUser = Core.GetUserFromGuild(user.Id, context.Guild.Id)
                     .AddWarning(
                         $"Banned {timeMessage} for `{reason}` (By `{context.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
-                Core.MongoEngine.SaveUserToGuild(bannedUser, context.Guild.Id);
-                Core.MongoEngine.SaveBanToGuild(new GenericBan(user.Id, context.Guild.Id, reason, time), context.Guild.Id);
+                Core.SaveUserToGuild(bannedUser, context.Guild.Id);
+                Core.SaveBanToGuild(new GenericBan(user.Id, context.Guild.Id, reason, time), context.Guild.Id);
 
                 // Send the ban logs
                 await context.Channel.SendMessageAsync("", embed: builder.Build());
@@ -371,10 +371,10 @@ namespace GenericBot.CommandModules
 
                 var guildconfig = Core.GetGuildConfig(context.Guild.Id);
 
-                var kickedUser = Core.MongoEngine.GetUserFromGuild(user.Id, context.Guild.Id)
+                var kickedUser = Core.GetUserFromGuild(user.Id, context.Guild.Id)
                     .AddWarning(
                         $"Kicked {user} for `{reason}` (By `{context.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
-                Core.MongoEngine.SaveUserToGuild(kickedUser, context.Guild.Id);
+                Core.SaveUserToGuild(kickedUser, context.Guild.Id);
 
                 // Send the kick logs
                 await context.Channel.SendMessageAsync("", embed: builder.Build());
@@ -398,9 +398,9 @@ namespace GenericBot.CommandModules
                     return;
                 }
                 if (ulong.TryParse(context.Parameters[0], out ulong bannedUId) && 
-                Core.MongoEngine.GetBansFromGuild(context.Guild.Id).HasElement(b => b.Id == bannedUId, out GenericBan banToRemove))
+                Core.GetBansFromGuild(context.Guild.Id).HasElement(b => b.Id == bannedUId, out GenericBan banToRemove))
                 {
-                    Core.MongoEngine.RemoveBanFromGuild(bannedUId, context.Guild.Id);
+                    Core.RemoveBanFromGuild(bannedUId, context.Guild.Id);
                     try
                     {
                         var user = context.Guild.GetBansAsync().Result.First(b => b.User.Id == bannedUId).User;
@@ -422,7 +422,7 @@ namespace GenericBot.CommandModules
                                     .WithIconUrl(user.GetAvatarUrl());
                             })
                             .AddField(new EmbedFieldBuilder().WithName("All Warnings").WithValue(
-                                Core.MongoEngine.GetUserFromGuild(banToRemove.Id, context.Guild.Id).Warnings.SumAnd()));
+                                Core.GetUserFromGuild(banToRemove.Id, context.Guild.Id).Warnings.SumAnd()));
                         await ((SocketTextChannel)Core.DiscordClient.GetChannel(Core.GetGuildConfig(context.Guild.Id).LoggingChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }

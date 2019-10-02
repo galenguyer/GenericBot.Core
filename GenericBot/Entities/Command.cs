@@ -46,7 +46,7 @@ namespace GenericBot.Entities
                 return;
 
             if (this.RequiredPermission >= PermissionLevels.Moderator && this.RequiredPermission < PermissionLevels.GlobalAdmin && this.Name != "audit")
-                Core.MongoEngine.AddToAuditLog(command, command.Guild.Id);
+                Core.AddToAuditLog(command, command.Guild.Id);
 
             if (SendTyping) await command.Message.Channel.TriggerTypingAsync();
             if (Delete)

@@ -26,11 +26,11 @@ namespace GenericBot.CommandModules
                 if (context.Message.MentionedUsers.Any())
                 {
                     foundUsers.AddRange(context.Message.MentionedUsers.Select(m => 
-                    Core.MongoEngine.GetUserFromGuild(m.Id, context.Guild.Id)));
+                    Core.GetUserFromGuild(m.Id, context.Guild.Id)));
                 }
                 else if ((context.ParameterString.Length > 16 && context.ParameterString.Length < 19) && ulong.TryParse(context.ParameterString, out ulong id))
                 {
-                    foundUsers.Add(Core.MongoEngine.GetUserFromGuild(id, context.Guild.Id));
+                    foundUsers.Add(Core.GetUserFromGuild(id, context.Guild.Id));
                 }
                 else if (context.ParameterString.Length < 3)
                 {
@@ -40,7 +40,7 @@ namespace GenericBot.CommandModules
 
                 else
                 {
-                    foreach (var user in Core.MongoEngine.GetAllUsers(context.Guild.Id))
+                    foreach (var user in Core.GetAllUsers(context.Guild.Id))
                     {
                         try
                         {
@@ -135,10 +135,10 @@ namespace GenericBot.CommandModules
                 int i = 0;
                 foreach(var user in context.Guild.Users)
                 {
-                    var dbUser = Core.MongoEngine.GetUserFromGuild(user.Id, context.Guild.Id);
+                    var dbUser = Core.GetUserFromGuild(user.Id, context.Guild.Id);
                     dbUser.AddNickname(user);
                     dbUser.AddUsername(user.Username);
-                    Core.MongoEngine.SaveUserToGuild(dbUser, context.Guild.Id);
+                    Core.SaveUserToGuild(dbUser, context.Guild.Id);
                     i++;
                 }
                 await context.Message.ReplyAsync($"Updated `{i}` users.");

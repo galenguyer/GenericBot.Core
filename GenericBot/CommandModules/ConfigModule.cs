@@ -496,7 +496,7 @@ namespace GenericBot.CommandModules
             audit.RequiredPermission = Command.PermissionLevels.Admin;
             audit.ToExecute += async (context) =>
             {
-                var log = Core.MongoEngine.GetAuditLog(context.Guild.Id);
+                var log = Core.GetAuditLog(context.Guild.Id);
                 ulong uIdToSearch = 0;
                 if (!context.Parameters.IsEmpty())
                     if (ulong.TryParse(context.Parameters[0], out uIdToSearch))
