@@ -108,7 +108,11 @@ namespace GenericBot
             if (CustomCommands.ContainsKey(guildId))
                 return CustomCommands[guildId];
             else
-                return MongoEngine.GetCustomCommands(guildId);
+            {
+                var cmds = MongoEngine.GetCustomCommands(guildId);
+                CustomCommands.Add(guildId, cmds);
+                return cmds;
+            }
         }
         public static async Task<CustomCommand> SaveCustomCommand(CustomCommand command, ulong guildId)
         {
