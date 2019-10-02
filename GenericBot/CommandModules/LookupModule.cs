@@ -18,6 +18,7 @@ namespace GenericBot.CommandModules
             find.Description = "Get information about a user currently on the server from a ID or Mention";
             find.Usage = "whois @user";
             find.RequiredPermission = Command.PermissionLevels.Moderator;
+            find.Aliases = new List<string> { "whois" };
             find.ToExecute += async (context) =>
             {
                 List<DatabaseUser> foundUsers = new List<DatabaseUser>();
