@@ -127,6 +127,24 @@ namespace GenericBot.CommandModules
             };
             commands.Add(find);
 
+            Command updateDb = new Command("updatedb");
+            updateDb.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            updateDb.ToExecute += async (context) =>
+            {
+                await context.Guild.DownloadUsersAsync();
+                int i = 0;
+                foreach(var user in context.Guild.Users)
+                {
+                    var dbUser = Core.MongoEngine.GetUserFromGuild(user.Id, context.Guild.Id);
+                    dbUser.AddNickname(user);
+                    dbUser.AddUsername(user.Username);
+                    Core.MongoEngine.SaveUserToGuild(dbUser, context.Guild.Id);
+                    i++;
+                }
+                await context.Message.ReplyAsync($"Updated `{i}` users.");
+            };
+            commands.Add(updateDb);
+
             return commands;
         }
     }
