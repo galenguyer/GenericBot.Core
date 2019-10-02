@@ -20,7 +20,13 @@ namespace GenericBot.CommandModules
             ping.Description = "Make sure the bot is up";
             ping.ToExecute += async (context) =>
             {
-                await context.Message.ReplyAsync("Pong!");
+                var replMessage = context.Message.ReplyAsync("Pong!").Result;
+
+                DateTimeOffset cmdTime = DateTimeOffset.FromUnixTimeMilliseconds((long)(context.Message.Id >> 22) + 1420070400000);
+                DateTimeOffset replTime = DateTimeOffset.FromUnixTimeMilliseconds((long)(replMessage.Id >> 22) + 1420070400000);
+
+                TimeSpan diff = replTime - cmdTime;
+                await replMessage.ModifyAsync(c => c.Content = $"Pong! Took `{diff.TotalMilliseconds}`ms to reply");
             };
             commands.Add(ping);
 
