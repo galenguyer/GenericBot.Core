@@ -137,6 +137,36 @@ namespace GenericBot.CommandModules
             };
             commands.Add(issuewarning);
 
+            Command removeWarning = new Command("removeWarning");
+            removeWarning.RequiredPermission = Command.PermissionLevels.Moderator;
+            removeWarning.Usage = "removewarning <user>";
+            removeWarning.Description = "Remove the last warning from a user";
+            removeWarning.ToExecute += async (context) =>
+            {
+                if (context.Parameters.IsEmpty())
+                {
+                    await context.Message.ReplyAsync($"You need to add some arguments. A user, perhaps?");
+                    return;
+                }
+
+                ulong uid;
+                if (ulong.TryParse(context.Parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out uid))
+                {
+                    var user = Core.MongoEngine.GetUserFromGuild(uid, context.Guild.Id); 
+                    try
+                    {
+                        Core.MongoEngine.SaveUserToGuild(user.RemoveWarning(), context.Guild.Id);
+                        await context.Message.ReplyAsync($"Done!");
+                    }
+                    catch (DivideByZeroException ex)
+                    {
+                        await context.Message.ReplyAsync("User had no warnings");
+                    }
+                }
+                else await context.Message.ReplyAsync($"No user found");
+            };
+            commands.Add(removeWarning);
+
             return commands;
         }
     }
