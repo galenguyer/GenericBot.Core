@@ -95,7 +95,7 @@ namespace GenericBot
                 return GetGuildConfig(GuildId); // Now that it's cached
             }
         }
-        public static async Task<GuildConfig> SaveGuildConfig(GuildConfig guildConfig)
+        public static GuildConfig SaveGuildConfig(GuildConfig guildConfig)
         {
             if (LoadedGuildConfigs.Any(c => c.Id == guildConfig.Id))
                 LoadedGuildConfigs.RemoveAll(c => c.Id == guildConfig.Id);
@@ -103,7 +103,7 @@ namespace GenericBot
 
             return MongoEngine.SaveGuildConfig(guildConfig);
         }
-        public static async Task<List<CustomCommand>> GetCustomCommands(ulong guildId)
+        public static List<CustomCommand> GetCustomCommands(ulong guildId)
         {
             if (CustomCommands.ContainsKey(guildId))
                 return CustomCommands[guildId];
@@ -114,7 +114,7 @@ namespace GenericBot
                 return cmds;
             }
         }
-        public static async Task<CustomCommand> SaveCustomCommand(CustomCommand command, ulong guildId)
+        public static CustomCommand SaveCustomCommand(CustomCommand command, ulong guildId)
         {
             if (CustomCommands.ContainsKey(guildId))
             {
@@ -131,6 +131,16 @@ namespace GenericBot
             MongoEngine.SaveCustomCommand(command, guildId);
             return command;
         }
+
+        public static void DeleteCustomCommand(string name, ulong guildId)
+        {
+            if (CustomCommands.ContainsKey(guildId))
+            {
+                CustomCommands[guildId].RemoveAll(c => c.Name == name);
+            }
+            MongoEngine.DeleteCustomCommand(name, guildId);
+        }
+
         public static Quote AddQuote(string quote, ulong guildId)
         {
             return MongoEngine.AddQuote(quote, guildId);
@@ -166,7 +176,7 @@ namespace GenericBot
                 {
                     LoadedGuildConfigs.Add(GetGuildConfig(guildId));
                     Logger.LogGenericMessage($"Loaded GuildConfig for {stringId}");
-                    CustomCommands.Add(guildId, GetCustomCommands(guildId).Result);
+                    CustomCommands.Add(guildId, GetCustomCommands(guildId));
                     Logger.LogGenericMessage($"Loaded Custom Commands for {stringId}");
                 }
             }

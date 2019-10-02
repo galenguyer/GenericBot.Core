@@ -75,6 +75,16 @@ namespace GenericBot.Database
             var list = _collection.Find(new BsonDocument()).ToList();
             return list;
         }
+        public void DeleteCustomCommand(string name, ulong guildId)
+        {
+            Core.Logger.LogGenericMessage($"[Mongo] DELETE CustomCommand {name} FROM {guildId}");
+
+            var _configDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _configDb.GetCollection<CustomCommand>("customCommands");
+
+            if(_collection.Find(c => c.Name == name).Any())
+                _collection.FindOneAndDelete(c => c.Name == name);
+        }
         public DatabaseUser GetUserFromGuild(ulong userId, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[Mongo] GOT User {userId} FROM {guildId}");

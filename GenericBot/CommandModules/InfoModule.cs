@@ -116,7 +116,7 @@ namespace GenericBot.CommandModules
                     if (!(context.Channel is SocketDMChannel))
                     {
                         commandList += "\n\nCustom Commands:\n";
-                        commandList += Core.GetCustomCommands(context.Guild.Id).Result
+                        commandList += Core.GetCustomCommands(context.Guild.Id)
                             .OrderBy(c => c.Name)
                             .Select(c => $"`{c.Name}`")
                             .ToList().SumAnd();
@@ -131,7 +131,7 @@ namespace GenericBot.CommandModules
                         .Count(c => c.Name.ToLower().Contains(param) || c.Aliases.Any(a => a.ToLower().Contains(param)));
                     if (!(context.Channel is SocketDMChannel))
                     {
-                        cmdCount += Core.GetCustomCommands(context.Guild.Id).Result
+                        cmdCount += Core.GetCustomCommands(context.Guild.Id)
                             .Count(c => c.Name.ToLower().Contains(param));
                     }
 
@@ -152,7 +152,7 @@ namespace GenericBot.CommandModules
                         if (!(context.Channel is SocketDMChannel))
                         {
                             commandList += "\n\nCustom Commands:\n";
-                            Core.GetCustomCommands(context.Guild.Id).Result
+                            Core.GetCustomCommands(context.Guild.Id)
                                 .Where(c => c.Name.ToLower().Contains(param))
                                 .OrderBy(c => c.Name)
                                 .Select(c => $"`{c.Name}`")
@@ -178,7 +178,7 @@ namespace GenericBot.CommandModules
 
                         if (!(context.Channel is SocketDMChannel))
                         {
-                            var ccmds = Core.GetCustomCommands(context.Guild.Id).Result
+                            var ccmds = Core.GetCustomCommands(context.Guild.Id)
                                 .Where(c => c.Name.ToLower().Contains(param))
                                 .OrderBy(c => c.Name);
                             foreach (var cmd in ccmds)

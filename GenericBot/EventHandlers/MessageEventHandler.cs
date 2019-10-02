@@ -63,7 +63,7 @@ namespace GenericBot
                     ulong guildId = parameterMessage.GetGuild().Id;
                     command = new Command("t").ParseMessage(parameterMessage);
 
-                    if (Core.GetCustomCommands(guildId).Result.HasElement(c => c.Name == command.Name,
+                    if (Core.GetCustomCommands(guildId).HasElement(c => c.Name == command.Name,
                         out CustomCommand customCommand))
                     {
                         if (customCommand.Delete)
