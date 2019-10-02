@@ -85,7 +85,13 @@ namespace GenericBot.Database
             else _collection.InsertOne(user);
             return user;
         }
+        public List<DatabaseUser> GetAllUsers(ulong guildId)
+        {
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<DatabaseUser>("users");
 
+            return _collection.Find(new BsonDocument()).ToList();
+        }
         public GenericBan SaveBanToGuild(GenericBan ban, ulong guildId)
         {
             var _userDb = GetDatabaseFromGuildId(guildId);

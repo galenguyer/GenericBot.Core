@@ -60,6 +60,7 @@ namespace GenericBot
             Commands.AddRange(new BanModule().Load());
             Commands.AddRange(new QuoteModule().Load());
             Commands.AddRange(new WarningModule().Load());
+            Commands.AddRange(new LookupModule().Load());
             Commands.AddRange(new QuickCommands().GetQuickCommands());
 
             if (CommandsToExclude == null)
