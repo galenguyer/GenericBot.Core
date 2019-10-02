@@ -36,12 +36,14 @@ namespace GenericBot.CommandModules
                 {
                     try
                     {
+                        gc.MutedUsers.Add(user);
                         await (context.Guild.GetUser(user)).AddRolesAsync(new List<IRole> { mutedRole });
                         mutedUsers.Add(context.Guild.GetUser(user));
                     }
                     catch
                     {
                     }
+                    Core.SaveGuildConfig(gc);
                 }
                 string result;
                 if (mutedUsers.Count > 0)
@@ -80,6 +82,7 @@ namespace GenericBot.CommandModules
                 {
                     try
                     {
+                        gc.MutedUsers.Remove(user);
                         await (context.Guild.GetUser(user)).RemoveRoleAsync(mutedRole);
                         mutedUsers.Add(context.Guild.GetUser(user));
                     }
@@ -87,7 +90,7 @@ namespace GenericBot.CommandModules
                     {
                     }
                 }
-                gc.Save();
+                Core.SaveGuildConfig(gc);
 
                 string res = "Succesfully unmuted ";
                 for (int i = 0; i < mutedUsers.Count; i++)

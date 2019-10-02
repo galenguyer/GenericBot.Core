@@ -29,6 +29,7 @@ namespace GenericBot.Entities
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         public Dictionary<string, List<ulong>> UserRoles { get; set; }
         public ulong MutedRoleId { get; set; }
+        public List<ulong> MutedUsers { get; set; }
         public List<ulong> AutoRoleIds { get; set; }
         public ulong LoggingChannelId { get; set; }
         public List<ulong> MessageLoggingIgnoreChannels { get; set; }
@@ -42,15 +43,11 @@ namespace GenericBot.Entities
             VerifiedRole = 0;
             AntispamLevel = AntiSpamLevel.None;
             MessageLoggingIgnoreChannels = new List<ulong>();
+            MutedUsers = new List<ulong>();
             AdminRoleIds = new List<ulong>();
             ModRoleIds = new List<ulong>();
             UserRoles = new Dictionary<string, List<ulong>>();
             AutoRoleIds = new List<ulong>();
-        }
-
-        public GuildConfig Save()
-        {
-            return this;
         }
     }
 

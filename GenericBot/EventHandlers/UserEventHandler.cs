@@ -59,6 +59,17 @@ namespace GenericBot
                     await Core.Logger.LogErrorMessage($"Could not send verification DM to {user} ({user.Id}) on {user.Guild} ({user.Guild.Id})");
                 }
             }
+            if (guildConfig.MutedUsers.Contains(user.Id))
+            {
+                try
+                {
+                    await user.AddRoleAsync(user.Guild.GetRole(guildConfig.MutedRoleId));
+                }
+                catch
+                {
+
+                }
+            }
             if(guildConfig.AutoRoleIds != null && guildConfig.AutoRoleIds.Any())
             {
                 foreach(var role in guildConfig.AutoRoleIds)
