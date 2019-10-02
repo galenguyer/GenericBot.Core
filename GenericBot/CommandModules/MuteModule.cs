@@ -43,22 +43,68 @@ namespace GenericBot.CommandModules
                     {
                     }
                 }
-
-                string res;
-
+                string result;
                 if (mutedUsers.Count > 0)
                 {
-                    res = "Succesfully muted " + mutedUsers.Select(u => u.Mention).ToList().SumAnd();
+                    result = "Succesfully muted " + mutedUsers.Select(u => u.Mention).ToList().SumAnd();
                 }
                 else
                 {
-                    res = "Could not find that user";
+                    result = "Could not find that user";
                 }
 
-                await context.Message.ReplyAsync(res);
+                await context.Message.ReplyAsync(result);
             };
             commands.Add(mute);
 
+            Command unmute = new Command("unmute");
+            unmute.RequiredPermission = Command.PermissionLevels.Moderator;
+            unmute.Usage = "unmute <user>";
+            unmute.Description = "Unmute a user";
+            unmute.ToExecute += async (context) =>
+            {
+                if (context.Parameters.IsEmpty())
+                {
+                    await context.Message.ReplyAsync($"You need to specify a user!");
+                    return;
+                }
+                var gc = Core.GetGuildConfig(context.Guild.Id);
+                if (!context.Guild.Roles.Any(r => r.Id == gc.MutedRoleId))
+                {
+                    await context.Message.ReplyAsync("The Muted Role Id is configured incorrectly. Please talk to your server admin");
+                    return;
+                }
+                var mutedRole = context.Guild.Roles.First(r => r.Id == gc.MutedRoleId);
+                List<IUser> mutedUsers = new List<IUser>();
+                foreach (var user in context.Message.GetMentionedUsers().Select(u => u.Id))
+                {
+                    try
+                    {
+                        await (context.Guild.GetUser(user)).RemoveRoleAsync(mutedRole);
+                        mutedUsers.Add(context.Guild.GetUser(user));
+                    }
+                    catch
+                    {
+                    }
+                }
+                gc.Save();
+
+                string res = "Succesfully unmuted ";
+                for (int i = 0; i < mutedUsers.Count; i++)
+                {
+                    if (i == mutedUsers.Count - 1 && mutedUsers.Count > 1)
+                    {
+                        res += $"and {mutedUsers.ElementAt(i).Mention}";
+                    }
+                    else
+                    {
+                        res += $"{mutedUsers.ElementAt(i).Mention}, ";
+                    }
+                }
+
+                await context.Message.ReplyAsync(res.TrimEnd(',', ' '));
+            };
+            commands.Add(unmute);
 
             return commands;
         }
