@@ -147,7 +147,7 @@ namespace GenericBot.CommandModules
             };
             commands.Add(ban);
 
-            Command purgeban = new Command("ban");
+            Command purgeban = new Command("purgeban");
             purgeban.Description = "Ban a user from the server, whether or not they're on it, and delete the last 24 hours of their messages";
             purgeban.Delete = false;
             purgeban.RequiredPermission = Command.PermissionLevels.Moderator;
