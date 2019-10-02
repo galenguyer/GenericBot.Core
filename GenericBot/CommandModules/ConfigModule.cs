@@ -312,7 +312,7 @@ namespace GenericBot.CommandModules
                         if (ulong.TryParse(context.Parameters[0], out roleId) && (context.Guild.Roles.Any(r => r.Id == roleId) || roleId == 0))
                         {
                             _guildConfig.MutedRoleId = roleId;
-                            _guildConfig.Save();
+                            Core.SaveGuildConfig(_guildConfig);
                             await context.Message.ReplyAsync($"MutedRoleId is now `{roleId}`");
                         }
                         else
@@ -487,7 +487,7 @@ namespace GenericBot.CommandModules
 
                 else await context.Message.ReplyAsync($"Unknown property `{context.Parameters[0]}`.");
 
-                _guildConfig.Save();
+                Core.SaveGuildConfig(_guildConfig);
             };
             commands.Add(config);
 

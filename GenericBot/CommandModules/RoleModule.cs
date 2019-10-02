@@ -281,7 +281,7 @@ namespace GenericBot.CommandModules
                     gc.UserRoles[""].Add(role.Id);
                 else
                     gc.UserRoles.Add("", new List<ulong> { role.Id });
-                gc.Save();
+                Core.SaveGuildConfig(gc);
                 await context.Message.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}` and added it to the user roles");
             };
             commands.Add(createUserRole);
