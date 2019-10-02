@@ -37,7 +37,7 @@ namespace GenericBot
         {
             foreach(var gid in Core.DiscordClient.Guilds.Select(g => g.Id))
             {
-                var bans = Core.GetBansFromGuild(gid);
+                var bans = Core.GetBansFromGuild(gid, false);
                 foreach(var ban in bans.Where(b => b.BannedUntil < DateTime.UtcNow))
                 {
                     try

@@ -173,8 +173,8 @@ namespace GenericBot
 
         public static GenericBan SaveBanToGuild(GenericBan ban, ulong guildId) =>
             MongoEngine.SaveBanToGuild(ban, guildId);
-        public static List<GenericBan> GetBansFromGuild(ulong guildId) =>
-            MongoEngine.GetBansFromGuild(guildId);
+        public static List<GenericBan> GetBansFromGuild(ulong guildId, bool log = true) =>
+            MongoEngine.GetBansFromGuild(guildId, log);
         public static void RemoveBanFromGuild(ulong banId, ulong guildId) =>
             MongoEngine.RemoveBanFromGuild(banId, guildId);
 

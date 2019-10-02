@@ -173,9 +173,10 @@ namespace GenericBot.Database
         /// </summary>
         /// <param name="guildId"></param>
         /// <returns></returns>
-        public List<GenericBan> GetBansFromGuild(ulong guildId)
+        public List<GenericBan> GetBansFromGuild(ulong guildId, bool log = true)
         {
-            Core.Logger.LogGenericMessage($"[Mongo] GOT AllBans FROM {guildId}");
+            if (log)
+                Core.Logger.LogGenericMessage($"[Mongo] GOT AllBans FROM {guildId}");
 
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<GenericBan>("bans");
