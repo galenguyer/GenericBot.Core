@@ -21,15 +21,16 @@ namespace GenericBot.Database
         /// </summary>
         /// <param name="GuildId"></param>
         /// <returns></returns>
-        public GuildConfig GetGuildConfig(ulong GuildId)
+        public GuildConfig GetGuildConfig(ulong guildId)
         {
-            var _configDb = GetDatabaseFromGuildId(GuildId);
+            Core.Logger.LogGenericMessage($"[Mongo] GOT GuildConfig FROM {guildId}");
+            var _configDb = GetDatabaseFromGuildId(guildId);
             var _collection = _configDb.GetCollection<GuildConfig>("config");
 
-            if (_collection.Find(c => c.Id == GuildId).Any())
-                return _collection.Find(c => c.Id == GuildId).First();
+            if (_collection.Find(c => c.Id == guildId).Any())
+                return _collection.Find(c => c.Id == guildId).First();
             else
-                return new GuildConfig(GuildId);
+                return new GuildConfig(guildId);
         }
         /// <summary>
         /// Update the config in the database if it exists, add it if not
@@ -38,6 +39,8 @@ namespace GenericBot.Database
         /// <returns></returns>
         public GuildConfig SaveGuildConfig(GuildConfig guildConfig)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] SAVED GuildConfig TO {guildConfig.Id}");
+
             var _configDb = GetDatabaseFromGuildId(guildConfig.Id);
             var _collection = _configDb.GetCollection<GuildConfig>("config");
             if (_collection.Find(c => c.Id == guildConfig.Id).Any())
@@ -54,6 +57,8 @@ namespace GenericBot.Database
         /// <returns></returns>
         public CustomCommand SaveCustomCommand(CustomCommand command, ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] SAVED CustomComand {command.Name} TO {guildId}");
+
             var _configDb = GetDatabaseFromGuildId(guildId);
             var _collection = _configDb.GetCollection<CustomCommand>("customCommands");
             if (_collection.Find(c => c.Name == command.Name).Any())
@@ -63,6 +68,8 @@ namespace GenericBot.Database
         }
         public List<CustomCommand> GetCustomCommands(ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] GOT CustomCommands FROM {guildId}");
+
             var _configDb = GetDatabaseFromGuildId(guildId);
             var _collection = _configDb.GetCollection<CustomCommand>("customCommands");
             var list = _collection.Find(new BsonDocument()).ToList();
@@ -70,6 +77,8 @@ namespace GenericBot.Database
         }
         public DatabaseUser GetUserFromGuild(ulong userId, ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] GOT User {userId} FROM {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<DatabaseUser>("users");
             if (_collection.Find(u => u.Id == userId).Any())
@@ -78,6 +87,8 @@ namespace GenericBot.Database
         }
         public DatabaseUser SaveUserToGuild(DatabaseUser user, ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] SAVED User {user.Id} TO {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<DatabaseUser>("users");
             if (_collection.Find(u => u.Id == user.Id).Any())
@@ -87,6 +98,8 @@ namespace GenericBot.Database
         }
         public List<DatabaseUser> GetAllUsers(ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] GOT AllUsers FROM {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<DatabaseUser>("users");
 
@@ -94,6 +107,8 @@ namespace GenericBot.Database
         }
         public GenericBan SaveBanToGuild(GenericBan ban, ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] SAVED Ban {ban.Id} TO {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<GenericBan>("bans");
             if (_collection.Find(u => u.Id == ban.Id).Any())
@@ -104,6 +119,8 @@ namespace GenericBot.Database
         
         public List<GenericBan> GetBansFromGuild(ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] GOT AllBans FROM {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<GenericBan>("bans");
             if (_collection.Find(new BsonDocument()).Any())
@@ -113,6 +130,8 @@ namespace GenericBot.Database
 
         public void RemoveBanFromGuild(ulong banId, ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] DELETE Ban {banId} FROM {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<GenericBan>("bans");
             if (_collection.Find(u => u.Id == banId).Any())
@@ -121,6 +140,8 @@ namespace GenericBot.Database
 
         public Quote AddQuote(string quote, ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] SAVED Quote TO {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<Quote>("quotes");
 
@@ -137,6 +158,8 @@ namespace GenericBot.Database
 
         public bool RemoveQuote(int id, ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] DELETE Quote {id} FROM {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<Quote>("quotes");
 
@@ -153,6 +176,8 @@ namespace GenericBot.Database
         
         public List<Quote> GetAllQuotes(ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] GOT AllQuotes FROM {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<Quote>("quotes");
 
@@ -161,6 +186,8 @@ namespace GenericBot.Database
 
         public void AddToAuditLog(ParsedCommand command, ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] SAVED AuditLog TO {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<AuditCommand>("auditlog");
 
@@ -168,6 +195,8 @@ namespace GenericBot.Database
         }
         public List<AuditCommand> GetAuditLog(ulong guildId)
         {
+            Core.Logger.LogGenericMessage($"[Mongo] GOT AuditLog FROM {guildId}");
+
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<AuditCommand>("auditlog");
 
