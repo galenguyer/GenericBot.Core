@@ -30,7 +30,6 @@ namespace GenericBot
             LoadCommands(GlobalConfig.CommandsToExclude);
             MongoEngine = new MongoEngine();
             LoadedGuildConfigs = new List<GuildConfig>();
-            //InitializeCache();
 
             // Configure Client
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
