@@ -1,4 +1,5 @@
-﻿using GenericBot.Entities;
+﻿using Discord;
+using GenericBot.Entities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -507,10 +508,12 @@ namespace GenericBot.CommandModules
                 while(message.Length < 2000 && i < log.Count)
                 {
                     var cmd = log.ElementAt(i++);
-                    message += $"`{cmd.Message}` - <@{cmd.UserId}>\n";
+                    message = $"{cmd.Message} - <@{cmd.UserId}>\n" + message;
                 }
-
-                await context.Message.ReplyAsync(message);
+                var builder = new EmbedBuilder()
+                    .WithDescription(message)
+                    .WithColor(new Color(0xFFFF00));
+                await context.Channel.SendMessageAsync("", embed: builder.Build());
             };
             commands.Add(audit);
 
