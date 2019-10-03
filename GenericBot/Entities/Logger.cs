@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Discord;
@@ -47,6 +48,19 @@ namespace GenericBot
             string message = $"[Error] {DateTime.UtcNow.ToString(@"yyyy-MM-dd_HH-mm")}: {msg}";
             Console.WriteLine(message);
             File.AppendAllText($"files/sessions/{SessionId.Substring(0, 8)}.log", message + "\n");
+
+            if (!string.IsNullOrEmpty(Core.GlobalConfig.CriticalLoggingWebhookUrl))
+            {
+                var webhook = new Discord.Webhook.DiscordWebhookClient(Core.GlobalConfig.CriticalLoggingWebhookUrl);
+                var builder = new EmbedBuilder()
+                    .WithColor(255, 0, 0)
+                    .WithCurrentTimestamp()
+                    .AddField(new EmbedFieldBuilder()
+                        .WithName("Error Message")
+                        .WithValue(msg));
+                webhook.SendMessageAsync("", embeds: new List<Embed> { builder.Build() });
+            }
+
             return Task.FromResult(1);
         }
     }

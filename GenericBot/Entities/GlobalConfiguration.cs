@@ -44,6 +44,10 @@ namespace GenericBot.Entities
         public List<string> CommandsToExclude { get; set; }
 
         /// <summary>
+        /// Webhook URL to send critical messages to
+        /// </summary>
+        public string CriticalLoggingWebhookUrl { get; set; }
+        /// <summary>
         /// Load the config file if it exists, otherwise create a blank one and save it
         /// for the user to edit
         /// </summary>
