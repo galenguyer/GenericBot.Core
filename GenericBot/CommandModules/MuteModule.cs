@@ -32,6 +32,8 @@ namespace GenericBot.CommandModules
                 }
                 var mutedRole = context.Guild.Roles.First(r => r.Id == gc.MutedRoleId);
                 List<IUser> mutedUsers = new List<IUser>();
+                if (gc.MutedUsers == null)
+                    gc.MutedUsers = new List<ulong>();
                 foreach (var user in context.Message.GetMentionedUsers().Select(u => u.Id))
                 {
                     try
