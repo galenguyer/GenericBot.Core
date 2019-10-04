@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericBot", "GenericBot\GenericBot.csproj", "{A206F030-5490-4BF3-B4B9-6DD7D9166533}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericBot", "GenericBot\GenericBot.csproj", "{F390102F-315C-4AB0-8635-267BAFFDAEF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A206F030-5490-4BF3-B4B9-6DD7D9166533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A206F030-5490-4BF3-B4B9-6DD7D9166533}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A206F030-5490-4BF3-B4B9-6DD7D9166533}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A206F030-5490-4BF3-B4B9-6DD7D9166533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F390102F-315C-4AB0-8635-267BAFFDAEF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F390102F-315C-4AB0-8635-267BAFFDAEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F390102F-315C-4AB0-8635-267BAFFDAEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F390102F-315C-4AB0-8635-267BAFFDAEF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {EF95EED0-21BB-40AD-BEE1-89655414B26B}
+		SolutionGuid = {BA667528-498A-43FB-AD4B-63D9F46A4D7B}
 	EndGlobalSection
 EndGlobal
