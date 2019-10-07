@@ -82,8 +82,7 @@ namespace GenericBot
                     await parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
                                                       "\n```");
                 }
-                await Core.Logger.LogErrorMessage(ex.Message);
-                Console.WriteLine($"{ex.StackTrace}");
+                await Core.Logger.LogErrorMessage(ex);
             }
         }
 

@@ -42,10 +42,10 @@ namespace GenericBot
             File.AppendAllText($"files/sessions/{SessionId.Substring(0, 8)}.log", message + "\n");
             return Task.FromResult(1);
         }
-        public Task LogErrorMessage(string msg)
+        public Task LogErrorMessage(Exception exception)
         {
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            string message = $"[Error] {DateTime.UtcNow.ToString(@"yyyy-MM-dd_HH-mm")}: {msg}";
+            string message = $"[Error] {DateTime.UtcNow.ToString(@"yyyy-MM-dd_HH-mm")}: {exception}";
             Console.WriteLine(message);
             File.AppendAllText($"files/sessions/{SessionId.Substring(0, 8)}.log", message + "\n");
 
@@ -57,7 +57,10 @@ namespace GenericBot
                     .WithCurrentTimestamp()
                     .AddField(new EmbedFieldBuilder()
                         .WithName("Error Message")
-                        .WithValue(msg));
+                        .WithValue(exception.Message))
+                    .AddField(new EmbedFieldBuilder()
+                        .WithName("Stack Trace")
+                        .WithValue(exception.StackTrace));
                 webhook.SendMessageAsync("", embeds: new List<Embed> { builder.Build() });
             }
 

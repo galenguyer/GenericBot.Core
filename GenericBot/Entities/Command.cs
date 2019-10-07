@@ -55,10 +55,9 @@ namespace GenericBot.Entities
                 {
                     await command.Message.DeleteAsync();
                 }
-                catch (Discord.Net.HttpException)
+                catch (Discord.Net.HttpException ex)
                 { 
-                    await Core.Logger.LogErrorMessage(
-                        $"Could Not Delete Message {command.Message.Id} CHANNELID {command.Message.Channel.Id}");
+                    await Core.Logger.LogErrorMessage(ex);
                 }
             }
 
@@ -73,7 +72,7 @@ namespace GenericBot.Entities
                     await (command.Message as SocketMessage).ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1600) +
                                                       "\n```");
                 }
-                await Core.Logger.LogErrorMessage(ex.Message+"\n"+ex.StackTrace);
+                await Core.Logger.LogErrorMessage(ex);
             }
         }
 

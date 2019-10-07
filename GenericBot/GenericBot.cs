@@ -83,7 +83,7 @@ namespace GenericBot
             }
             catch (Exception e)
             {
-                await Core.Logger.LogErrorMessage($"{e.Message}\n{e.StackTrace}");
+                await Core.Logger.LogErrorMessage(e);
                 return;
             }
 
