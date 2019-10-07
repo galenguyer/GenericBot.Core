@@ -15,6 +15,14 @@ namespace GenericBot.CommandModules
         {
             List<Command> commands = new List<Command>();
 
+            Command thrh = new Command("throw");
+            thrh.RequiredPermission = Command.PermissionLevels.BotOwner;
+            thrh.ToExecute += async (context) =>
+            {
+                throw new Exception("This is a test exception");
+            };
+            commands.Add(thrh);
+
             Command ping = new Command("ping");
             ping.WorksInDms = true;
             ping.Description = "Make sure the bot is up";
