@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Discord;
+using GenericBot.Entities;
 
 namespace GenericBot
 {
@@ -42,7 +43,7 @@ namespace GenericBot
             File.AppendAllText($"files/sessions/{SessionId.Substring(0, 8)}.log", message + "\n");
             return Task.FromResult(1);
         }
-        public Task LogErrorMessage(Exception exception)
+        public Task LogErrorMessage(Exception exception, ParsedCommand context)
         {
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             string message = $"[Error] {DateTime.UtcNow.ToString(@"yyyy-MM-dd_HH-mm")}: {exception}";
@@ -61,6 +62,19 @@ namespace GenericBot
                     .AddField(new EmbedFieldBuilder()
                         .WithName("Stack Trace")
                         .WithValue(exception.StackTrace));
+                if(context != null)
+                {
+                    builder.AddField(new EmbedFieldBuilder()
+                        .WithName($"Location")
+                        .WithValue($"{context.Guild.Name} ({context.Guild.Id}) - #{context.Channel.Name} ({context.Channel.Id})"));
+                    builder.AddField(new EmbedFieldBuilder()
+                        .WithName($"Author")
+                        .WithValue($"{context.Author.Username}#{context.Author.Discriminator} ({context.Author.Id})"));
+                    builder.AddField(new EmbedFieldBuilder()
+                        .WithName($"Message")
+                        .WithValue(context.Message.Content));
+
+                }
                 webhook.SendMessageAsync("", embeds: new List<Embed> { builder.Build() });
             }
 

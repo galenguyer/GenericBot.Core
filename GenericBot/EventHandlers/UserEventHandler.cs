@@ -56,7 +56,7 @@ namespace GenericBot
                 }
                 catch
                 {
-                    await Core.Logger.LogErrorMessage(new Exception($"Could not send verification DM to {user} ({user.Id}) on {user.Guild} ({user.Guild.Id})"));
+                    await Core.Logger.LogErrorMessage(new Exception($"Could not send verification DM to {user} ({user.Id}) on {user.Guild} ({user.Guild.Id})"), null);
                 }
             }
             if (guildConfig.MutedUsers.Contains(user.Id))

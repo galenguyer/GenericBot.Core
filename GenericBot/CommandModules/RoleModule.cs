@@ -108,7 +108,7 @@ namespace GenericBot.CommandModules
                         }
                         catch (Exception e)
                         {
-                            await Core.Logger.LogErrorMessage(e);
+                            await Core.Logger.LogErrorMessage(e, context);
                             messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"I may not have permissions to do that").WithColor(new Color(0xFFFF00)).Build()).Result);
                         }
                     }
@@ -177,7 +177,7 @@ namespace GenericBot.CommandModules
                         }
                         catch (Exception e)
                         {
-                            await Core.Logger.LogErrorMessage(e);
+                            await Core.Logger.LogErrorMessage(e, context);
                             messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"I may not have permissions to do that").WithColor(new Color(0xFFFF00)).Build()).Result);
                         }
                     }

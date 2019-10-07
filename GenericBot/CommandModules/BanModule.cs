@@ -428,7 +428,7 @@ namespace GenericBot.CommandModules
                     }
                     catch (Discord.Net.HttpException httpException)
                     {
-                        await Core.Logger.LogErrorMessage(httpException);
+                        await Core.Logger.LogErrorMessage(httpException, context);
                         await context.Message.ReplyAsync("Could not unban that user. Either I don't have the permissions or they weren't banned");
                     }
                 }

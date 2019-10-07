@@ -83,7 +83,7 @@ namespace GenericBot
             }
             catch (Exception e)
             {
-                await Core.Logger.LogErrorMessage(e);
+                await Core.Logger.LogErrorMessage(e, null);
                 return;
             }
 

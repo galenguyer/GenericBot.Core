@@ -57,7 +57,7 @@ namespace GenericBot.Entities
                 }
                 catch (Discord.Net.HttpException ex)
                 { 
-                    await Core.Logger.LogErrorMessage(ex);
+                    await Core.Logger.LogErrorMessage(ex, command);
                 }
             }
 
@@ -72,7 +72,7 @@ namespace GenericBot.Entities
                     await (command.Message as SocketMessage).ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1600) +
                                                       "\n```");
                 }
-                await Core.Logger.LogErrorMessage(ex);
+                await Core.Logger.LogErrorMessage(ex, command);
             }
         }
 
