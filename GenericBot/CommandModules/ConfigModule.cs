@@ -505,9 +505,11 @@ namespace GenericBot.CommandModules
 
                 string message = string.Empty;
                 int i = 0;
-                while(message.Length < 2000 && i < log.Count)
+                while(i < log.Count)
                 {
                     var cmd = log.ElementAt(i++);
+                    if (message.Length + $"{cmd.Message} - <@{cmd.UserId}>\n".Length > 2000)
+                        break;
                     message = $"{cmd.Message} - <@{cmd.UserId}>\n" + message;
                 }
                 var builder = new EmbedBuilder()
