@@ -61,7 +61,7 @@ namespace GenericBot
                         .WithValue(exception.Message))
                     .AddField(new EmbedFieldBuilder()
                         .WithName("Stack Trace")
-                        .WithValue(exception.StackTrace));
+                        .WithValue(exception.StackTrace.Length > 1000 ? exception.StackTrace.Substring(exception.StackTrace.Length - 1000, 1000) : exception.StackTrace));
                 if(context != null)
                 {
                     builder.AddField(new EmbedFieldBuilder()
