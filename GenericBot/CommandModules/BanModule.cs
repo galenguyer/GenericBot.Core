@@ -18,6 +18,7 @@ namespace GenericBot.CommandModules
             ban.Description = "Ban a user from the server, whether or not they're on it";
             ban.Delete = false;
             ban.RequiredPermission = Command.PermissionLevels.Moderator;
+            ban.Aliases = new List<string> { "yeet" };
             ban.Usage = $"{ban.Name} <user> <time> <reason>";
             ban.ToExecute += async (context) =>
             {
