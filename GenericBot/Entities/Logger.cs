@@ -58,11 +58,13 @@ namespace GenericBot
                     .WithCurrentTimestamp()
                     .AddField(new EmbedFieldBuilder()
                         .WithName("Error Message")
-                        .WithValue(exception.Message))
-                    .AddField(new EmbedFieldBuilder()
+                        .WithValue(exception.Message));
+                if (!string.IsNullOrEmpty(exception.StackTrace))
+                    builder.AddField(new EmbedFieldBuilder()
                         .WithName("Stack Trace")
                         .WithValue(exception.StackTrace.Length > 1000 ? exception.StackTrace.Substring(exception.StackTrace.Length - 1000, 1000) : exception.StackTrace));
-                if(context != null)
+
+                if (context != null)
                 {
                     builder.AddField(new EmbedFieldBuilder()
                         .WithName($"Location")
