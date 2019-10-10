@@ -40,7 +40,14 @@ namespace GenericBot.CommandModules
                     {
                         var users = context.Message.MentionedUsers;
                         msgs = msgs.Where(m => users.Select(u => u.Id).Contains(m.Author.Id)).ToList();
-                        msgs.Add(context.Message);
+                        try
+                        {
+                            await context.Message.DeleteAsync();
+                        }
+                        catch
+                        {
+                            Core.Logger.LogErrorMessage(new Exception("Could not delete command"), context);
+                        }
                     }
                     if (context.Parameters.Count > 1 && !context.Message.MentionedUsers.Any())
                     {
