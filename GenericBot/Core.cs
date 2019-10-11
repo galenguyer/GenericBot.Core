@@ -45,7 +45,7 @@ namespace GenericBot
             DiscordClient.UserJoined += UserEventHandler.UserJoined;
             DiscordClient.UserLeft += UserEventHandler.UserLeft;
             DiscordClient.UserUpdated += UserEventHandler.UserUpdated;
-            //DiscordClient.GuildAvailable += GuildEventHandler.GuildLoaded;
+            DiscordClient.GuildAvailable += GuildEventHandler.GuildLoaded;
         }
 
         private static void LoadCommands(List<string> CommandsToExclude = null)

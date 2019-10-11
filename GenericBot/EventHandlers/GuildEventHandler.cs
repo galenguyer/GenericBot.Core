@@ -10,7 +10,7 @@ namespace GenericBot
     {
         public static async Task GuildLoaded(SocketGuild guild)
         {
-            Core.SaveGuildConfig(Core.GetGuildConfig(guild.Id));
+            guild.DownloadUsersAsync();
         }
     }
 }
