@@ -241,6 +241,34 @@ namespace GenericBot.CommandModules
             };
             commands.Add(global);
 
+            Command guildInfo = new Command("guildinfo");
+            guildInfo.Aliases = new List<string> { "serverinfo" };
+            guildInfo.Description = "Show some information about the guild";
+            guildInfo.ToExecute += async (context) =>
+            {
+                var guild = context.Guild;
+                await guild.DownloadUsersAsync();
+                var bans = guild.GetBansAsync().Result;
+                string resp = string.Empty;
+                resp += $"Guild Name: `{guild.Name}`\n";
+                resp += $"Guild Id: `{guild.Id}`\n";
+                resp += $"Owner: `{guild.Owner}` (`{guild.OwnerId}`)\n";
+                resp += $"User Count: `{guild.MemberCount}` (`{guild.Users.Count(u => !u.IsBot)}` Humans)\n";
+                resp += $"Created At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", guild.CreatedAt.LocalDateTime)}GMT` " +
+                        $"(about {(DateTime.UtcNow - guild.CreatedAt).Days} days ago)\n";
+                resp += $"Text Channels: `{guild.TextChannels.Count}`\n";
+                resp += $"Voice Channels: `{guild.VoiceChannels.Count}`\n";
+                resp += $"Voice Region: `{guild.VoiceRegionId}`\n";
+                resp += $"Roles: `{guild.Roles.Count}`\n";
+                resp += $"Verification Level: `{guild.VerificationLevel}`\n";
+                resp += $"Partnered: `{guild.Features.Any()}`\n";
+                resp += $"Bans: `{bans.Count}` (`{bans.Count(b => b.User.AvatarId == null && b.User.Username.StartsWith("Deleted User "))}` Accounts Deleted)\n";
+                resp += $"Active Invites: `{guild.GetInvitesAsync().Result.Count}`\n";
+
+                await context.Message.ReplyAsync(resp);
+            };
+            commands.Add(guildInfo);
+
             return commands;
         }
 
