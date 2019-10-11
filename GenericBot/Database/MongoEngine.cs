@@ -293,6 +293,13 @@ namespace GenericBot.Database
             return _collection.Find(new BsonDocument()).ToList();
         }
 
+        public void AddStatus(Status status)
+        {
+            var _db = mongoClient.GetDatabase("global");
+            var _collection = _db.GetCollection<Status>("statusLog");
+            _collection.InsertOne(status);
+        }
+
         public List<string> GetGuildIdsFromDb()
         {
             return mongoClient.ListDatabaseNames().ToList();

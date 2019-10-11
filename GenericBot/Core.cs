@@ -15,6 +15,7 @@ namespace GenericBot
         public static DiscordShardedClient DiscordClient { get; private set; }
         public static List<Command> Commands { get; set; }
         public static Dictionary<ulong, List<CustomCommand>> CustomCommands;
+        public static int Messages { get; set; }
         public static Logger Logger { get; private set; }
         private static MongoEngine MongoEngine { get; set; }
 
@@ -30,6 +31,7 @@ namespace GenericBot
             LoadCommands(GlobalConfig.CommandsToExclude);
             MongoEngine = new MongoEngine();
             LoadedGuildConfigs = new List<GuildConfig>();
+            Messages = 0;
 
             // Configure Client
             DiscordClient = new DiscordShardedClient(new DiscordSocketConfig()
@@ -183,5 +185,8 @@ namespace GenericBot
             MongoEngine.AddToAuditLog(command, guildId);
         public static List<AuditCommand> GetAuditLog(ulong guildId) =>
             MongoEngine.GetAuditLog(guildId);
+
+        public static void AddStatus(Status status) =>
+            MongoEngine.AddStatus(status);
     }
 }

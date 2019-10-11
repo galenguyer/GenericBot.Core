@@ -12,6 +12,7 @@ namespace GenericBot
     {
         public static async Task MessageRecieved(SocketMessage parameterMessage, bool edited = false)
         {
+            Core.Messages++;
             // Don't do stuff if the user is blacklisted
             if (Core.CheckBlacklisted(parameterMessage.Author.Id))
                 return;

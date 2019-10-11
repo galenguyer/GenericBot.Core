@@ -24,17 +24,21 @@ namespace GenericBot
                 BuildId = File.ReadAllText("version.txt").Trim();
             }
 
-            Timer unbanTimer = new Timer();
-            unbanTimer.Interval = 60 * 1000;
-            unbanTimer.AutoReset = true;
-            unbanTimer.Elapsed += CheckUnbans;
-            unbanTimer.Start();
+            Timer cycleTimer = new Timer();
+            cycleTimer.Interval = 60 * 1000;
+            cycleTimer.AutoReset = true;
+            cycleTimer.Elapsed += ExecuteCycle;
+            cycleTimer.Start();
 
             Start().GetAwaiter().GetResult();
         }
 
-        private static void CheckUnbans(object sender, ElapsedEventArgs e)
+        private static void ExecuteCycle(object sender, ElapsedEventArgs e)
         {
+            var status = new Status();
+            Core.AddStatus(status);
+
+            // Check for unbans
             foreach(var gid in Core.DiscordClient.Guilds.Select(g => g.Id))
             {
                 var bans = Core.GetBansFromGuild(gid, false);
