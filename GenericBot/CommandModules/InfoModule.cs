@@ -246,8 +246,8 @@ namespace GenericBot.CommandModules
             guildInfo.Description = "Show some information about the guild";
             guildInfo.ToExecute += async (context) =>
             {
+                
                 var guild = context.Guild;
-                await guild.DownloadUsersAsync();
                 var bans = guild.GetBansAsync().Result;
                 string resp = string.Empty;
                 resp += $"Guild Name: `{guild.Name}`\n";
