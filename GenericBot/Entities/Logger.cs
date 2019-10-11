@@ -24,12 +24,16 @@ namespace GenericBot
             if (msg.Severity != LogSeverity.Debug)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(message);
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine(message);
+            }
+            Console.WriteLine(message);
+            if ((msg.Severity == LogSeverity.Warning || msg.Severity == LogSeverity.Error) && msg.Exception != null)
+            {
+                Console.WriteLine(msg.Exception.Message);
+                Console.WriteLine(msg.Exception.StackTrace);
             }
             File.AppendAllText($"files/sessions/{SessionId}.log", message + "\n");
             return Task.FromResult(1);
