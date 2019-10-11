@@ -253,7 +253,7 @@ namespace GenericBot.CommandModules
                 resp += $"Guild Name: `{guild.Name}`\n";
                 resp += $"Guild Id: `{guild.Id}`\n";
                 resp += $"Owner: `{guild.Owner}` (`{guild.OwnerId}`)\n";
-                resp += $"User Count: `{guild.MemberCount}` (`{guild.Users.Count(u => !u.IsBot)}` Humans)\n";
+                resp += $"User Count: `{guild.MemberCount}` (`{guild.Users.Count(u => u.IsBot)}` Bots)\n";
                 resp += $"Created At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", guild.CreatedAt.LocalDateTime)}GMT` " +
                         $"(about {(DateTime.UtcNow - guild.CreatedAt).Days} days ago)\n";
                 resp += $"Text Channels: `{guild.TextChannels.Count}`\n";
