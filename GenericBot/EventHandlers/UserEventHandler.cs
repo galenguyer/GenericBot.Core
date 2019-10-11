@@ -16,11 +16,14 @@ namespace GenericBot
         {
             SocketGuildUser beforeUser = bUser as SocketGuildUser;
             SocketGuildUser afterUser = aUser as SocketGuildUser;
-            if (beforeUser.Username != afterUser.Username || beforeUser.Nickname != afterUser.Nickname)
+            if (beforeUser == null || beforeUser.Username != afterUser.Username || beforeUser.Nickname != afterUser.Nickname)
             {
                 var user = Core.GetUserFromGuild(afterUser.Id, afterUser.Guild.Id);
-                user.AddUsername(beforeUser.Username);
-                user.AddNickname(beforeUser);
+                if (beforeUser != null)
+                {
+                    user.AddUsername(beforeUser.Username);
+                    user.AddNickname(beforeUser);
+                }
                 user.AddUsername(afterUser.Username);
                 user.AddNickname(afterUser);
                 Core.SaveUserToGuild(user, afterUser.Guild.Id);
