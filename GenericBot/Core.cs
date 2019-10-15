@@ -163,7 +163,7 @@ namespace GenericBot
             else
             {
                 var foundQuotes = quotes.Where(q => q.Content.ToLower().Contains(quote.ToLower())).ToList();
-                return quotes.Any() ? quotes.GetRandomItem() : new Quote("Not Found", 0);
+                return foundQuotes.Any() ? foundQuotes.GetRandomItem() : new Quote("Not Found", 0);
             }
         }
 
