@@ -25,6 +25,7 @@ namespace GenericBot.CommandModules
 
             Command ping = new Command("ping");
             ping.WorksInDms = true;
+            ping.SendTyping = false;
             ping.Description = "Make sure the bot is up";
             ping.ToExecute += async (context) =>
             {
