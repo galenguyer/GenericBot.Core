@@ -29,12 +29,12 @@ namespace GenericBot
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
             }
-            Console.WriteLine(message);
             if ((msg.Severity == LogSeverity.Warning || msg.Severity == LogSeverity.Error) && msg.Exception != null)
             {
-                Console.WriteLine(msg.Exception.Message);
-                Console.WriteLine(msg.Exception.StackTrace);
+                message += "\n" + msg.Exception.Message;
+                message += "\n" + msg.Exception.StackTrace;
             }
+            Console.WriteLine(message);
             File.AppendAllText($"files/sessions/{SessionId}.log", message + "\n");
             return Task.FromResult(1);
         }
