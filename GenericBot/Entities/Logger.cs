@@ -36,6 +36,8 @@ namespace GenericBot
             }
             Console.WriteLine(message);
             File.AppendAllText($"files/sessions/{SessionId}.log", message + "\n");
+            if (message.Contains("Server missed last heartbeat"))
+                Environment.Exit(1);
             return Task.FromResult(1);
         }
 
