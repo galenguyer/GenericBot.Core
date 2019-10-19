@@ -290,5 +290,13 @@ namespace GenericBot
             return offset;
         }
 
+        public static string Truncate(this string input, int maxLength, string ellipsis = "\u2026", bool end = false)
+        {
+            if (input.Length <= maxLength) return input;
+            
+            if (end)
+                return input.Substring(input.Length - maxLength - ellipsis.Length - 1) + ellipsis;
+            return input.Substring(0, maxLength - ellipsis.Length) + ellipsis;
+        }
     }
 }
