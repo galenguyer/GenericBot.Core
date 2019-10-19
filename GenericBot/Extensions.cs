@@ -171,7 +171,7 @@ namespace GenericBot
             {
                 return input;
             }
-            else return input.Substring(0, length) + "...";
+            else return input.Substring(0, length-1) + "\u2026";
         }
 
         public static string SumAnd<T>(this List<T> input)

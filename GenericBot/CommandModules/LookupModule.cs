@@ -183,7 +183,7 @@ namespace GenericBot.CommandModules
                 }
                 
                 var usernames = user.Usernames.Distinct().Select(n => $"`{n.Replace("`", "'")}`").ToList().SumAnd();
-                foreach (var s in usernames.SplitSafe(',')) 
+                foreach (var s in $"<@!{user.Id}> has had the following nicknames: {usernames}".SplitSafe()) 
                     await context.Message.ReplyAsync(s);
             };
             commands.Add(names);
@@ -209,7 +209,7 @@ namespace GenericBot.CommandModules
                 }
                 
                 var nicknames = user.Nicknames.Distinct().Select(n => $"`{n.Replace("`", "'")}`").ToList().SumAnd();
-                foreach (var s in nicknames.SplitSafe(',')) 
+                foreach (var s in $"<@!{user.Id}> has had the following nicknames: {nicknames}".SplitSafe()) 
                     await context.Message.ReplyAsync(s);
             };
             commands.Add(nicksCmd);
