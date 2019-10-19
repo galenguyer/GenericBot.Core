@@ -97,6 +97,7 @@ namespace GenericBot
         public async Task MessageRecieved(SocketMessage arg)
         {
             await MessageRecieved(arg, edited: false);
+            await UserEventHandler.UserUpdated(null, arg.Author);
         }
 
         public async Task HandleEditedCommand(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
