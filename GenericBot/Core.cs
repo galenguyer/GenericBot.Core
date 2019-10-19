@@ -20,6 +20,7 @@ namespace GenericBot
         private static MongoEngine MongoEngine { get; set; }
 
         private static List<GuildConfig> LoadedGuildConfigs;
+        private static MessageEventHandler MessageEventHandler;
 
         static Core()
         {
@@ -40,6 +41,8 @@ namespace GenericBot
                 AlwaysDownloadUsers = true,
                 MessageCacheSize = 100,
             });
+            MessageEventHandler = new MessageEventHandler(DiscordClient);
+            
             DiscordClient.Log += Logger.LogClientMessage;
             DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
             DiscordClient.MessageUpdated += MessageEventHandler.HandleEditedCommand;

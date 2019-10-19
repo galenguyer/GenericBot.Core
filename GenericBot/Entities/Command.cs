@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
 
 namespace GenericBot.Entities
@@ -101,11 +102,10 @@ namespace GenericBot.Entities
                 return true;
             return false;
         }
-
-        public ParsedCommand ParseMessage(SocketMessage msg)
+ 
+        public ParsedCommand ParseMessage(IDiscordClient client, SocketMessage msg)
         {
-            ParsedCommand parsedCommand = new ParsedCommand();
-            parsedCommand.Message = msg;
+            ParsedCommand parsedCommand = new ParsedCommand {Message = msg, Client = client};
             string message = msg.Content;
             string pref = Core.GetPrefix(parsedCommand);
 
