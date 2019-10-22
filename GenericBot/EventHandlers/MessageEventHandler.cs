@@ -8,16 +8,9 @@ using Newtonsoft.Json;
 
 namespace GenericBot
 {
-    public class MessageEventHandler
+    public static class MessageEventHandler
     {
-        private IDiscordClient _client;
-
-        public MessageEventHandler(IDiscordClient client)
-        {
-            _client = client;
-        }
-
-        public async Task MessageRecieved(SocketMessage parameterMessage, bool edited = false)
+        public static async Task MessageRecieved(SocketMessage parameterMessage, bool edited = false)
         {
             Core.Messages++;
             // Don't do stuff if the user is blacklisted
@@ -32,7 +25,7 @@ namespace GenericBot
 
                 if (parameterMessage.Channel is SocketDMChannel)
                 {
-                    command = new Command("t").ParseMessage(_client, parameterMessage);
+                    command = new Command("t").ParseMessage(parameterMessage);
 
                     await Core.Logger.LogGenericMessage($"Recieved DM: {parameterMessage.Content}");
 
@@ -69,7 +62,7 @@ namespace GenericBot
                 else
                 {
                     ulong guildId = parameterMessage.GetGuild().Id;
-                    command = new Command("t").ParseMessage(_client, parameterMessage);
+                    command = new Command("t").ParseMessage(parameterMessage);
 
                     if (Core.GetCustomCommands(guildId).HasElement(c => c.Name == command.Name,
                         out CustomCommand customCommand))
@@ -90,23 +83,23 @@ namespace GenericBot
                     await parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
                                                       "\n```");
                 }
-                await Core.Logger.LogErrorMessage(ex, new Command("t").ParseMessage(_client, parameterMessage));
+                await Core.Logger.LogErrorMessage(ex, new Command("t").ParseMessage(parameterMessage));
             }
         }
 
-        public async Task MessageRecieved(SocketMessage arg)
+        public static async Task MessageRecieved(SocketMessage arg)
         {
             await MessageRecieved(arg, edited: false);
             await UserEventHandler.UserUpdated(null, arg.Author);
         }
 
-        public async Task HandleEditedCommand(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
+        public static async Task HandleEditedCommand(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
         {
             if (arg1.Value.Content == arg2.Content) return;
 
             if (Core.GlobalConfig.DefaultExecuteEdits)
             {
-                await MessageRecieved(arg2, edited: true);
+                await MessageEventHandler.MessageRecieved(arg2, edited: true);
             }
 
             var guildConfig = Core.GetGuildConfig(arg2.GetGuild().Id);
@@ -138,7 +131,7 @@ namespace GenericBot
             await arg2.GetGuild().GetTextChannel(guildConfig.LoggingChannelId).SendMessageAsync("", embed: log.Build());
         }
 
-        public async Task MessageDeleted(Cacheable<IMessage, ulong> arg, ISocketMessageChannel channel)
+        public static async Task MessageDeleted(Cacheable<IMessage, ulong> arg, ISocketMessageChannel channel)
         {
             if (!arg.HasValue) return;
             if (GenericBot.ClearedMessageIds.Contains(arg.Id)) return;

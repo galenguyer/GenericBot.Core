@@ -12,7 +12,6 @@ namespace GenericBot.Entities
         public List<string> Parameters;
         public string ParameterString;
         public SocketMessage Message;
-        public IDiscordClient Client;
 
         public SocketUser Author { get { return Message.Author; } }
         public SocketGuild Guild { get
