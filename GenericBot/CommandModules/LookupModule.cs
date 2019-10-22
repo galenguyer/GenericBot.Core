@@ -108,7 +108,7 @@ namespace GenericBot.CommandModules
 
                     // Fetch the Discord user from the cache or the API
                     // This works even if the user has left the server, and allows us to extract *some* information
-                    IUser user = await context.Client.GetUserAsync(dbUser.Id);
+                    IUser user = Core.DiscordClient.GetUser(dbUser.Id);
 
                     // Fetch the per-server user data, this returns null if the user has left the server
                     SocketGuildUser guildUser = context.Message.GetGuild().GetUser(dbUser.Id);
