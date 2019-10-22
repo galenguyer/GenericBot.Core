@@ -38,12 +38,23 @@ namespace GenericBot
             bool alreadyJoined = dbUser.Usernames != null;
             dbUser.AddUsername(user.Username);
             Core.SaveUserToGuild(dbUser, user.Guild.Id);
-            
+
             #endregion Databasae
+
+            var guildConfig = Core.GetGuildConfig(user.Guild.Id);
+
+            #region JoinMessage
+
+            if (guildConfig.JoinMessageChannelId != 0 && !string.IsNullOrEmpty(guildConfig.JoinMessage) && user.Guild.Channels.Any(r => r.Id == guildConfig.JoinMessageChannelId))
+            {
+                await user.Guild.GetTextChannel(guildConfig.JoinMessageChannelId).SendMessageAsync(
+                    VerificationEngine.ConstructWelcomeMessage(guildConfig.JoinMessage, user));
+            }
+
+            #endregion JoinMessage
 
             #region Logging
 
-            var guildConfig = Core.GetGuildConfig(user.Guild.Id);
 
             if (!(guildConfig.VerifiedRole == 0 || (string.IsNullOrEmpty(guildConfig.VerifiedMessage) || guildConfig.VerifiedMessage.Split().Length < 32 || !user.Guild.Roles.Any(r => r.Id == guildConfig.VerifiedRole))))
             {
