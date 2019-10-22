@@ -64,7 +64,7 @@ namespace GenericBot
                     .WithCurrentTimestamp()
                     .AddField(new EmbedFieldBuilder()
                         .WithName("Error Message")
-                        .WithValue(exception.Message));
+                        .WithValue(exception.GetType() + ": " + exception.Message));
                 if (!string.IsNullOrEmpty(exception.StackTrace))
                     builder.AddField(new EmbedFieldBuilder()
                         .WithName("Stack Trace")
