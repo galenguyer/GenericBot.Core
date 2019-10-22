@@ -83,8 +83,7 @@ namespace GenericBot
                     await parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
                                                       "\n```");
                 }
-                if(ex.GetType() != new System.NullReferenceException().GetType()) 
-                    await Core.Logger.LogErrorMessage(ex, new Command("t").ParseMessage(parameterMessage));
+                await Core.Logger.LogErrorMessage(ex, new Command("t").ParseMessage(parameterMessage));
             }
         }
 
