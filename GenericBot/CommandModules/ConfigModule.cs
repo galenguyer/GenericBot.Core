@@ -396,7 +396,7 @@ namespace GenericBot.CommandModules
 
                 else if (context.Parameters[0].ToLower().Equals("joinmessage"))
                 {
-                    if (context.Parameters[1].ToLower().Equals("channelid"))
+                    if (context.Parameters.Count >= 2 && context.Parameters[1].ToLower().Equals("channelid"))
                     {
                         if (context.Parameters.Count == 2)
                         {
@@ -428,7 +428,7 @@ namespace GenericBot.CommandModules
                             await context.Message.ReplyAsync("Invalid Channel Id");
                         }
                     }
-                    else if (context.Parameters[1].ToLower().Equals("message"))
+                    else if (context.Parameters.Count >= 2 && context.Parameters[1].ToLower().Equals("message"))
                     {
                         string message = context.ParameterString.Replace("  ", " ").Remove(0, "joinmessage message".Length);
 
@@ -441,9 +441,10 @@ namespace GenericBot.CommandModules
                         {
                             _guildConfig.JoinMessage = message;
                         }
+
                         await context.Message.ReplyAsync("Example join message:");
 
-                        await context.Message.ReplyAsync(VerificationEngine.ConstructWelcomeMessage(message, context.Author));
+                        await context.Message.ReplyAsync(VerificationEngine.ConstructWelcomeMessage(_guildConfig.JoinMessage, context.Author));
                     }
                     else await context.Message.ReplyAsync("Invalid Option");
                 }
