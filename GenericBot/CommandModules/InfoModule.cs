@@ -227,7 +227,7 @@ namespace GenericBot.CommandModules
                                $"SessionID: `{Core.Logger.SessionId}`\n" +
                                //$"Build Number: `{GenericBot.BuildId}`\n\n" +
                                $"Servers: `{Core.DiscordClient.Guilds.Count}`\n" +
-                               $"Users: `{Core.DiscordClient.Guilds.Sum(g => g.Users.Count)}`\n" +
+                               $"Users: `{Core.DiscordClient.Guilds.Sum(g => g.MemberCount)}`\n" +
                                $"Shards: `{Core.DiscordClient.Shards.Count}`\n" +
                                //$"CPU Usage: `{Math.Round(GenericBot.CpuCounter.NextValue())}`% \n" +
                                $"Memory: `{Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB`\n" +
