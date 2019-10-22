@@ -84,11 +84,7 @@ namespace GenericBot.CommandModules
                     .WithDescription($"The `{prefix}config` command is huge and confusing. This aims to make it a bit simpler (For more general assistance, try `{prefix}info`)")
                     .WithUrl("https://github.com/MasterChief-John-117/GenericBot")
                     .WithColor(new Color(0xEF4347))
-                    .WithFooter(footer =>
-                    {
-                        footer
-                            .WithText($"If you have questions or notice any errors, please contact {Core.DiscordClient.GetUser(169918990313848832).ToString()}");
-                    })
+                    .WithFooter(new EmbedFooterBuilder().WithText($"If you have questions or notice any errors, please contact {Core.DiscordClient.GetUser(169918990313848832).ToString()}"))
                     .WithThumbnailUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Gear_1.svg/1000px-Gear_1.svg.png")
                     .AddField("AdminRoles", $"Add or remove Admin Roles by ID\nSyntax: `{prefix}config adminroles <add/remove> [roleId]`")
                     .AddField("ModeratorRoles (ModRoles)", $"Add or remove Moderator Roles by ID\nSyntax: `{prefix}config modroles <add/remove> [roleId]`")
