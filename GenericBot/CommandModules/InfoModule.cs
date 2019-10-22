@@ -93,6 +93,7 @@ namespace GenericBot.CommandModules
                     .AddField("Logging", $"Set the channel for logging by Id\nSyntax: `{prefix}config logging channelId [channelId]`\n\nToggle ignoring channels for logging by Id. Lists all ignored channels if channelId is empty\nSyntax`{prefix}config logging ignoreChannel [channelId]`")
                     .AddField("MutedRoleId", $"Set the role assigned by the `{prefix}mute` command. Set [roleId] to `0` to disable muting\nSyntax: `{prefix}config mutedRoleId [roleId]`")
                     .AddField("Verification", $"Get or Set the RoleId assigned for verification. Leave [roleId] empty to get the current role. Use `0` for the [roleId] to disable verification\nSyntax: `{prefix}config verification roleId [roleId]`\n\nGet or set the message sent for verification. Leave [message] empty to get the current message\nSyntax: `{prefix}config verification message [message]`")
+                    .AddField("JoinMessage", $"Get or Set the ChannelId for the join message. Leave [channelId] empty to get the current channel. Use `0` for the [channelId] to disable join messages\nSyntax: `{prefix}config joinmessage channelid [channelId]`\n\nGet or set the message sent on join. Leave [message] empty to get the current message\nSyntax: `{prefix}config joinmessage message [message]`")
                     .AddField("AutoRole", $"Add or remove a role to be automatically granted by Id\nSyntax: `{prefix}config autorole <add/remove> [roleId]`");
                 var embed = builder.Build();
 
