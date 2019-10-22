@@ -106,9 +106,10 @@ namespace GenericBot.Database
         /// <param name="userId"></param>
         /// <param name="guildId"></param>
         /// <returns></returns>
-        public DatabaseUser GetUserFromGuild(ulong userId, ulong guildId)
+        public DatabaseUser GetUserFromGuild(ulong userId, ulong guildId, bool log = true)
         {
-            Core.Logger.LogGenericMessage($"[Mongo] GOT User {userId} FROM {guildId}");
+            if(log)
+                Core.Logger.LogGenericMessage($"[Mongo] GOT User {userId} FROM {guildId}");
 
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<DatabaseUser>("users");
@@ -123,9 +124,10 @@ namespace GenericBot.Database
         /// <param name="user"></param>
         /// <param name="guildId"></param>
         /// <returns></returns>
-        public DatabaseUser SaveUserToGuild(DatabaseUser user, ulong guildId)
+        public DatabaseUser SaveUserToGuild(DatabaseUser user, ulong guildId, bool log = true)
         {
-            Core.Logger.LogGenericMessage($"[Mongo] SAVED User {user.Id} TO {guildId}");
+            if (log)
+                Core.Logger.LogGenericMessage($"[Mongo] SAVED User {user.Id} TO {guildId}");
 
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<DatabaseUser>("users");

@@ -18,7 +18,7 @@ namespace GenericBot
             SocketGuildUser afterUser = aUser as SocketGuildUser;
             if (beforeUser == null || beforeUser.Username != afterUser.Username || beforeUser.Nickname != afterUser.Nickname)
             {
-                var user = Core.GetUserFromGuild(afterUser.Id, afterUser.Guild.Id);
+                var user = Core.GetUserFromGuild(afterUser.Id, afterUser.Guild.Id, log: false);
                 if (beforeUser != null)
                 {
                     user.AddUsername(beforeUser.Username);
@@ -26,7 +26,7 @@ namespace GenericBot
                 }
                 user.AddUsername(afterUser.Username);
                 user.AddNickname(afterUser);
-                Core.SaveUserToGuild(user, afterUser.Guild.Id);
+                Core.SaveUserToGuild(user, afterUser.Guild.Id, log: false);
             }
         }
 

@@ -167,10 +167,10 @@ namespace GenericBot
             }
         }
 
-        public static DatabaseUser SaveUserToGuild(DatabaseUser user, ulong guildId) =>
-            MongoEngine.SaveUserToGuild(user, guildId);
-        public static DatabaseUser GetUserFromGuild(ulong userId, ulong guildId) =>
-            MongoEngine.GetUserFromGuild(userId, guildId);
+        public static DatabaseUser SaveUserToGuild(DatabaseUser user, ulong guildId, bool log = true) =>
+            MongoEngine.SaveUserToGuild(user, guildId, log);
+        public static DatabaseUser GetUserFromGuild(ulong userId, ulong guildId, bool log = true) =>
+            MongoEngine.GetUserFromGuild(userId, guildId, log);
         public static List<DatabaseUser> GetAllUsers(ulong guildId) =>
             MongoEngine.GetAllUsers(guildId);
 
