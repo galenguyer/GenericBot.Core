@@ -57,8 +57,8 @@ namespace GenericBot.CommandModules
                     string message = context.Message.Content;
                     message = message.Remove(0, pref.Length).TrimStart(' ').Remove(0, "command".Length).TrimStart('s').TrimStart(' ').Remove(0, "add".Length).TrimStart(' ').Remove(0, cName.Length).Trim(' ');
 
-                    Core.GetCustomCommands(context.Guild.Id).Add(new CustomCommand(cName.ToLower(), message));
-                    await context.Message.ReplyAsync($"New command created! \n```\n{JsonConvert.SerializeObject(new CustomCommand(cName.ToLower(), message), Formatting.Indented)}\n```");
+                    CustomCommand newCommand = Core.SaveCustomCommand(new CustomCommand(cName.ToLower(), message), context.Guild.Id);
+                    await context.Message.ReplyAsync($"New command created! \n```\n{JsonConvert.SerializeObject(newCommand, Formatting.Indented)}\n```");
                 }
                 else if (context.Parameters[0].Equals("remove") || context.Parameters[0].Equals("delete"))
                 {
@@ -80,6 +80,7 @@ namespace GenericBot.CommandModules
                         .HasElement(c => c.Name == context.Parameters[1], out custom))
                     {
                         custom.Delete = !custom.Delete;
+                        Core.SaveCustomCommand(custom, context.Guild.Id);
                         if (!custom.Delete)
                         {
                             await context.Message.ReplyAsync($"The command `{custom.Name}` will **not** be deleted");
