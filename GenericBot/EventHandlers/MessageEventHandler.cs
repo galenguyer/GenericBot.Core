@@ -76,6 +76,9 @@ namespace GenericBot
                         await command.Execute();
                 }
             }
+            catch (NullReferenceException _)
+            {
+            }
             catch (Exception ex)
             {
                 if (parameterMessage.Author.Id == Core.GetOwnerId())
