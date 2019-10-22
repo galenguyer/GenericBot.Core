@@ -76,9 +76,6 @@ namespace GenericBot
                         await command.Execute();
                 }
             }
-            catch (NullReferenceException _)
-            {
-            }
             catch (Exception ex)
             {
                 if (parameterMessage.Author.Id == Core.GetOwnerId())
@@ -86,7 +83,8 @@ namespace GenericBot
                     await parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
                                                       "\n```");
                 }
-                await Core.Logger.LogErrorMessage(ex, new Command("t").ParseMessage(parameterMessage));
+                if(ex.GetType() != new System.NullReferenceException().GetType()) 
+                    await Core.Logger.LogErrorMessage(ex, new Command("t").ParseMessage(parameterMessage));
             }
         }
 
