@@ -42,8 +42,9 @@ namespace GenericBot.CommandModules
                         await (context.Guild.GetUser(user)).AddRolesAsync(new List<IRole> { mutedRole });
                         mutedUsers.Add(context.Guild.GetUser(user));
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        await Core.Logger.LogErrorMessage(ex, context);
                     }
                     Core.SaveGuildConfig(gc);
                 }
@@ -88,8 +89,9 @@ namespace GenericBot.CommandModules
                         await (context.Guild.GetUser(user)).RemoveRoleAsync(mutedRole);
                         mutedUsers.Add(context.Guild.GetUser(user));
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        await Core.Logger.LogErrorMessage(ex, context);
                     }
                 }
                 Core.SaveGuildConfig(gc);

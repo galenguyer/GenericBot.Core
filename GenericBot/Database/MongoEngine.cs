@@ -244,8 +244,9 @@ namespace GenericBot.Database
                 _collection.UpdateOne(new BsonDocument("_id", id), Builders<Quote>.Update.Set("Active", false));
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Core.Logger.LogErrorMessage(ex, null);
                 return false;
             }
         }

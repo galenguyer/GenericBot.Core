@@ -129,9 +129,9 @@ namespace GenericBot.Entities
                 parsedCommand.ParameterString = param.Trim();
                 parsedCommand.Parameters = param.Split().Where(p => !string.IsNullOrEmpty(p.Trim())).ToList();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Core.Logger.LogErrorMessage(ex, parsedCommand);
             }
 
             return parsedCommand;

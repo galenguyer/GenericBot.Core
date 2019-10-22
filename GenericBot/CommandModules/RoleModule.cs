@@ -121,8 +121,9 @@ namespace GenericBot.CommandModules
                     messagesToDelete.Add(context.Message);
                     await (context.Channel as ITextChannel).DeleteMessagesAsync(messagesToDelete);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    await Core.Logger.LogErrorMessage(ex, context);
                     try
                     {
                         foreach (var m in messagesToDelete)
@@ -130,7 +131,10 @@ namespace GenericBot.CommandModules
                             await m.DeleteAsync();
                         }
                     }
-                    catch { }
+                    catch (Exception e)
+                    {
+                        await Core.Logger.LogErrorMessage(e, context);
+                    }
                 }
             };
             commands.Add(iam);
@@ -190,8 +194,9 @@ namespace GenericBot.CommandModules
                     messagesToDelete.Add(context.Message);
                     await (context.Channel as ITextChannel).DeleteMessagesAsync(messagesToDelete);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    await Core.Logger.LogErrorMessage(ex, context);
                     try
                     {
                         foreach (var m in messagesToDelete)
@@ -199,7 +204,10 @@ namespace GenericBot.CommandModules
                             await m.DeleteAsync();
                         }
                     }
-                    catch { }
+                    catch (Exception e)
+                    {
+                        await Core.Logger.LogErrorMessage(e, context);
+                    }
                 }
             };
             commands.Add(iamnot);
@@ -347,8 +355,9 @@ namespace GenericBot.CommandModules
                         await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
                         success.Add(user);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        await Core.Logger.LogErrorMessage(ex, context);
                         failed.Add(user);
                     }
                 }

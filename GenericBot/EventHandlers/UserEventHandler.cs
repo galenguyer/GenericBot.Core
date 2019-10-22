@@ -79,9 +79,9 @@ namespace GenericBot
                 {
                     await user.AddRoleAsync(user.Guild.GetRole(guildConfig.MutedRoleId));
                 }
-                catch
+                catch(Exception ex)
                 {
-
+                    await Core.Logger.LogErrorMessage(ex, null);
                 }
             }
             if(guildConfig.AutoRoleIds != null && guildConfig.AutoRoleIds.Any())
@@ -92,9 +92,9 @@ namespace GenericBot
                     {
                         await user.AddRoleAsync(user.Guild.GetRole(role));
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        // Supress
+                        await Core.Logger.LogErrorMessage(ex, null);
                     }
                 }
             }
@@ -131,8 +131,9 @@ namespace GenericBot
                         .WithValue(warns));
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                await Core.Logger.LogErrorMessage(ex, null);
             }
 
             await user.Guild.GetTextChannel(guildConfig.LoggingChannelId).SendMessageAsync("", embed: log.Build());

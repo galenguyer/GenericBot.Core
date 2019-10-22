@@ -99,8 +99,9 @@ namespace GenericBot
                 output = default(T);
                 return false;
             }
-            catch
+            catch (Exception ex)
             {
+                Core.Logger.LogErrorMessage(ex, null);
                 output = default(T);
                 return false;
             }

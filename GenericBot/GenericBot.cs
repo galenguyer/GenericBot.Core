@@ -68,12 +68,18 @@ namespace GenericBot
                         ((SocketTextChannel)Core.DiscordClient.GetChannel(Core.GetGuildConfig(gid).LoggingChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }
-                    catch { }
+                    catch(Exception ex)
+                    {
+                        Core.Logger.LogErrorMessage(ex, null);
+                    }
                     try
                     {
                         Core.RemoveBanFromGuild(ban.Id, gid);
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        Core.Logger.LogErrorMessage(ex, null);
+                    }
                 }
             }
         }

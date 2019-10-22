@@ -59,7 +59,10 @@ namespace GenericBot.CommandModules
                 }
                 // In case no time was specified
                 catch (Exception ex)
-                { time = DateTimeOffset.MaxValue; }
+                {
+                    await Core.Logger.LogErrorMessage(ex, context);
+                    time = DateTimeOffset.MaxValue; 
+                }
                 string timeMessage = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`";
 
                 // Check if the user was already banned
@@ -82,8 +85,9 @@ namespace GenericBot.CommandModules
                     await context.Guild.GetUser(userId).GetOrCreateDMChannelAsync().Result
                         .SendMessageAsync(dmMessage);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    await Core.Logger.LogErrorMessage(ex, context);
                     dmSuccess = false;
                 }
 
@@ -98,8 +102,9 @@ namespace GenericBot.CommandModules
                     }
                     await context.Guild.AddBanAsync(userId, reason: auditReason);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    await Core.Logger.LogErrorMessage(ex, context);
                     await context.Message.ReplyAsync($"Could not ban the given user. Try checking role hierarchy and permissions");
                     return;
                 }
@@ -192,7 +197,10 @@ namespace GenericBot.CommandModules
                 }
                 // In case no time was specified
                 catch (Exception ex)
-                { time = DateTimeOffset.MaxValue; }
+                {
+                    await Core.Logger.LogErrorMessage(ex, context); 
+                    time = DateTimeOffset.MaxValue; 
+                }
                 string timeMessage = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`";
 
                 // Check if the user was already banned
@@ -215,8 +223,9 @@ namespace GenericBot.CommandModules
                     await context.Guild.GetUser(userId).GetOrCreateDMChannelAsync().Result
                         .SendMessageAsync(dmMessage);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    await Core.Logger.LogErrorMessage(ex, context);
                     dmSuccess = false;
                 }
 
@@ -231,8 +240,9 @@ namespace GenericBot.CommandModules
                     }
                     await context.Guild.AddBanAsync(userId, pruneDays: 1, reason: auditReason);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    await Core.Logger.LogErrorMessage(ex, context);
                     await context.Message.ReplyAsync($"Could not ban the given user. Try checking role hierarchy and permissions");
                     return;
                 }
@@ -324,8 +334,9 @@ namespace GenericBot.CommandModules
                     await context.Guild.GetUser(userId).GetOrCreateDMChannelAsync().Result
                         .SendMessageAsync(dmMessage);
                 }
-                catch
+                catch(Exception ex)
                 {
+                    await Core.Logger.LogErrorMessage(ex, context);
                     dmSuccess = false;
                 }
 
@@ -341,8 +352,9 @@ namespace GenericBot.CommandModules
                     }
                     await user.KickAsync(auditReason);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    await Core.Logger.LogErrorMessage(ex, context);
                     await context.Message.ReplyAsync($"Could not kick the given user. Try checking role hierarchy and permissions");
                     return;
                 }

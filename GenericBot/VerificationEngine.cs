@@ -28,8 +28,9 @@ namespace GenericBot
                     return guild;
                 return null;
             }
-            catch
+            catch (Exception ex)
             {
+                Core.Logger.LogErrorMessage(ex, null);
                 return null;
             }
         }

@@ -62,6 +62,7 @@ namespace GenericBot.CommandModules
                         }
                         catch (Exception ex)
                         {
+                            await Core.Logger.LogErrorMessage(ex, context);
                             if (new Command("test").GetPermissions(context) >= Command.PermissionLevels.GlobalAdmin)
                                 await context.Message.ReplyAsync($"```\n{ex.Message}\n{ex.StackTrace}\n{user.Id} : {user.Usernames.Count} | {user.Nicknames.Count}\n```");
                         }

@@ -181,7 +181,10 @@ namespace GenericBot.CommandModules
                                         {
                                             _guildConfig.UserRoles.Add("", new List<ulong>());
                                         }
-                                        catch (ArgumentException ex) { }
+                                        catch (ArgumentException ex) 
+                                        {
+                                            await Core.Logger.LogErrorMessage(ex, context);
+                                        }
 
                                         _guildConfig.UserRoles[""].Add(id);
                                         await context.Message.ReplyAsync($"Added {context.Guild.Roles.FirstOrDefault(r => r.Id == id).Name} to User Roles");
@@ -226,9 +229,10 @@ namespace GenericBot.CommandModules
                             _guildConfig.Prefix = new Regex("\"(.*?)\"").Match(context.Message.Content).Value.Trim('"');
                         }
                         await context.Message.ReplyAsync($"The prefix has been set to `{_guildConfig.Prefix}`");
-                    }
-                    catch
+                    } 
+                    catch (Exception ex)
                     {
+                        await Core.Logger.LogErrorMessage(ex, context);
                         _guildConfig.Prefix = "";
                         await context.Message.ReplyAsync($"The prefix has been reset to the default of `{Core.GetGlobalPrefix()}`");
                     }

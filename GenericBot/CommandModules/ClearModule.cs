@@ -44,9 +44,9 @@ namespace GenericBot.CommandModules
                         {
                             await context.Message.DeleteAsync();
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            Core.Logger.LogErrorMessage(new Exception("Could not delete command"), context);
+                            await Core.Logger.LogErrorMessage(ex, context);
                         }
                     }
                     if (context.Parameters.Count > 1 && !context.Message.MentionedUsers.Any())

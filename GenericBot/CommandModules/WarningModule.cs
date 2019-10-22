@@ -52,8 +52,9 @@ namespace GenericBot.CommandModules
                         var user = Core.DiscordClient.GetUser(uid);
                         builder.Author = new EmbedAuthorBuilder().WithName(user.ToString()).WithIconUrl(user.GetAvatarUrl());
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        await Core.Logger.LogErrorMessage(ex, context);
                         builder.Author = new EmbedAuthorBuilder().WithName(uid.ToString());
                     }
 
@@ -103,8 +104,9 @@ namespace GenericBot.CommandModules
                         await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(
                             $"The Moderator team of **{context.Guild.Name}** has issued you the following warning:\n{context.Parameters.Rejoin()}");
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        await Core.Logger.LogErrorMessage(ex, context);
                         warning += $"\nCould not message {user}";
                     }
 
@@ -160,6 +162,7 @@ namespace GenericBot.CommandModules
                     }
                     catch (DivideByZeroException ex)
                     {
+                        await Core.Logger.LogErrorMessage(ex, context);
                         await context.Message.ReplyAsync("User had no warnings");
                     }
                 }
