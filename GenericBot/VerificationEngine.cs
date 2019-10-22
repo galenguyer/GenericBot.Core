@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.RegularExpressions;
+using Discord;
 using Discord.WebSocket;
 
 namespace GenericBot
@@ -77,6 +79,14 @@ namespace GenericBot
             str = str.Replace('z', '8');
             str = str.Replace('v', '9');
             return str;
+        }
+
+        public static string ConstructWelcomeMessage(string message, IUser user)
+        {
+            message = Regex.Replace(message, "{{username}}", user.Username, RegexOptions.IgnoreCase);
+            message = Regex.Replace(message, "{{usermention}}", user.Mention, RegexOptions.IgnoreCase);
+            message = Regex.Replace(message, "{{user}}", user.Mention, RegexOptions.IgnoreCase);
+            return message;
         }
     }
 }

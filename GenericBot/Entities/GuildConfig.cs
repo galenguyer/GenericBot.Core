@@ -35,6 +35,8 @@ namespace GenericBot.Entities
         public List<ulong> MessageLoggingIgnoreChannels { get; set; }
         public ulong VerifiedRole { get; set; }
         public string VerifiedMessage { get; set; }
+        public string JoinMessage { get; set; }
+        public ulong JoinMessageChannelId { get; set; }
         public AntiSpamLevel AntispamLevel { get; set; }
 
         public GuildConfig(ulong id)

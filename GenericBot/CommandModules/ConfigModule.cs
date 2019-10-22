@@ -370,7 +370,7 @@ namespace GenericBot.CommandModules
 
                         if (string.IsNullOrEmpty(message) && string.IsNullOrEmpty(_guildConfig.VerifiedMessage))
                         {
-                            await context.Message.ReplyAsync("Verification is disabled on this srever. Please make sure you have a roleid and message set.");
+                            await context.Message.ReplyAsync("Verification is disabled on this server. Please make sure you have a roleid and message set.");
                             return;
                         }
                         else if (!string.IsNullOrEmpty(message))
@@ -391,6 +391,64 @@ namespace GenericBot.CommandModules
                 }
 
                 #endregion Verification
+
+                #region JoinMessage
+
+                else if (context.Parameters[0].ToLower().Equals("joinmessage"))
+                {
+                    if (context.Parameters[1].ToLower().Equals("channelid"))
+                    {
+                        if (context.Parameters.Count == 2)
+                        {
+                            var channelId = _guildConfig.JoinMessageChannelId;
+                            if (channelId == 0)
+                            {
+                                await context.Message.ReplyAsync("Join messages are disabled on this server");
+                            }
+                            else
+                            {
+                                await context.Message.ReplyAsync($"Join message channel is <#{channelId}>");
+                            }
+                        }
+                        else if (ulong.TryParse(context.Parameters[2], out ulong channelId) && (context.Guild.Channels.Any(g => g.Id == channelId) || channelId == 0))
+                        {
+                            _guildConfig.JoinMessageChannelId = channelId;
+                            if (channelId != 0)
+                            {
+                                await context.Message.ReplyAsync(
+                                    $"Join message channel set to <#{channelId}>");
+                            }
+                            else
+                            {
+                                await context.Message.ReplyAsync("Join message channel cleared. Join messages are off for this server.");
+                            }
+                        }
+                        else
+                        {
+                            await context.Message.ReplyAsync("Invalid Channel Id");
+                        }
+                    }
+                    else if (context.Parameters[1].ToLower().Equals("message"))
+                    {
+                        string message = context.ParameterString.Replace("  ", " ").Remove(0, "joinmessage message".Length);
+
+                        if (string.IsNullOrEmpty(message) && string.IsNullOrEmpty(_guildConfig.VerifiedMessage))
+                        {
+                            await context.Message.ReplyAsync("Join messages are disabled on this server. Please make sure you have a channelid and message set.");
+                            return;
+                        }
+                        else if (!string.IsNullOrEmpty(message))
+                        {
+                            _guildConfig.JoinMessage = message;
+                        }
+                        await context.Message.ReplyAsync("Example join message:");
+
+                        await context.Message.ReplyAsync(VerificationEngine.ConstructWelcomeMessage(message, context.Author));
+                    }
+                    else await context.Message.ReplyAsync("Invalid Option");
+                }
+
+                #endregion JoinMessage
 
                 #region AutoRole
 
