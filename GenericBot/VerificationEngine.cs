@@ -30,7 +30,10 @@ namespace GenericBot
             }
             catch (Exception ex)
             {
-                Core.Logger.LogErrorMessage(ex, null);
+                // This log throws way too much. It's fine to ignore errors, 
+                // because it means there was a string parsing error. There's no 
+                // better way to detect them easily
+                //Core.Logger.LogErrorMessage(ex, null);
                 return null;
             }
         }
