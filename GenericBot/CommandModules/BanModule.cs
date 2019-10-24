@@ -58,10 +58,15 @@ namespace GenericBot.CommandModules
                     context.Parameters.RemoveAt(0);
                 }
                 // In case no time was specified
+                catch (FormatException)
+                {
+                    time = DateTimeOffset.MaxValue;
+                }
                 catch (Exception ex)
                 {
                     await Core.Logger.LogErrorMessage(ex, context);
-                    time = DateTimeOffset.MaxValue; 
+                    await context.Message.ReplyAsync($"An unknown error has occured, and the developer has been notified. Please try again or with different options");
+                    return;
                 }
                 string timeMessage = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`";
 
