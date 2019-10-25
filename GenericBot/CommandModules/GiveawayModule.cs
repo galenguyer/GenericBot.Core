@@ -50,7 +50,7 @@ namespace GenericBot.CommandModules
                     }
                     else
                     {
-                        if (context.Parameters.Count < 3)
+                        if (context.Parameters.Count < 2)
                             await context.Message.ReplyAsync("There are multiple giveaways running. Please provide an Id");
                         else
                         {
