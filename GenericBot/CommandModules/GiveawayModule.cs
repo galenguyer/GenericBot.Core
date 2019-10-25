@@ -16,11 +16,11 @@ namespace GenericBot.CommandModules
             giveaway.Usage = "giveaway [create <description>|join <id>|close <id>|roll <id>|list]";
             giveaway.ToExecute += async (context) =>
             {
-                if(context.Parameters.Count == 0)
+                if (context.Parameters.Count == 0)
                 {
-                    await context.Message.ReplyAsync("Please choose one of the following options: `create`, `join`, `close`, or `roll`");
+                    await context.Message.ReplyAsync("Please choose one of the following options: `create`, `join`, `close`, `roll`, or `list`");
                 }
-                else if (context.Parameters[0].ToLower().Equals("create"))
+                else if (context.Parameters[0].ToLower().Equals("create") || context.Parameters[0].ToLower().Equals("open") || context.Parameters[0].ToLower().Equals("start"))
                 {
                     string desc = context.Parameters.Count > 1 ? context.ParameterString.Substring("create".Length).Trim() : string.Empty;
                     Giveaway newGiveaway = new Giveaway(context, desc);
@@ -55,7 +55,9 @@ namespace GenericBot.CommandModules
                         else
                         {
                             Giveaway g = giveaways.Find(x => x.Id.ToLower().Equals(context.Parameters[1]));
-                            if (g.EnteredUsers.Contains(context.Author.Id))
+                            if (g == null)
+                                await context.Message.ReplyAsync("Invalid Id");
+                            else if (g.EnteredUsers.Contains(context.Author.Id))
                                 await context.Message.ReplyAsync("You're already in that giveaway");
                             else
                             {
@@ -93,7 +95,9 @@ namespace GenericBot.CommandModules
                         else
                         {
                             Giveaway g = giveaways.Find(x => x.Id.ToLower().Equals(context.Parameters[1]));
-                            if (g.OwnerId != context.Author.Id && giveaway.GetPermissions(context) < Command.PermissionLevels.Moderator)
+                            if (g == null)
+                                await context.Message.ReplyAsync("Invalid Id");
+                            else if (g.OwnerId != context.Author.Id && giveaway.GetPermissions(context) < Command.PermissionLevels.Moderator)
                                 await context.Message.ReplyAsync("You do not have permissions to do that.");
                             else
                             {
@@ -127,7 +131,9 @@ namespace GenericBot.CommandModules
                         else
                         {
                             Giveaway g = giveaways.Find(x => x.Id.ToLower().Equals(context.Parameters[1]));
-                            if (g.OwnerId != context.Author.Id && giveaway.GetPermissions(context) < Command.PermissionLevels.Moderator)
+                            if (g == null)
+                                await context.Message.ReplyAsync("Invalid Id");
+                            else if (g.OwnerId != context.Author.Id && giveaway.GetPermissions(context) < Command.PermissionLevels.Moderator)
                                 await context.Message.ReplyAsync("You do not have permissions to do that.");
                             else
                                 await context.Message.ReplyAsync($"<@{g.EnteredUsers.GetRandomItem()}> has won {g.Description}!");
