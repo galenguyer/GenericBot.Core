@@ -68,7 +68,7 @@ namespace GenericBot.CommandModules
                 }
                 else if (context.Parameters[0].ToLower().Equals("close"))
                 {
-                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id);
+                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id).Where(g => g.IsActive).ToList();
 
                     if (giveaways.Count == 0)
                     {
@@ -76,28 +76,62 @@ namespace GenericBot.CommandModules
                     }
                     else if (giveaways.Count == 1)
                     {
-
+                        Giveaway g = giveaways.First();
+                        if (g.OwnerId != context.Author.Id && giveaway.GetPermissions(context) < Command.PermissionLevels.Moderator)
+                            await context.Message.ReplyAsync("You do not have permissions to do that.");
+                        else
+                        {
+                            g.IsActive = false;
+                            Core.UpdateOrCreateGiveaway(g, context.Guild.Id);
+                            await context.Message.ReplyAsync($"Giveaway closed with {g.EnteredUsers.Count} participants!");
+                        }
                     }
                     else
                     {
-
+                        if (context.Parameters.Count < 2)
+                            await context.Message.ReplyAsync("There are multiple giveaways running. Please provide an Id");
+                        else
+                        {
+                            Giveaway g = giveaways.Find(x => x.Id.ToLower().Equals(context.Parameters[1]));
+                            if (g.OwnerId != context.Author.Id && giveaway.GetPermissions(context) < Command.PermissionLevels.Moderator)
+                                await context.Message.ReplyAsync("You do not have permissions to do that.");
+                            else
+                            {
+                                g.IsActive = false;
+                                Core.UpdateOrCreateGiveaway(g, context.Guild.Id);
+                                await context.Message.ReplyAsync($"Giveaway closed with {g.EnteredUsers.Count} participants!");
+                            }
+                        }
                     }
                 }
                 else if (context.Parameters[0].ToLower().Equals("roll"))
                 {
-                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id);
+                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id).Where(g => !g.IsActive).ToList();
 
                     if (giveaways.Count == 0)
                     {
-                        await context.Message.ReplyAsync("No giveaways found");
+                        await context.Message.ReplyAsync("No giveaways found. Make sure the giveaway is closed before rolling.");
                     }
                     else if (giveaways.Count == 1)
                     {
-
+                        Giveaway g = giveaways.First();
+                        if (g.OwnerId != context.Author.Id && giveaway.GetPermissions(context) < Command.PermissionLevels.Moderator)
+                            await context.Message.ReplyAsync("You do not have permissions to do that.");
+                        else
+                            await context.Message.ReplyAsync($"<@{g.EnteredUsers.GetRandomItem()}> has won {g.Description}!");
                     }
                     else
                     {
-
+                        if (context.Parameters.Count < 2)
+                            await context.Message.ReplyAsync("There are multiple giveaways running. Please provide an Id");
+                        else
+                        {
+                            Giveaway g = giveaways.Find(x => x.Id.ToLower().Equals(context.Parameters[1]));
+                            if (g.OwnerId != context.Author.Id && giveaway.GetPermissions(context) < Command.PermissionLevels.Moderator)
+                                await context.Message.ReplyAsync("You do not have permissions to do that.");
+                            else
+                                await context.Message.ReplyAsync($"<@{g.EnteredUsers.GetRandomItem()}> has won {g.Description}!");
+                        }
                     }
                 }
                 else if (context.Parameters[0].ToLower().Equals("delete"))
