@@ -162,7 +162,7 @@ namespace GenericBot.CommandModules
                         resp += $"\n  `{_giveaway.Id}`: {_giveaway.Description} (By {Core.DiscordClient.GetUser(_giveaway.OwnerId)}, {_giveaway.EnteredUsers.Count} entered)";
                     }
                     if (giveaways.Any(g => !g.IsActive))
-                        resp += "Closed Giveaways:";
+                        resp += "\nClosed Giveaways:";
                     foreach (Giveaway _giveaway in giveaways.Where(g => !g.IsActive))
                     {
                         resp += $"\n  `{_giveaway.Id}`: {_giveaway.Description} (By {Core.DiscordClient.GetUser(_giveaway.OwnerId)}, {_giveaway.EnteredUsers.Count} entered)";
