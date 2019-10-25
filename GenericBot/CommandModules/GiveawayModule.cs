@@ -19,10 +19,8 @@ namespace GenericBot.CommandModules
                 if(context.Parameters.Count == 0)
                 {
                     await context.Message.ReplyAsync("Please choose one of the following options: `create`, `join`, `close`, or `roll`");
-                    return;
                 }
-
-                if (context.Parameters[0].ToLower().Equals("create"))
+                else if (context.Parameters[0].ToLower().Equals("create"))
                 {
                     string desc = context.Parameters.Count > 1 ? context.ParameterString.Substring("create".Length).Trim() : string.Empty;
                     Giveaway newGiveaway = new Giveaway(context, desc);
@@ -32,19 +30,92 @@ namespace GenericBot.CommandModules
                 }
                 else if (context.Parameters[0].ToLower().Equals("join"))
                 {
+                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id).Where(g => g.IsActive);
 
+                    if (giveaways.Count == 0)
+                    {
+                        await context.Message.ReplyAsync("No giveaways found");
+                    }
+                    else if (giveaways.Count == 1)
+                    {
+                        Giveaway g = giveaways.First();
+                        if (g.EnteredUsers.Contains(context.Author.Id))
+                            await context.Message.ReplyAsync("You're already in that giveaway");
+                        else
+                        {
+                            g.EnteredUsers.Add(context.Author.Id);
+                            Core.UpdateOrCreateGiveaway(g, context.Guild.Id);
+                            await context.Message.ReplyAsync($"You've joined the giveaway! Good luck!");
+                        }
+                    }
+                    else
+                    {
+                        if (context.Parameters.Count < 3)
+                            await context.Message.ReplyAsync("There are multiple giveaways running. Please provide an Id");
+                        else
+                        {
+                            Giveaway g = giveaways.Find(x => x.Id.ToLower().Equals(context.Parameters[2]));
+                            if (g.EnteredUsers.Contains(context.Author.Id))
+                                await context.Message.ReplyAsync("You're already in that giveaway");
+                            else
+                            {
+                                g.EnteredUsers.Add(context.Author.Id);
+                                Core.UpdateOrCreateGiveaway(g, context.Guild.Id);
+                                await context.Message.ReplyAsync($"You've joined the giveaway! Good luck!");
+                            }
+                        }
+                    }
                 }
                 else if (context.Parameters[0].ToLower().Equals("close"))
                 {
+                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id);
 
+                    if (giveaways.Count == 0)
+                    {
+                        await context.Message.ReplyAsync("No giveaways found");
+                    }
+                    else if (giveaways.Count == 1)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
                 }
                 else if (context.Parameters[0].ToLower().Equals("roll"))
                 {
+                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id);
 
+                    if (giveaways.Count == 0)
+                    {
+                        await context.Message.ReplyAsync("No giveaways found");
+                    }
+                    else if (giveaways.Count == 1)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
                 }
                 else if (context.Parameters[0].ToLower().Equals("delete"))
                 {
+                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id);
 
+                    if (giveaways.Count == 0)
+                    {
+                        await context.Message.ReplyAsync("No giveaways found");
+                    }
+                    else if (giveaways.Count == 1)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
                 }
                 else if (context.Parameters[0].ToLower().Equals("list"))
                 {

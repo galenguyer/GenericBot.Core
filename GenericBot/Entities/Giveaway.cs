@@ -23,7 +23,7 @@ namespace GenericBot.Entities
         {
             this.OwnerId = context.Author.Id;
             this.Description = description;
-            this.Id = VerificationEngine.GetVerificationCode(context.Message.Id, context.Guild.Id);
+            this.Id = VerificationEngine.GetVerificationCode(context.Message.Id, context.Author.Id);
             this.EnteredUsers = new List<ulong>();
             this.IsActive = true;
         }
