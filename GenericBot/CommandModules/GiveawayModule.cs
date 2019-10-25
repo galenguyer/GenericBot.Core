@@ -54,7 +54,7 @@ namespace GenericBot.CommandModules
                             await context.Message.ReplyAsync("There are multiple giveaways running. Please provide an Id");
                         else
                         {
-                            Giveaway g = giveaways.Find(x => x.Id.ToLower().Equals(context.Parameters[2]));
+                            Giveaway g = giveaways.Find(x => x.Id.ToLower().Equals(context.Parameters[1]));
                             if (g.EnteredUsers.Contains(context.Author.Id))
                                 await context.Message.ReplyAsync("You're already in that giveaway");
                             else
