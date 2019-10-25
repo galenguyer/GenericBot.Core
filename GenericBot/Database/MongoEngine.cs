@@ -339,6 +339,16 @@ namespace GenericBot.Database
             return _collection.Find(new BsonDocument()).ToList();
         }
 
+        public void DeleteGiveaway(Giveaway giveaway, ulong guildId)
+        {
+            Core.Logger.LogGenericMessage($"[Mongo] GOT Giveaways FROM {guildId}");
+
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<Giveaway>("giveaways");
+
+            _collection.FindOneAndDelete(g => g.Id == giveaway.Id);
+        }
+
         public void AddStatus(Status status)
         {
             var _db = mongoClient.GetDatabase("global");

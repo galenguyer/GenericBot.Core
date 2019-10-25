@@ -148,13 +148,23 @@ namespace GenericBot.CommandModules
                     {
                         await context.Message.ReplyAsync("No giveaways found");
                     }
-                    else if (giveaways.Count == 1)
-                    {
-
-                    }
                     else
                     {
-
+                        if (context.Parameters.Count < 2)
+                            await context.Message.ReplyAsync("Please provide an Id");
+                        else
+                        {
+                            Giveaway g = giveaways.Find(x => x.Id.ToLower().Equals(context.Parameters[1]));
+                            if (g == null)
+                                await context.Message.ReplyAsync("Invalid Id");
+                            else if (g.OwnerId != context.Author.Id && giveaway.GetPermissions(context) < Command.PermissionLevels.Moderator)
+                                await context.Message.ReplyAsync("You do not have permissions to do that.");
+                            else
+                            {
+                                Core.DeleteGiveaway(g, context.Guild.Id);
+                                await context.Message.ReplyAsync($"Deleted giveaway.");
+                            }
+                        }
                     }
                 }
                 else if (context.Parameters[0].ToLower().Equals("list"))

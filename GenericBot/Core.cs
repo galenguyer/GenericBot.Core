@@ -199,5 +199,8 @@ namespace GenericBot
 
         public static List<Giveaway> GetGiveaways(ulong guildId) =>
             MongoEngine.GetGiveaways(guildId);
+
+        public static void DeleteGiveaway(Giveaway giveaway, ulong guildId) =>
+            MongoEngine.DeleteGiveaway(giveaway, guildId);
     }
 }
