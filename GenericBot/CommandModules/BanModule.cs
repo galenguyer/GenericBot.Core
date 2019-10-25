@@ -141,7 +141,9 @@ namespace GenericBot.CommandModules
 
 
                 var guildconfig = Core.GetGuildConfig(context.Guild.Id);
-
+                if (guildconfig.MutedUsers.Contains(userId))
+                    guildconfig.MutedUsers.Remove(userId);
+                Core.SaveGuildConfig(guildconfig);
                 var bannedUser = Core.GetUserFromGuild(user.Id, context.Guild.Id)
                     .AddWarning(
                         $"Banned {timeMessage} for `{reason}` (By `{context.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
@@ -279,6 +281,9 @@ namespace GenericBot.CommandModules
 
 
                 var guildconfig = Core.GetGuildConfig(context.Guild.Id);
+                if (guildconfig.MutedUsers.Contains(userId))
+                    guildconfig.MutedUsers.Remove(userId);
+                Core.SaveGuildConfig(guildconfig);
 
                 var bannedUser = Core.GetUserFromGuild(user.Id, context.Guild.Id)
                     .AddWarning(
@@ -388,7 +393,9 @@ namespace GenericBot.CommandModules
 
 
                 var guildconfig = Core.GetGuildConfig(context.Guild.Id);
-
+                if (guildconfig.MutedUsers.Contains(user.Id))
+                    guildconfig.MutedUsers.Remove(user.Id);
+                Core.SaveGuildConfig(guildconfig);
                 var kickedUser = Core.GetUserFromGuild(user.Id, context.Guild.Id)
                     .AddWarning(
                         $"Kicked {user} for `{reason}` (By `{context.Author}` At `{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")} GMT`)");
