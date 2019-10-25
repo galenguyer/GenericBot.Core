@@ -10,13 +10,22 @@ namespace GenericBot.Entities
     {
         public ulong OwnerId { get; set; }
         public string Description { get; set; }
-        public string GiveawayId { get; set; }
+        public string Id { get; set; }
         public List<ulong> EnteredUsers { get; set; }
         public bool IsActive { get; set; }
 
         public Giveaway()
         {
 
+        }
+
+        public Giveaway(ParsedCommand context, string description)
+        {
+            this.OwnerId = context.Author.Id;
+            this.Description = description;
+            this.Id = VerificationEngine.GetVerificationCode(context.Message.Id, context.Guild.Id);
+            this.EnteredUsers = new List<ulong>();
+            this.IsActive = true;
         }
     }
 }

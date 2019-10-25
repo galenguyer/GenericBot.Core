@@ -189,5 +189,14 @@ namespace GenericBot
 
         public static void AddStatus(Status status) =>
             MongoEngine.AddStatus(status);
+
+        public static Giveaway CreateGiveaway(Giveaway giveaway, ulong guildId) =>
+            MongoEngine.CreateGiveaway(giveaway, guildId);
+
+        public static Giveaway UpdateOrCreateGiveaway(Giveaway giveaway, ulong guildId) =>
+            MongoEngine.UpdateOrCreateGiveaway(giveaway, guildId);
+
+        public static List<Giveaway> GetGiveaways(ulong guildId) =>
+            MongoEngine.GetGiveaways(guildId);
     }
 }

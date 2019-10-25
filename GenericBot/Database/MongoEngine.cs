@@ -3,6 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace GenericBot.Database
@@ -294,6 +295,48 @@ namespace GenericBot.Database
             var _collection = _userDb.GetCollection<AuditCommand>("auditlog");
 
             return _collection.Find(new BsonDocument()).ToList();
+        }
+
+        public Giveaway CreateGiveaway(Giveaway giveaway, ulong guildId)
+        {
+            Core.Logger.LogGenericMessage($"[Mongo] CREATE GIVEAWAY {giveaway.Id} FOR {guildId}");
+
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<Giveaway>("giveaways");
+
+            while(_collection.Find(new BsonDocument()).ToList().HasElement(g => g.Id == giveaway.Id, out Giveaway output))
+            {
+                giveaway.Id += new Random().Next(0, 10).ToString();
+            }
+
+            _collection.InsertOne(giveaway);
+            return giveaway;
+        }
+
+        public Giveaway UpdateOrCreateGiveaway(Giveaway giveaway, ulong guildId)
+        {
+            Core.Logger.LogGenericMessage($"[Mongo] UPDATE GIVEAWAY {giveaway.Id} FOR {guildId}");
+
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<Giveaway>("giveaways");
+
+            if (_collection.Find(new BsonDocument()).ToList().Any(g => g.Id == giveaway.Id))
+            {
+                _collection.FindOneAndReplace(g => g.Id == giveaway.Id, giveaway);
+            }
+            else _collection.InsertOne(giveaway);
+
+            return giveaway;
+        }
+
+        public List<Giveaway> GetGiveaways(ulong guildId)
+        {
+            Core.Logger.LogGenericMessage($"[Mongo] GOT Giveaways FROM {guildId}");
+
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<Giveaway>("giveaways");
+
+            return _collection.Find(new BsonDocument()).ToList()
         }
 
         public void AddStatus(Status status)
