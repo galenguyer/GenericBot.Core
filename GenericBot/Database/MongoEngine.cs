@@ -336,7 +336,7 @@ namespace GenericBot.Database
             var _userDb = GetDatabaseFromGuildId(guildId);
             var _collection = _userDb.GetCollection<Giveaway>("giveaways");
 
-            return _collection.Find(new BsonDocument()).ToList()
+            return _collection.Find(new BsonDocument()).ToList();
         }
 
         public void AddStatus(Status status)
