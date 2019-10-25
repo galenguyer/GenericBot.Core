@@ -30,7 +30,7 @@ namespace GenericBot.CommandModules
                 }
                 else if (context.Parameters[0].ToLower().Equals("join"))
                 {
-                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id).Where(g => g.IsActive);
+                    List<Giveaway> giveaways = Core.GetGiveaways(context.Guild.Id).Where(g => g.IsActive).ToList();
 
                     if (giveaways.Count == 0)
                     {
