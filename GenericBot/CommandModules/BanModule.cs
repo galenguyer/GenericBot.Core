@@ -62,6 +62,10 @@ namespace GenericBot.CommandModules
                 {
                     time = DateTimeOffset.MaxValue;
                 }
+                catch (ArgumentOutOfRangeException)
+                {
+                    time = DateTimeOffset.MaxValue;
+                }
                 catch (Exception ex)
                 {
                     await Core.Logger.LogErrorMessage(ex, context);
