@@ -47,7 +47,7 @@ namespace GenericBot.CommandModules
                         {
                             if (!user.Nicknames.IsEmpty())
                             {
-                                if (user.Nicknames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
+                                if (user.Nicknames != null && user.Nicknames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
                                 {
                                     foundUsers.Add(user);
                                 }
@@ -55,7 +55,7 @@ namespace GenericBot.CommandModules
 
                             if (!user.Usernames.IsEmpty())
                             {
-                                if (user.Usernames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
+                                if (user.Usernames != null && user.Usernames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
                                 {
                                     foundUsers.Add(user);
                                 }
