@@ -4,6 +4,7 @@ using GenericBot.CommandModules;
 using GenericBot.Database;
 using GenericBot.Entities;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -48,6 +49,15 @@ namespace GenericBot
             DiscordClient.UserLeft += UserEventHandler.UserLeft;
             DiscordClient.UserUpdated += UserEventHandler.UserUpdated;
             DiscordClient.GuildAvailable += GuildEventHandler.GuildLoaded;
+
+            if (File.Exists("version.txt"))
+            {
+                DiscordClient.SetGameAsync($"v. {File.ReadAllText("version.txt")}", type: ActivityType.Watching);
+            }
+            else
+            {
+                DiscordClient.SetGameAsync(GlobalConfig.PlayingStatus);
+            }
         }
 
         private static void LoadCommands(List<string> CommandsToExclude = null)
