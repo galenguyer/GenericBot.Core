@@ -21,6 +21,7 @@ namespace GenericBot.CommandModules
             {
                 Command cmd = new Command(_name);
                 cmd.SendTyping = false;
+                cmd.WorksInDms = true;
                 cmd.Description = _description;
                 cmd.ToExecute += async (context) =>
                 {
