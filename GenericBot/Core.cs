@@ -82,6 +82,7 @@ namespace GenericBot
             Commands.AddRange(new QuickCommands().GetQuickCommands());
             Commands.AddRange(new GetGuildModule().Load());
             Commands.AddRange(new GiveawayModule().Load());
+            Commands.AddRange(new ImageModule().Load());
 
             if (CommandsToExclude == null)
                 return;
