@@ -30,5 +30,5 @@ In late September, I took it upon myself to completely re-write GenericBot. I've
 - General bug fixes. Small things like unbans not working if the user wasn't banned by the bot or Administrator permissions not being deteted that were.
 
 ##### Things I've removed
-- Some fun commands have been removed. These are commands like >jeff, >star, >dog, and >cat. These are popular and will be added but are a lower priority than bug fixes and other features.
+- Some fun commands have been removed. These are commands like >jeff and >star. These are popular and will be added but are a lower priority than bug fixes and other features.
 - Points have been removed, at least for the time being. The code around them was very messy and doesn't work with the new structure. 
