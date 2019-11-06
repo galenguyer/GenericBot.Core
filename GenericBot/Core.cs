@@ -49,14 +49,18 @@ namespace GenericBot
             DiscordClient.UserLeft += UserEventHandler.UserLeft;
             DiscordClient.UserUpdated += UserEventHandler.UserUpdated;
             DiscordClient.GuildAvailable += GuildEventHandler.GuildLoaded;
+            DiscordClient.ShardReady += ShardReady;
+        }
 
+        private static async Task ShardReady(DiscordSocketClient arg)
+        {
             if (File.Exists("version.txt"))
             {
-                DiscordClient.SetGameAsync($"v. {File.ReadAllText("version.txt")}", type: ActivityType.Watching);
+                await arg.SetGameAsync($"v. {File.ReadAllText("version.txt")}", type: ActivityType.Watching);
             }
             else
             {
-                DiscordClient.SetGameAsync(GlobalConfig.PlayingStatus);
+                await arg.SetGameAsync(GlobalConfig.PlayingStatus);
             }
         }
 
