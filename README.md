@@ -22,7 +22,7 @@ If you notice a bug or want a feature added, open an [issue!](https://github.com
 In late September, I took it upon myself to completely re-write GenericBot. I've added some features, removed some others, and generally streamlined the code to make it maintainble. 
 
 ##### Things I've added
-- Better error handling. Any error sends a message via webhook to a channel I get notifications for, so I can track down and diagnose issues faster than ever before.
+- Better error handling. Any error sends a message via webhook to a channel I get notifications for, so I can track down and diagnose issues faster than ever before. If the error is seen 5 times, an issue is created on Github.
 - Better database abstraction. Any access to the database goes through a wrapper I wrote to ensure DRY. Previously, the database was accessed in different ways depending on when I wrote that code. 
 - Improved command context. Previously, the global client, the message itself, and an array of parameters was passed in. Now a unified object is given to the command, improving readability and simplifying data access. Furthermore, now newlines can be preserved. 
 - Some commands work in DMs now! This was enabled by the improved context. Previously, messages had to be used in a server for the object to be constructed properly, but with the new context the server can be null, and if a flag is enabled on the individual command, the bot will allow the command to execute in DMs. 
