@@ -31,7 +31,7 @@ namespace GenericBot.Entities
 
             this.Id = this.Message.GetHashCode() + this.StackTrace.GetHashCode();
 
-            this.Count = 0;
+            this.Count = 1;
             this.Reported = false;
         }
     }
