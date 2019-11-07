@@ -120,6 +120,76 @@ namespace GenericBot.CommandModules
             };
             commands.Add(jeff);
 
+            Command warm = new Command("warm");
+            warm.ToExecute += async (context) =>
+            {
+                string filename = "";
+                if (context.Parameters.IsEmpty())
+                {
+                    var user = context.Author;
+                    using (WebClient webClient = new WebClient())
+                    {
+                        await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl(size: 512)),
+                            $"files/img/{user.AvatarId}.png");
+                    }
+                    filename = $"files/img/{user.AvatarId}.png";
+                }
+                else if (Uri.IsWellFormedUriString(context.Parameters[0], UriKind.RelativeOrAbsolute) &&
+                                         (context.Parameters[0].EndsWith(".png") || context.Parameters[0].EndsWith(".jpg") ||
+                                          context.Parameters[0].EndsWith("jpeg") || context.Parameters[0].EndsWith(".gif")))
+                {
+                    filename = $"files/img/{context.Message.Id}.{context.ParameterString.Split('.').Last()}";
+                    using (WebClient webclient = new WebClient())
+                    {
+                        await webclient.DownloadFileTaskAsync(new Uri(context.ParameterString), filename);
+                    }
+                }
+                else if (context.Message.GetMentionedUsers().Any())
+                {
+                    var user = context.Message.GetMentionedUsers().First();
+                    using (WebClient webClient = new WebClient())
+                    {
+                        await webClient.DownloadFileTaskAsync(new Uri(user.GetAvatarUrl().Replace("size=128", "size=512")),
+                            $"files/img/{user.AvatarId}.png");
+                    }
+                    filename = $"files/img/{user.AvatarId}.png";
+                }
+
+                {
+                    int targetWidth = 596;
+                    int targetHeight = 684; //height and width of the finished image
+                    Image baseImage = Image.FromFile("files/img/warm.png");
+                    Image avatar = Image.FromFile(filename);
+
+                    //be sure to use a pixelformat that supports transparency
+                    using (var bitmap = new Bitmap(targetWidth, targetHeight, PixelFormat.Format32bppArgb))
+                    {
+                        using (var canvas = Graphics.FromImage(bitmap))
+                        {
+                            //this ensures that the backgroundcolor is transparent
+                            canvas.Clear(Color.White);
+
+                            //this paints the frontimage with a offset at the given coordinates
+                            canvas.DrawImage(avatar, 20, 466, 218, 218);
+
+                            //this selects the entire backimage and and paints
+                            //it on the new image in the same size, so its not distorted.
+                            canvas.DrawImage(baseImage, 0, 0, targetWidth, targetHeight);
+                            canvas.Save();
+                        }
+
+                        bitmap.Save($"files/img/warm{context.Message.Id}.png", System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                    await Task.Delay(100);
+                    await context.Channel.SendFileAsync($"files/img/warm{context.Message.Id}.png");
+                    baseImage.Dispose();
+                    avatar.Dispose();
+                    File.Delete(filename);
+                    File.Delete($"files/img/warm{context.Message.Id}.png");
+                }
+            };
+            commands.Add(warm);
+    
             return commands;
         }
     }
