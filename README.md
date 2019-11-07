@@ -1,4 +1,6 @@
 # GenericBot: An All-Purpose Almost-Decent Bot
+[![Build status](https://mastrchef.visualstudio.com/GenericBot/_apis/build/status/GenericBot-ASP.NET%20Core-CI)](https://mastrchef.visualstudio.com/GenericBot/_build/latest?definitionId=1)
+
 GenericBot aims to provide an almost full featured moderation and fun box experience in one convenient package
 
 GenericBot is, and always will be, free to use. To invite it, click [here](https://discordapp.com/oauth2/authorize?client_id=295329346590343168&scope=bot&permissions=2110258303)
