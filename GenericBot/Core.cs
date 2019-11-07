@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using GenericBot.CommandModules;
 using GenericBot.Database;
 using GenericBot.Entities;
+using Octokit;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -222,10 +223,26 @@ namespace GenericBot
         {
             report = MongoEngine.AddOrUpdateExceptionReport(report);
 
-            if(!report.Reported && report.Count >= 5)
+            if(!report.Reported && report.Count >= 5 && !string.IsNullOrEmpty(GlobalConfig.GithubToken))
             {
-                // TODO: Report Issue to GitHub
-                //report.Reported = true;
+                try
+                {
+                    var githubTokenAuth = new Credentials(GlobalConfig.GithubToken);
+                    var client = new GitHubClient(new ProductHeaderValue("GenericBot"));
+                    client.Credentials = githubTokenAuth;
+                    var issueToCreate = new NewIssue($"AUTOMATED: {report.Message}");
+                    issueToCreate.Body = $"Stacktrace:\n" +
+                        $"{report.StackTrace}\n" +
+                        $"\n" +
+                        $"Reporting Build (if available): {GenericBot.BuildId}\n";
+
+                    var issue = client.Issue.Create(client.User.Current().Result.Name, "GenericBot", issueToCreate).Result;
+                    report.Reported = true;
+                }
+                catch
+                {
+                    Logger.LogGenericMessage("An error occured reporting to github. Please check your credentials and that there is a repo \"GenericBot\" associated with your account.");
+                }
             }
 
             return report;

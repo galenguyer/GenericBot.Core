@@ -48,6 +48,11 @@ namespace GenericBot.Entities
         /// </summary>
         public string CriticalLoggingWebhookUrl { get; set; }
         /// <summary>
+        /// Token to use to authenticate with GitHub for opening issues
+        /// </summary>
+        public string GithubToken { get; set; }
+
+        /// <summary>
         /// Load the config file if it exists, otherwise create a blank one and save it
         /// for the user to edit
         /// </summary>

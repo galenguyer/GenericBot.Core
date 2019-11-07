@@ -14,7 +14,7 @@ namespace GenericBot
 {
     class GenericBot
     {
-        public static string BuildId;
+        public static string BuildId = string.Empty;
         public static List<ulong> ClearedMessageIds = new List<ulong>();
         static void Main(string[] args)
         {
