@@ -12,6 +12,9 @@ One of the most popular features GenericBot is used for is roles a user can assi
 ### Moderation
 GenericBot provides a wide range of tools for moderators to track users and infractions. It keeps track of all of a user's usernames, nicknames, and logged infractions, including kicks and timed or permanent bans. Users can be searched for either by ID, or by username or nickname, whether it be current or an old name. (All data is stored in an encrypted database, and data from one server is completely inaccessible by another server)
 
+### Fun!
+In addition to being a highly effective moderator toolkit, GenericBot has some fun commands, such as >dog, >cat, or >jeff. You can also create your own custom commands for rapid-fire memery or whatever else tickles your fancy
+
 ### Development 
 GenericBot is constantly in active development. 
 
