@@ -360,18 +360,20 @@ namespace GenericBot.Database
         {
             var _db = mongoClient.GetDatabase("global");
             var _collection = _db.GetCollection<ExceptionReport>("exceptionReports");
-
-            if (_collection.Find(new BsonDocument()).ToList().HasElement(r => r.Message.Equals(report.Message) && r.StackTrace.Equals(report.StackTrace), out report))
+            ExceptionReport foundReport;
+            if (_collection.Find(new BsonDocument()).ToList()
+                .HasElement(r => r.Message.Equals(report.Message) && r.StackTrace.Equals(report.StackTrace), out foundReport))
             {
-                report.Count++;
-                _collection.FindOneAndReplace(r => r.Message.Equals(report.Message) && r.StackTrace.Equals(report.StackTrace), report);
+                foundReport.Count++;
+                _collection.FindOneAndReplace(r => r.Message.Equals(foundReport.Message) && r.StackTrace.Equals(foundReport.StackTrace), foundReport);
             }
             else
             {
                 _collection.InsertOne(report);
+                foundReport = report;
             }
 
-            return report;
+            return foundReport;
         }
 
         public List<string> GetGuildIdsFromDb()
