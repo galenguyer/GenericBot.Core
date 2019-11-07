@@ -356,6 +356,24 @@ namespace GenericBot.Database
             _collection.InsertOne(status);
         }
 
+        public ExceptionReport AddOrUpdateExceptionReport(ExceptionReport report)
+        {
+            var _db = mongoClient.GetDatabase("global");
+            var _collection = _db.GetCollection<ExceptionReport>("exceptionReports");
+
+            if (_collection.Find(new BsonDocument()).ToList().HasElement(r => r.Message.Equals(report.Message) && r.StackTrace.Equals(report.StackTrace), out report))
+            {
+                report.Count++;
+                _collection.FindOneAndReplace(r => r.Message.Equals(report.Message) && r.StackTrace.Equals(report.StackTrace), report);
+            }
+            else
+            {
+                _collection.InsertOne(report);
+            }
+
+            return report;
+        }
+
         public List<string> GetGuildIdsFromDb()
         {
             return mongoClient.ListDatabaseNames().ToList();

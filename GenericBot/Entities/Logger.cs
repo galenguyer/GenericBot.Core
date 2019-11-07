@@ -59,6 +59,9 @@ namespace GenericBot
             if (!string.IsNullOrEmpty(Core.GlobalConfig.CriticalLoggingWebhookUrl))
             {
                 var webhook = new Discord.Webhook.DiscordWebhookClient(Core.GlobalConfig.CriticalLoggingWebhookUrl);
+
+                ExceptionReport report = Core.AddOrUpdateExceptionReport(new ExceptionReport(exception));
+
                 var builder = new EmbedBuilder()
                     .WithColor(255, 0, 0)
                     .WithCurrentTimestamp()
@@ -69,7 +72,7 @@ namespace GenericBot
                     builder.AddField(new EmbedFieldBuilder()
                         .WithName("Stack Trace")
                         .WithValue(exception.StackTrace.Length > 1000 ? exception.StackTrace.Substring(exception.StackTrace.Length - 1000, 1000) : exception.StackTrace));
-
+                
                 if (context != null)
                 {
                     builder.AddField(new EmbedFieldBuilder()
@@ -81,8 +84,16 @@ namespace GenericBot
                     builder.AddField(new EmbedFieldBuilder()
                         .WithName($"Message")
                         .WithValue(context.Message.Content));
-
                 }
+
+                builder.AddField(new EmbedFieldBuilder()
+                    .WithName("Count")
+                    .WithValue(report.Count).WithIsInline(true))
+                    .AddField(new EmbedFieldBuilder()
+                    .WithName("Reported")
+                    .WithValue(report.Reported)
+                    .WithIsInline(true));
+
                 webhook.SendMessageAsync("", embeds: new List<Embed> { builder.Build() });
             }
 

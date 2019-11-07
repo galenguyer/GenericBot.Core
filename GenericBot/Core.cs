@@ -160,9 +160,9 @@ namespace GenericBot
             MongoEngine.DeleteCustomCommand(name, guildId);
         }
 
-        public static Quote AddQuote(string quote, ulong guildId) => 
+        public static Quote AddQuote(string quote, ulong guildId) =>
             MongoEngine.AddQuote(quote, guildId);
-        public static bool RemoveQuote(int id, ulong guildId)  => 
+        public static bool RemoveQuote(int id, ulong guildId) =>
             MongoEngine.RemoveQuote(id, guildId);
 
         public static Quote GetQuote(string quote, ulong guildId)
@@ -173,7 +173,7 @@ namespace GenericBot
             {
                 return quotes.GetRandomItem();
             }
-            else if(int.TryParse(quote, out int id))
+            else if (int.TryParse(quote, out int id))
             {
                 return quotes.Any(q => q.Id == id) ? quotes.Find(q => q.Id == id) : new Quote("Not Found", 0);
             }
@@ -217,5 +217,18 @@ namespace GenericBot
 
         public static void DeleteGiveaway(Giveaway giveaway, ulong guildId) =>
             MongoEngine.DeleteGiveaway(giveaway, guildId);
+
+        public static ExceptionReport AddOrUpdateExceptionReport(ExceptionReport report)
+        {
+            report = MongoEngine.AddOrUpdateExceptionReport(report);
+
+            if(!report.Reported && report.Count >= 5)
+            {
+                // TODO: Report Issue to GitHub
+                //report.Reported = true;
+            }
+
+            return report;
+        }
     }
 }
