@@ -72,21 +72,21 @@ namespace GenericBot.CommandModules
                     }
                 }
 
-                if (count > 100)
-                {
-                    await context.Message.ReplyAsync("I don't think you can hold that many!");
-                    return;
-                }
-                if (sides < 2)
-                {
-                    await context.Message.ReplyAsync("You can't have a 1-sided dice!");
-                    return;
-                }
-                if (sides > 100)
-                {
-                    await context.Message.ReplyAsync("That's an awefully large dice, I can't hold that");
-                    return;
-                }
+                //if (count > 100)
+                //{
+                //    await context.Message.ReplyAsync("I don't think you can hold that many!");
+                //    return;
+                //}
+                //if (sides < 2)
+                //{
+                //    await context.Message.ReplyAsync("You can't have a 1-sided dice!");
+                //    return;
+                //}
+                //if (sides > 100)
+                //{
+                //    await context.Message.ReplyAsync("That's an awefully large dice, I can't hold that");
+                //    return;
+                //}
                 RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider();
                 List<int> results = new List<int>();
                 while (results.Count < count)
