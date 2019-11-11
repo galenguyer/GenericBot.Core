@@ -17,6 +17,7 @@ namespace GenericBot.CommandModules
             roll.Aliases.Add("dice");
             roll.Description = "Roll a specified number of dices. Defaults to 1d20 if no parameters";
             roll.Usage = "roll [count]d[sides]";
+            roll.WorksInDms = true;
             roll.ToExecute += async (context) =>
             {
                 uint count = 1;
