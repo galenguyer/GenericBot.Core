@@ -46,7 +46,7 @@ namespace GenericBot
             Console.ForegroundColor = ConsoleColor.Blue;
             string message = $"[Generic] {DateTime.UtcNow.ToString(@"yyyy-MM-dd_HH-mm")}: {msg}";
             Console.WriteLine(message);
-            File.AppendAllText($"files/sessions/{SessionId.Substring(0, 8)}.log", message + "\n");
+            File.AppendAllText($"files/sessions/{SessionId}.log", message + "\n");
             return Task.FromResult(1);
         }
         public Task LogErrorMessage(Exception exception, ParsedCommand context)
