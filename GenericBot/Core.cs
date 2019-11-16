@@ -4,6 +4,7 @@ using GenericBot.CommandModules;
 using GenericBot.Database;
 using GenericBot.Entities;
 using Octokit;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -239,9 +240,10 @@ namespace GenericBot
                     var issue = client.Issue.Create(client.User.Current().Result.Name, "GenericBot", issueToCreate).Result;
                     report.Reported = true;
                 }
-                catch
+                catch(Exception ex)
                 {
                     Logger.LogGenericMessage("An error occured reporting to github. Please check your credentials and that there is a repo \"GenericBot\" associated with your account.");
+                    Logger.LogGenericMessage(ex.Message + "\n" + ex.StackTrace);
                 }
             }
 
