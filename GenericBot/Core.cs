@@ -237,7 +237,7 @@ namespace GenericBot
                         $"\n" +
                         $"Reporting Build (if available): {GenericBot.BuildId}\n";
 
-                    var issue = client.Issue.Create(client.User.Current().Result.Name, "GenericBot", issueToCreate).Result;
+                    var issue = client.Issue.Create(client.User.Current().Result.Login, "GenericBot", issueToCreate).Result;
                     report.Reported = true;
                 }
                 catch(Exception ex)
