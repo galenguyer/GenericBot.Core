@@ -40,6 +40,19 @@ namespace GenericBot.CommandModules
             };
             commands.Add(getInvite);
 
+            Command dmuser = new Command("dmuser");
+            dmuser.RequiredPermission = Command.PermissionLevels.BotOwner;
+            dmuser.ToExecute += async (context) =>
+            {
+                var channel = Core.DiscordClient.GetUser(ulong.Parse(context.Parameters[0])).GetOrCreateDMChannelAsync().Result;
+
+                string message = context.ParameterString.Substring(context.ParameterString.IndexOf(' '));
+
+                await channel.SendMessageAsync(message);
+                await context.Message.ReplyAsync($"Sent `{message}` to {Core.DiscordClient.GetUser(ulong.Parse(context.Parameters[0]))}");
+            };
+            commands.Add(dmuser);
+
             Command getGuildCommand = new Command("getguild");
             getGuildCommand.Usage = "getguild <user|guild|name>";
             getGuildCommand.Description = "Gets information about guilds this bot is in.";
