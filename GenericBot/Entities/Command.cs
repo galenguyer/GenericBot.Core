@@ -43,7 +43,10 @@ namespace GenericBot.Entities
         public async Task ExecuteCommand(ParsedCommand command)
         {
             if (GetPermissions(command) < RequiredPermission)
+            {
+                await command.Message.ReplyAsync($"I'm sorry, {command.Author.GetDisplayName()}. I'm afraid I can't do that.");
                 return;
+            }
 
             if (this.RequiredPermission >= PermissionLevels.Moderator && this.RequiredPermission < PermissionLevels.GlobalAdmin && this.Name != "audit")
                 Core.AddToAuditLog(command, command.Guild.Id);
