@@ -13,7 +13,33 @@ namespace GenericBot.CommandModules
         public List<Command> Load()
         {
             List<Command> commands = new List<Command>();
-            
+
+            Command getInvite = new Command("getinvite");
+            getInvite.RequiredPermission = Command.PermissionLevels.BotOwner;
+            getInvite.ToExecute += async (context) =>
+            {
+                ulong guildId;
+                if(context.Parameters.Count < 1 || !ulong.TryParse(context.Parameters[0], out guildId))
+                {
+                    await context.Message.ReplyAsync("Please pass in a Guild Id");
+                }
+                guildId = ulong.Parse(context.Parameters[0]);
+                try
+                {
+                    var guild = Core.DiscordClient.GetGuild(guildId);
+                    var invite = guild.DefaultChannel.CreateInviteAsync(maxUses: 1).Result;
+
+                    await context.Message.ReplyAsync($"Guild: {guild.Name} (`{guild.Id}`)\n" +
+                        $"Owner: {guild.Owner} (`{guild.Owner.Id}`)\n" +
+                        $"Invite: {invite.Url}");
+                }
+                catch
+                {
+                    await context.Message.ReplyAsync($"Could not get an invite for that server");
+                }
+            };
+            commands.Add(getInvite);
+
             Command getGuildCommand = new Command("getguild");
             getGuildCommand.Usage = "getguild <user|guild|name>";
             getGuildCommand.Description = "Gets information about guilds this bot is in.";
