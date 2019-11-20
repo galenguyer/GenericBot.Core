@@ -29,12 +29,14 @@ namespace GenericBot
             return result;
         }
 
-        public static string GetDisplayName(this SocketGuildUser user)
+        public static string GetDisplayName(this SocketUser user)
         {
-            if (string.IsNullOrEmpty(user.Nickname))
-                return user.Username;
+            SocketGuildUser guildUser = user as SocketGuildUser;
 
-            return user.Nickname;
+            if (guildUser != null && !string.IsNullOrEmpty(guildUser.Nickname))
+                return guildUser.Nickname;
+
+            return user.Username;
         }
 
         public static SocketGuild GetGuild(this SocketMessage msg)
