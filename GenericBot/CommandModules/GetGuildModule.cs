@@ -98,6 +98,7 @@ namespace GenericBot.CommandModules
 
                 foreach (var str in res.MessageSplit('\n'))
                     await context.Message.ReplyAsync(str);
+                return;
             }
             
             var eb = new EmbedBuilder().WithTitle($"Guilds matching \"{searchQuery}\"");
