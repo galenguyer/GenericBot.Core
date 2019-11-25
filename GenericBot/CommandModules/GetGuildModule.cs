@@ -92,9 +92,12 @@ namespace GenericBot.CommandModules
             
             if (foundGuilds.Count > 25)
             {
-                await context.Message.ReplyAsync(
-                    $"Search query `{searchQuery} resulted in **{foundGuilds.Count}** guilds. Try constraining your search term.");
-                return;
+                string res = "";
+                foreach (var guild in foundGuilds)
+                    res += $"{guild.Name} ({guild.Id})\n";
+
+                foreach (var str in res.MessageSplit('\n'))
+                    await context.Message.ReplyAsync(str);
             }
             
             var eb = new EmbedBuilder().WithTitle($"Guilds matching \"{searchQuery}\"");
