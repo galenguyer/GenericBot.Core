@@ -249,12 +249,15 @@ namespace GenericBot.CommandModules
             repairDb.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             repairDb.ToExecute += async (context) =>
             {
+                int i = 0;
                 foreach(var user in Core.GetAllUsers(context.Guild.Id))
                 {
                     user.Usernames = user.Usernames.Where(n => n != null).ToList();
                     user.Nicknames = user.Nicknames.Where(n => n != null).ToList();
                     Core.SaveUserToGuild(user, context.Guild.Id, false);
+                    i++;
                 }
+                await context.Message.ReplyAsync($"Updated {i} users");
             };
             commands.Add(repairDb);
 
