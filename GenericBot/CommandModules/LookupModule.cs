@@ -256,6 +256,8 @@ namespace GenericBot.CommandModules
                     var dbUser = Core.GetUserFromGuild(user.Id, context.Guild.Id);
                     dbUser.AddNickname(user);
                     dbUser.AddUsername(user.Username);
+                    dbUser.Usernames = dbUser.Usernames.Where(n => n != null).ToList();
+                    dbUser.Nicknames = dbUser.Nicknames.Where(n => n != null).ToList();
                     Core.SaveUserToGuild(dbUser, context.Guild.Id);
                     i++;
                 }
