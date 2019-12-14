@@ -245,6 +245,19 @@ namespace GenericBot.CommandModules
             };
             commands.Add(warnsCmd);
 
+            Command repairDb = new Command("repairdb");
+            repairDb.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            repairDb.ToExecute += async (context) =>
+            {
+                foreach(var user in Core.GetAllUsers(context.Guild.Id))
+                {
+                    user.Usernames = user.Usernames.Where(n => n != null).ToList();
+                    user.Nicknames = user.Nicknames.Where(n => n != null).ToList();
+                    Core.SaveUserToGuild(user, context.Guild.Id, false);
+                }
+            };
+            commands.Add(repairDb);
+
             Command updateDb = new Command("updatedb");
             updateDb.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             updateDb.ToExecute += async (context) =>
@@ -256,9 +269,7 @@ namespace GenericBot.CommandModules
                     var dbUser = Core.GetUserFromGuild(user.Id, context.Guild.Id);
                     dbUser.AddNickname(user);
                     dbUser.AddUsername(user.Username);
-                    dbUser.Usernames = dbUser.Usernames.Where(n => n != null).ToList();
-                    dbUser.Nicknames = dbUser.Nicknames.Where(n => n != null).ToList();
-                    Core.SaveUserToGuild(dbUser, context.Guild.Id);
+                    Core.SaveUserToGuild(dbUser, context.Guild.Id, false);
                     i++;
                 }
                 await context.Message.ReplyAsync($"Updated `{i}` users.");
