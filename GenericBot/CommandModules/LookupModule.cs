@@ -45,17 +45,17 @@ namespace GenericBot.CommandModules
                     {
                         try
                         {
-                            if (!user.Nicknames.IsEmpty())
+                            if (user != null && user.Nicknames != null && !user.Nicknames.IsEmpty())
                             {
-                                if (user.Nicknames != null && user.Nicknames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
+                                if (user.Nicknames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
                                 {
                                     foundUsers.Add(user);
                                 }
                             }
 
-                            if (!user.Usernames.IsEmpty())
+                            if (user != null && user.Usernames != null && !user.Usernames.IsEmpty())
                             {
-                                if (user.Usernames != null && user.Usernames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
+                                if (user.Usernames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
                                 {
                                     foundUsers.Add(user);
                                 }
