@@ -27,11 +27,11 @@ namespace GenericBot
                 {
                     command = new Command("t").ParseMessage(parameterMessage);
 
-                    await Core.Logger.LogGenericMessage($"Recieved DM: {parameterMessage.Content}");
+                    Core.Logger.LogGenericMessage($"Recieved DM: {parameterMessage.Content}");
 
                     if (command != null && command.RawCommand != null && command.RawCommand.WorksInDms)
                     {
-                        await command.Execute();
+                        command.Execute();
                     }
                     else
                     {
@@ -42,18 +42,18 @@ namespace GenericBot
                             var guild = VerificationEngine.GetGuildFromCode(parameterMessage.Content, parameterMessage.Author.Id);
                             if (guild == null)
                             {
-                                await parameterMessage.ReplyAsync("Invalid verification code");
+                                parameterMessage.ReplyAsync("Invalid verification code");
                             }
                             else
                             {
-                                await guild.GetUser(parameterMessage.Author.Id)
+                                guild.GetUser(parameterMessage.Author.Id)
                                     .AddRoleAsync(guild.GetRole(Core.GetGuildConfig(guild.Id).VerifiedRole));
                                 if (guild.TextChannels.HasElement(c => c.Id == (Core.GetGuildConfig(guild.Id).LoggingChannelId), out SocketTextChannel logChannel))
                                 {
-                                    await logChannel.SendMessageAsync($"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}`:  `{parameterMessage.Author}` (`{parameterMessage.Author.Id}`) just verified");
+                                    logChannel.SendMessageAsync($"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}`:  `{parameterMessage.Author}` (`{parameterMessage.Author.Id}`) just verified");
                                 }
-                                await parameterMessage.ReplyAsync($"You've been verified on **{guild.Name}**!");
-                                await msg.ModifyAsync(m =>
+                                parameterMessage.ReplyAsync($"You've been verified on **{guild.Name}**!");
+                                msg.ModifyAsync(m =>
                                     m.Content = $"```\nDM from: {parameterMessage.Author}({parameterMessage.Author.Id})\nContent: {parameterMessage.Content.SafeSubstring(1900)}\nVerified on {guild.Name}\n```");
                             }
                         }
@@ -68,29 +68,29 @@ namespace GenericBot
                         out CustomCommand customCommand))
                     {
                         if (customCommand.Delete)
-                            await parameterMessage.DeleteAsync();
-                        await parameterMessage.ReplyAsync(customCommand.Response);
+                            parameterMessage.DeleteAsync();
+                        parameterMessage.ReplyAsync(customCommand.Response);
                     }
 
                     if (command != null && command.RawCommand != null)
-                        await command.Execute();
+                        command.Execute();
                 }
             }
             catch (Exception ex)
             {
                 if (parameterMessage.Author.Id == Core.GetOwnerId())
                 {
-                    await parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
+                    parameterMessage.ReplyAsync("```\n" + $"{ex.Message}\n{ex.StackTrace}".SafeSubstring(1000) +
                                                       "\n```");
                 }
-                await Core.Logger.LogErrorMessage(ex, new Command("t").ParseMessage(parameterMessage));
+                Core.Logger.LogErrorMessage(ex, new Command("t").ParseMessage(parameterMessage));
             }
         }
 
         public static async Task MessageRecieved(SocketMessage arg)
         {
-            await MessageRecieved(arg, edited: false);
-            await UserEventHandler.UserUpdated(null, arg.Author);
+            MessageRecieved(arg, edited: false);
+            UserEventHandler.UserUpdated(null, arg.Author);
         }
 
         public static async Task HandleEditedCommand(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
@@ -99,7 +99,7 @@ namespace GenericBot
 
             if (Core.GlobalConfig.DefaultExecuteEdits)
             {
-                await MessageEventHandler.MessageRecieved(arg2, edited: true);
+                MessageEventHandler.MessageRecieved(arg2, edited: true);
             }
 
             var guildConfig = Core.GetGuildConfig(arg2.GetGuild().Id);
