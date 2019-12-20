@@ -19,6 +19,17 @@ namespace GenericBot
             // Ignore self
             if (parameterMessage.Author.Id == Core.GetCurrentUserId())
                 return;
+
+            // Handle me saying "open an issue"
+            try
+            {
+                if(parameterMessage.Content.ToLower().Contains("open an issue") && parameterMessage.Author.Id == Core.DiscordClient.GetApplicationInfoAsync().Result.Owner.Id)
+                {
+                    parameterMessage.Channel.SendMessageAsync("https://github.com/MasterChief-John-117/GenericBot/issues");
+                }
+            }
+            catch { }
+
             try
             {
                 ParsedCommand command;
