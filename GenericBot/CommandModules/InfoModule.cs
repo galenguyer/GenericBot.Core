@@ -15,13 +15,17 @@ namespace GenericBot.CommandModules
         {
             List<Command> commands = new List<Command>();
 
-            Command thrh = new Command("throw");
-            thrh.RequiredPermission = Command.PermissionLevels.BotOwner;
-            thrh.ToExecute += async (context) =>
+            Command checkdbtime = new Command("checkdbtime");
+            checkdbtime.RequiredPermission = Command.PermissionLevels.BotOwner;
+            checkdbtime.ToExecute += async (context) =>
             {
-                throw new Exception("This is a test exception");
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+                Core.GetGuildConfig(context.Guild.Id);
+                watch.Stop();
+                await context.Message.ReplyAsync($"config lookup took {watch.Elapsed.TotalMilliseconds}ms ({watch.Elapsed.Ticks*100} nanoseconds)");
             };
-            commands.Add(thrh);
+            commands.Add(checkdbtime);
 
             Command ping = new Command("ping");
             ping.WorksInDms = true;
