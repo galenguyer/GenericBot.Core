@@ -22,7 +22,7 @@ namespace GenericBot
         public static Logger Logger { get; private set; }
         private static MongoEngine MongoEngine { get; set; }
 
-        //private static List<GuildConfig> LoadedGuildConfigs;
+        private static List<GuildConfig> LoadedGuildConfigs;
 
         static Core()
         {
@@ -106,21 +106,21 @@ namespace GenericBot
 
         public static GuildConfig GetGuildConfig(ulong GuildId)
         {
-            //if (LoadedGuildConfigs.Any(c => c.Id == GuildId))
-            //{
-            //    return LoadedGuildConfigs.Find(c => c.Id == GuildId);
-            //}
-            //else
-            //{
-            //    LoadedGuildConfigs.Add(MongoEngine.GetGuildConfig(GuildId));
-            //}
-            return GetGuildConfig(GuildId); 
+            if (LoadedGuildConfigs.Any(c => c.Id == GuildId))
+            {
+                return LoadedGuildConfigs.Find(c => c.Id == GuildId);
+            }
+            else
+            {
+                LoadedGuildConfigs.Add(MongoEngine.GetGuildConfig(GuildId));
+                return GetGuildConfig(GuildId); // Now that it's cached
+            }
         }
         public static GuildConfig SaveGuildConfig(GuildConfig guildConfig)
         {
-            //if (LoadedGuildConfigs.Any(c => c.Id == guildConfig.Id))
-            //    LoadedGuildConfigs.RemoveAll(c => c.Id == guildConfig.Id);
-            //LoadedGuildConfigs.Add(guildConfig);
+            if (LoadedGuildConfigs.Any(c => c.Id == guildConfig.Id))
+                LoadedGuildConfigs.RemoveAll(c => c.Id == guildConfig.Id);
+            LoadedGuildConfigs.Add(guildConfig);
 
             return MongoEngine.SaveGuildConfig(guildConfig);
         }
