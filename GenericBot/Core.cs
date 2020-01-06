@@ -33,7 +33,7 @@ namespace GenericBot
             CustomCommands = new Dictionary<ulong, List<CustomCommand>>();
             LoadCommands(GlobalConfig.CommandsToExclude);
             MongoEngine = new MongoEngine();
-            //LoadedGuildConfigs = new List<GuildConfig>();
+            LoadedGuildConfigs = new List<GuildConfig>();
             Messages = 0;
 
             // Configure Client
