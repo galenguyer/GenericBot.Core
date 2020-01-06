@@ -22,7 +22,7 @@ namespace GenericBot
         public static Logger Logger { get; private set; }
         private static MongoEngine MongoEngine { get; set; }
 
-        private static List<GuildConfig> LoadedGuildConfigs;
+        //private static List<GuildConfig> LoadedGuildConfigs;
 
         static Core()
         {
@@ -33,7 +33,7 @@ namespace GenericBot
             CustomCommands = new Dictionary<ulong, List<CustomCommand>>();
             LoadCommands(GlobalConfig.CommandsToExclude);
             MongoEngine = new MongoEngine();
-            LoadedGuildConfigs = new List<GuildConfig>();
+            //LoadedGuildConfigs = new List<GuildConfig>();
             Messages = 0;
 
             // Configure Client
@@ -106,21 +106,21 @@ namespace GenericBot
 
         public static GuildConfig GetGuildConfig(ulong GuildId)
         {
-            if (LoadedGuildConfigs.Any(c => c.Id == GuildId))
-            {
-                return LoadedGuildConfigs.Find(c => c.Id == GuildId);
-            }
-            else
-            {
-                LoadedGuildConfigs.Add(MongoEngine.GetGuildConfig(GuildId));
-                return GetGuildConfig(GuildId); // Now that it's cached
-            }
+            //if (LoadedGuildConfigs.Any(c => c.Id == GuildId))
+            //{
+            //    return LoadedGuildConfigs.Find(c => c.Id == GuildId);
+            //}
+            //else
+            //{
+            //    LoadedGuildConfigs.Add(MongoEngine.GetGuildConfig(GuildId));
+            //}
+            return MongoEngine.GetGuildConfig(GuildId);
         }
         public static GuildConfig SaveGuildConfig(GuildConfig guildConfig)
         {
-            if (LoadedGuildConfigs.Any(c => c.Id == guildConfig.Id))
-                LoadedGuildConfigs.RemoveAll(c => c.Id == guildConfig.Id);
-            LoadedGuildConfigs.Add(guildConfig);
+            //if (LoadedGuildConfigs.Any(c => c.Id == guildConfig.Id))
+            //    LoadedGuildConfigs.RemoveAll(c => c.Id == guildConfig.Id);
+            //LoadedGuildConfigs.Add(guildConfig);
 
             return MongoEngine.SaveGuildConfig(guildConfig);
         }
@@ -224,7 +224,7 @@ namespace GenericBot
         {
             report = MongoEngine.AddOrUpdateExceptionReport(report);
 
-            if(!report.Reported && report.Count >= 5 && !string.IsNullOrEmpty(GlobalConfig.GithubToken))
+            if (!report.Reported && report.Count >= 5 && !string.IsNullOrEmpty(GlobalConfig.GithubToken))
             {
                 try
                 {
@@ -240,7 +240,7 @@ namespace GenericBot
                     var issue = client.Issue.Create(client.User.Current().Result.Login, "GenericBot", issueToCreate).Result;
                     report.Reported = true;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Logger.LogGenericMessage("An error occured reporting to github. Please check your credentials and that there is a repo \"GenericBot\" associated with your account.");
                     Logger.LogGenericMessage(ex.Message + "\n" + ex.StackTrace);
