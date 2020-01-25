@@ -49,7 +49,7 @@ namespace GenericBot.CommandModules
                 if(context.Parameters.Count == 1)
                 {
                     var messages = channel.GetMessagesAsync().Flatten().ToList().Result;
-                    File.WriteAllText("messages.txt", messages.Select(m => $"{m.Author.Username}: {m.Content}").Aggregate((a, b) => a + "\n" + b));
+                    File.WriteAllText("messages.txt", messages.Select(m => $"{m.Author.Username}: {m.Content}").Reverse().Aggregate((a, b) => a + "\n" + b));
                     await context.Channel.SendFileAsync("messages.txt");
                     File.Delete("messages.txt");
                     return;
