@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -45,7 +46,14 @@ namespace GenericBot.CommandModules
             dmuser.ToExecute += async (context) =>
             {
                 var channel = Core.DiscordClient.GetUser(ulong.Parse(context.Parameters[0])).GetOrCreateDMChannelAsync().Result;
-
+                if(context.Parameters.Count == 1)
+                {
+                    var messages = channel.GetMessagesAsync().Flatten().ToList().Result;
+                    File.WriteAllText("messages.txt", messages.Select(m => $"{m.Author.Username}: {m.Content}").Aggregate((a, b) => a + "\n" + b));
+                    await context.Channel.SendFileAsync("messages.txt");
+                    File.Delete("messages.txt");
+                    return;
+                }
                 string message = context.ParameterString.Substring(context.ParameterString.IndexOf(' '));
 
                 await channel.SendMessageAsync(message);
