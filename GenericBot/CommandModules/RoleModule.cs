@@ -96,7 +96,7 @@ namespace GenericBot.CommandModules
                             var role = roles.Any(r => r.Name.ToLower() == roleName.ToLower())
                                 ? roles.First(r => r.Name.ToLower() == roleName.ToLower())
                                 : roles.First();
-                            if (context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                            if (context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == role.Id))
                             {
                                 messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"You already have that role!").WithColor(new Color(0xFFFF00)).Build()).Result);
                             }
@@ -169,7 +169,7 @@ namespace GenericBot.CommandModules
                             var role = roles.Any(r => r.Name.ToLower() == roleName.ToLower())
                                 ? roles.First(r => r.Name.ToLower() == roleName.ToLower())
                                 : roles.First();
-                            if (!context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                            if (!context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == role.Id))
                             {
                                 messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"You don't have that role!").WithColor(new Color(0xFFFF00)).Build()).Result);
                             }
