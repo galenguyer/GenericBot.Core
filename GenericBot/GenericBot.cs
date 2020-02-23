@@ -1,21 +1,23 @@
-﻿using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
-using GenericBot.Entities;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using System.Timers;
+using Discord;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Discord.WebSocket;
 
 namespace GenericBot
 {
-    class GenericBot
+    public class GenericBot
     {
         public static string BuildId = string.Empty;
         public static List<ulong> ClearedMessageIds = new List<ulong>();
+
         static void Main(string[] args)
         {
             if (File.Exists("version.txt"))
@@ -30,19 +32,44 @@ namespace GenericBot
             cycleTimer.Elapsed += ExecuteCycle;
             cycleTimer.Start();
 
-            Start().GetAwaiter().GetResult();
+            Start(args).GetAwaiter().GetResult();
         }
+
+        private static async Task Start(string[] args)
+        {
+            try
+            {
+                await Core.DiscordClient.LoginAsync(TokenType.Bot, Core.GlobalConfig.DiscordToken);
+                await Core.DiscordClient.StartAsync();
+            }
+            catch (Exception e)
+            {
+                await Core.Logger.LogGenericMessage(e.ToString());
+                return;
+            }
+
+            // Block until exited
+            CreateHostBuilder(args).Build().Run();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>()
+                    .UseUrls("http://localhost:6969");
+                });
 
         private static void ExecuteCycle(object sender, ElapsedEventArgs e)
         {
-            var status = new Status();
-            Core.AddStatus(status);
+            //var status = new Status();
+            //Core.AddStatus(status);
 
             // Check for unbans
-            foreach(var gid in Core.DiscordClient.Guilds.Select(g => g.Id))
+            foreach (var gid in Core.DiscordClient.Guilds.Select(g => g.Id))
             {
                 var bans = Core.GetBansFromGuild(gid, false);
-                foreach(var ban in bans.Where(b => b.BannedUntil < DateTime.UtcNow))
+                foreach (var ban in bans.Where(b => b.BannedUntil < DateTime.UtcNow))
                 {
                     try
                     {
@@ -68,7 +95,7 @@ namespace GenericBot
                         ((SocketTextChannel)Core.DiscordClient.GetChannel(Core.GetGuildConfig(gid).LoggingChannelId))
                             .SendMessageAsync("", embed: builder.Build());
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Core.Logger.LogErrorMessage(ex, null);
                     }
@@ -82,23 +109,6 @@ namespace GenericBot
                     }
                 }
             }
-        }
-
-        private static async Task Start()
-        {
-            try
-            {
-                await Core.DiscordClient.LoginAsync(TokenType.Bot, Core.GlobalConfig.DiscordToken);
-                await Core.DiscordClient.StartAsync();
-            }
-            catch (Exception e)
-            {
-                await Core.Logger.LogErrorMessage(e, null);
-                return;
-            }
-
-            // Block until exited
-            await Task.Delay(-1);
         }
     }
 }

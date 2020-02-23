@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29215.179
+VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericBot", "GenericBot\GenericBot.csproj", "{F390102F-315C-4AB0-8635-267BAFFDAEF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericBot", "GenericBot\GenericBot.csproj", "{82A65EAE-75E9-4991-B0E9-D8C6F3E608A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F390102F-315C-4AB0-8635-267BAFFDAEF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F390102F-315C-4AB0-8635-267BAFFDAEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F390102F-315C-4AB0-8635-267BAFFDAEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F390102F-315C-4AB0-8635-267BAFFDAEF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82A65EAE-75E9-4991-B0E9-D8C6F3E608A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82A65EAE-75E9-4991-B0E9-D8C6F3E608A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82A65EAE-75E9-4991-B0E9-D8C6F3E608A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82A65EAE-75E9-4991-B0E9-D8C6F3E608A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {BA667528-498A-43FB-AD4B-63D9F46A4D7B}
+		SolutionGuid = {A201D623-D77E-4CCA-9C74-E0F76575B219}
 	EndGlobalSection
 EndGlobal
