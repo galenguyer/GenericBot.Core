@@ -1,0 +1,14 @@
+{
+  "DiscordToken": "",
+  "DbConnectionString": "mongodb://",
+  "DefaultPrefix": ">",
+  "DefaultExecuteEdits": true,
+  "OAuthClientId": "",
+  "OAuthClientSecret": "",
+  "RedirectUri": "http://localhost/login",
+  "CriticalLoggingWebhookUrl": "https://discordapp.com/api/webhooks/",
+  "PlayingStatus": "",
+  "GithubToken": "",
+  "GlobalAdminIds": [],
+  "BlacklistedIds": []
+}
