@@ -71,6 +71,7 @@ namespace GenericBot.CommandModules
             commands.Add(dmuser);
 
             Command getGuildCommand = new Command("getguild");
+            getGuildCommand.Aliases = new List<string> { "getguilds" };
             getGuildCommand.Usage = "getguild <user|guild|name>";
             getGuildCommand.Description = "Gets information about guilds this bot is in.";
             getGuildCommand.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
