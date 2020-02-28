@@ -139,7 +139,5 @@ namespace GenericBot.Database
         public ExceptionReport AddOrUpdateExceptionReport(ExceptionReport report);
 
         public List<string> GetGuildIdsFromDb();
-
-        private IMongoDatabase GetDatabaseFromGuildId(ulong GuildId);
     }
 }
