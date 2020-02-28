@@ -83,7 +83,7 @@ namespace GenericBot.Database
 
         public GuildConfig GetGuildConfig(ulong guildId)
         {
-
+            throw new NotImplementedException();
         }
 
         public List<string> GetGuildIdsFromDb()
