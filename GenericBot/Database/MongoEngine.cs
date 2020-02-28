@@ -8,7 +8,7 @@ using System.Text;
 
 namespace GenericBot.Database
 {
-    public class MongoEngine
+    public class MongoEngine : IDatabaseEngine
     {
         private MongoClient mongoClient;
 
