@@ -20,7 +20,7 @@ namespace GenericBot
         public static Dictionary<ulong, List<CustomCommand>> CustomCommands;
         public static int Messages { get; set; }
         public static Logger Logger { get; private set; }
-        private static MongoEngine MongoEngine { get; set; }
+        private static IDatabaseEngine MongoEngine { get; set; }
 
         private static List<GuildConfig> LoadedGuildConfigs;
 
