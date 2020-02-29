@@ -149,22 +149,6 @@ namespace GenericBot.Database
             _giveawayDb.DeleteMany(g => g.Id == giveaway.Id);
         }
 
-        public GuildConfig GetGuildConfig(ulong guildId)
-        {
-            Core.Logger.LogGenericMessage($"[LiteDB] GOT GuildConfig FROM {guildId}");
-            var _configDb = liteDatabase.GetCollection<GuildConfig>($"{guildId}-config");
-            if (_configDb.Find(c => c.Id == guildId).Any())
-                return _configDb.Find(c => c.Id == guildId).First();
-            else
-                return new GuildConfig(guildId);
-        }
-
-        public List<string> GetGuildIdsFromDb()
-        {
-            var collectionNames = liteDatabase.GetCollectionNames().Select(s => s.Split('-')[1]).Distinct();
-            return collectionNames.ToList();
-        }
-
         public DatabaseUser GetUserFromGuild(ulong userId, ulong guildId, bool log = true)
         {
             if (log)
@@ -221,6 +205,22 @@ namespace GenericBot.Database
             var _db = liteDatabase.GetCollection<GuildConfig>($"{guildConfig.Id}-config");
             _db.Upsert(guildConfig);
             return guildConfig;
+        }
+
+        public GuildConfig GetGuildConfig(ulong guildId)
+        {
+            Core.Logger.LogGenericMessage($"[LiteDB] GOT GuildConfig FROM {guildId}");
+            var _configDb = liteDatabase.GetCollection<GuildConfig>($"{guildId}-config");
+            if (_configDb.Find(c => c.Id == guildId).Any())
+                return _configDb.Find(c => c.Id == guildId).First();
+            else
+                return new GuildConfig(guildId);
+        }
+
+        public List<string> GetGuildIdsFromDb()
+        {
+            var collectionNames = liteDatabase.GetCollectionNames().Select(s => s.Split('-')[1]).Distinct();
+            return collectionNames.ToList();
         }
     }
 }
