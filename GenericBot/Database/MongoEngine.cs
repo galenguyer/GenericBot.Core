@@ -380,7 +380,7 @@ namespace GenericBot.Database
             return foundReport;
         }
 
-        public void AddVerification(ulong guildId, ulong userId)
+        public void AddVerification(ulong userId, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[Mongo] ADD VERIFICATION {userId} TO {guildId}");
 

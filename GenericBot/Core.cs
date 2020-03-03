@@ -220,6 +220,9 @@ namespace GenericBot
         public static void DeleteGiveaway(Giveaway giveaway, ulong guildId) =>
             MongoEngine.DeleteGiveaway(giveaway, guildId);
 
+        public static void AddVerificationEvent(ulong userId, ulong guildId) =>
+            MongoEngine.AddVerification(userId, guildId);
+
         public static ExceptionReport AddOrUpdateExceptionReport(ExceptionReport report)
         {
             report = MongoEngine.AddOrUpdateExceptionReport(report);

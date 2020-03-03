@@ -25,10 +25,13 @@ namespace GenericBot
 
                 if (Core.DiscordClient.Guilds.HasElement(g => g.Id.ToString().Contains(gid.ToString()),
                     out SocketGuild guild))
+                {
+                    Core.AddVerificationEvent(guild.Id, userId);
                     return guild;
+                }
                 return null;
             }
-            catch (Exception ex)
+            catch
             {
                 // This log throws way too much. It's fine to ignore errors, 
                 // because it means there was a string parsing error. There's no 

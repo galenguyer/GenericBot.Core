@@ -217,7 +217,7 @@ namespace GenericBot.Database
                 return new GuildConfig(guildId);
         }
 
-        public void AddVerification(ulong guildId, ulong userId)
+        public void AddVerification(ulong userId, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] ADD VERIFICATION {userId} TO {guildId}");
 
