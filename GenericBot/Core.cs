@@ -20,7 +20,7 @@ namespace GenericBot
         public static Dictionary<ulong, List<CustomCommand>> CustomCommands;
         public static int Messages { get; set; }
         public static Logger Logger { get; private set; }
-        private static IDatabaseEngine MongoEngine { get; set; }
+        private static IDatabaseEngine DatabaseEngine { get; set; }
 
         private static List<GuildConfig> LoadedGuildConfigs;
 
@@ -32,7 +32,7 @@ namespace GenericBot
             Commands = new List<Command>();
             CustomCommands = new Dictionary<ulong, List<CustomCommand>>();
             LoadCommands(GlobalConfig.CommandsToExclude);
-            MongoEngine = new MongoEngine();
+            DatabaseEngine = new MongoEngine();
             LoadedGuildConfigs = new List<GuildConfig>();
             Messages = 0;
 
@@ -112,9 +112,9 @@ namespace GenericBot
             }
             else
             {
-                LoadedGuildConfigs.Add(MongoEngine.GetGuildConfig(GuildId));
+                LoadedGuildConfigs.Add(DatabaseEngine.GetGuildConfig(GuildId));
             }
-            return MongoEngine.GetGuildConfig(GuildId);
+            return DatabaseEngine.GetGuildConfig(GuildId);
         }
         public static GuildConfig SaveGuildConfig(GuildConfig guildConfig)
         {
@@ -122,7 +122,7 @@ namespace GenericBot
             //    LoadedGuildConfigs.RemoveAll(c => c.Id == guildConfig.Id);
             //LoadedGuildConfigs.Add(guildConfig);
 
-            return MongoEngine.SaveGuildConfig(guildConfig);
+            return DatabaseEngine.SaveGuildConfig(guildConfig);
         }
         public static List<CustomCommand> GetCustomCommands(ulong guildId)
         {
@@ -130,7 +130,7 @@ namespace GenericBot
                 return CustomCommands[guildId];
             else
             {
-                var cmds = MongoEngine.GetCustomCommands(guildId);
+                var cmds = DatabaseEngine.GetCustomCommands(guildId);
                 CustomCommands.Add(guildId, cmds);
                 return cmds;
             }
@@ -149,7 +149,7 @@ namespace GenericBot
             {
                 CustomCommands.Add(guildId, new List<CustomCommand> { command });
             }
-            MongoEngine.SaveCustomCommand(command, guildId);
+            DatabaseEngine.SaveCustomCommand(command, guildId);
             return command;
         }
 
@@ -159,17 +159,17 @@ namespace GenericBot
             {
                 CustomCommands[guildId].RemoveAll(c => c.Name == name);
             }
-            MongoEngine.DeleteCustomCommand(name, guildId);
+            DatabaseEngine.DeleteCustomCommand(name, guildId);
         }
 
         public static Quote AddQuote(string quote, ulong guildId) =>
-            MongoEngine.AddQuote(quote, guildId);
+            DatabaseEngine.AddQuote(quote, guildId);
         public static bool RemoveQuote(int id, ulong guildId) =>
-            MongoEngine.RemoveQuote(id, guildId);
+            DatabaseEngine.RemoveQuote(id, guildId);
 
         public static Quote GetQuote(string quote, ulong guildId)
         {
-            var quotes = MongoEngine.GetAllQuotes(guildId);
+            var quotes = DatabaseEngine.GetAllQuotes(guildId);
 
             if (string.IsNullOrEmpty(quote))
             {
@@ -187,45 +187,45 @@ namespace GenericBot
         }
 
         public static DatabaseUser SaveUserToGuild(DatabaseUser user, ulong guildId, bool log = true) =>
-            MongoEngine.SaveUserToGuild(user, guildId, log);
+            DatabaseEngine.SaveUserToGuild(user, guildId, log);
         public static DatabaseUser GetUserFromGuild(ulong userId, ulong guildId, bool log = true) =>
-            MongoEngine.GetUserFromGuild(userId, guildId, log);
+            DatabaseEngine.GetUserFromGuild(userId, guildId, log);
         public static List<DatabaseUser> GetAllUsers(ulong guildId) =>
-            MongoEngine.GetAllUsers(guildId);
+            DatabaseEngine.GetAllUsers(guildId);
 
         public static GenericBan SaveBanToGuild(GenericBan ban, ulong guildId) =>
-            MongoEngine.SaveBanToGuild(ban, guildId);
+            DatabaseEngine.SaveBanToGuild(ban, guildId);
         public static List<GenericBan> GetBansFromGuild(ulong guildId, bool log = true) =>
-            MongoEngine.GetBansFromGuild(guildId, log);
+            DatabaseEngine.GetBansFromGuild(guildId, log);
         public static void RemoveBanFromGuild(ulong banId, ulong guildId) =>
-            MongoEngine.RemoveBanFromGuild(banId, guildId);
+            DatabaseEngine.RemoveBanFromGuild(banId, guildId);
 
         public static void AddToAuditLog(ParsedCommand command, ulong guildId) =>
-            MongoEngine.AddToAuditLog(command, guildId);
+            DatabaseEngine.AddToAuditLog(command, guildId);
         public static List<AuditCommand> GetAuditLog(ulong guildId) =>
-            MongoEngine.GetAuditLog(guildId);
+            DatabaseEngine.GetAuditLog(guildId);
 
         public static void AddStatus(Status status) =>
-            MongoEngine.AddStatus(status);
+            DatabaseEngine.AddStatus(status);
 
         public static Giveaway CreateGiveaway(Giveaway giveaway, ulong guildId) =>
-            MongoEngine.CreateGiveaway(giveaway, guildId);
+            DatabaseEngine.CreateGiveaway(giveaway, guildId);
 
         public static Giveaway UpdateOrCreateGiveaway(Giveaway giveaway, ulong guildId) =>
-            MongoEngine.UpdateOrCreateGiveaway(giveaway, guildId);
+            DatabaseEngine.UpdateOrCreateGiveaway(giveaway, guildId);
 
         public static List<Giveaway> GetGiveaways(ulong guildId) =>
-            MongoEngine.GetGiveaways(guildId);
+            DatabaseEngine.GetGiveaways(guildId);
 
         public static void DeleteGiveaway(Giveaway giveaway, ulong guildId) =>
-            MongoEngine.DeleteGiveaway(giveaway, guildId);
+            DatabaseEngine.DeleteGiveaway(giveaway, guildId);
 
         public static void AddVerificationEvent(ulong userId, ulong guildId) =>
-            MongoEngine.AddVerification(userId, guildId);
+            DatabaseEngine.AddVerification(userId, guildId);
 
         public static ExceptionReport AddOrUpdateExceptionReport(ExceptionReport report)
         {
-            report = MongoEngine.AddOrUpdateExceptionReport(report);
+            report = DatabaseEngine.AddOrUpdateExceptionReport(report);
 
             if (!report.Reported && report.Count >= 5 && !string.IsNullOrEmpty(GlobalConfig.GithubToken))
             {
