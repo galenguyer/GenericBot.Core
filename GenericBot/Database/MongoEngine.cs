@@ -14,6 +14,10 @@ namespace GenericBot.Database
 
         public MongoEngine()
         {
+            if (!Core.GlobalConfig.DbConnectionString.StartsWith("mongodb"))
+            {
+                throw new Exception("Connection string is not of type mongo");
+            }
             mongoClient = new MongoClient(Core.GlobalConfig.DbConnectionString);
         }
 
