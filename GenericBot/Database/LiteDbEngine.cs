@@ -217,6 +217,16 @@ namespace GenericBot.Database
                 return new GuildConfig(guildId);
         }
 
+        public void AddVerification(ulong guildId, ulong userId)
+        {
+            Core.Logger.LogGenericMessage($"[LiteDb] ADD VERIFICATION {userId} TO {guildId}");
+
+            var _db = liteDatabase.GetCollection<VerificationEvent>($"{guildId}-verifications");
+
+            var _event = new VerificationEvent(guildId, userId);
+            _db.Insert(_event);
+        }
+
         public List<string> GetGuildIdsFromDb()
         {
             var collectionNames = liteDatabase.GetCollectionNames().Select(s => s.Split('-')[1]).Distinct();

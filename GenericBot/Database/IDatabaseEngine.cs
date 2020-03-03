@@ -126,6 +126,13 @@ namespace GenericBot.Database
         /// <returns></returns>
         public List<AuditCommand> GetAuditLog(ulong guildId);
 
+        /// <summary>
+        /// Save a verification to a guild's database
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="guildId"></param>
+        public void AddVerification(ulong userId, ulong guildId);
+
         public Giveaway CreateGiveaway(Giveaway giveaway, ulong guildId);
 
         public Giveaway UpdateOrCreateGiveaway(Giveaway giveaway, ulong guildId);

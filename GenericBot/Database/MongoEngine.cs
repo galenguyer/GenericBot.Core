@@ -380,6 +380,17 @@ namespace GenericBot.Database
             return foundReport;
         }
 
+        public void AddVerification(ulong guildId, ulong userId)
+        {
+            Core.Logger.LogGenericMessage($"[Mongo] ADD VERIFICATION {userId} TO {guildId}");
+
+            var _userDb = GetDatabaseFromGuildId(guildId);
+            var _collection = _userDb.GetCollection<VerificationEvent>("verifications");
+
+            var _event = new VerificationEvent(guildId, userId);
+            _collection.InsertOne(_event);
+        }
+
         public List<string> GetGuildIdsFromDb()
         {
             return mongoClient.ListDatabaseNames().ToList();

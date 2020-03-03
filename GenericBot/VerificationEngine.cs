@@ -93,4 +93,22 @@ namespace GenericBot
             return message;
         }
     }
+
+    public class VerificationEvent
+    {
+        public ulong GuildId { get; set; }
+        public ulong UserId { get; set; }
+        public DateTimeOffset DateTime { get; set; }
+
+        public VerificationEvent(ulong guildId, ulong userId)
+        {
+            this.GuildId = guildId;
+            this.UserId = userId;
+            this.DateTime = DateTimeOffset.UtcNow;
+        }
+        public VerificationEvent()
+        {
+
+        }
+    }
 }
