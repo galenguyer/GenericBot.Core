@@ -26,7 +26,7 @@ namespace GenericBot
                 if (Core.DiscordClient.Guilds.HasElement(g => g.Id.ToString().Contains(gid.ToString()),
                     out SocketGuild guild))
                 {
-                    Core.AddVerificationEvent(guild.Id, userId);
+                    Core.AddVerificationEvent(userId, guild.Id);
                     return guild;
                 }
                 return null;
