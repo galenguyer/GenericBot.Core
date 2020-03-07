@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GenericBot.Entities;
 using LiteDB;
 
 namespace GenericBot.Database
 {
+    /// <summary>
+    /// Implementation of <see cref="IDatabaseEngine"/> for LiteDb
+    /// </summary>
     public class LiteDbEngine : IDatabaseEngine
     {
         private LiteDatabase liteDatabase;
@@ -16,6 +18,7 @@ namespace GenericBot.Database
             liteDatabase = new LiteDatabase(Core.GlobalConfig.DbConnectionString);
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.AddOrUpdateExceptionReport(ExceptionReport)"/>
         public ExceptionReport AddOrUpdateExceptionReport(ExceptionReport report)
         {
             var _exceptionDb = liteDatabase.GetCollection<ExceptionReport>($"exceptions");
@@ -34,6 +37,7 @@ namespace GenericBot.Database
             return foundReport;
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.AddQuote(string, ulong)"/>
         public Quote AddQuote(string quote, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] SAVED Quote TO {guildId}");
@@ -48,6 +52,7 @@ namespace GenericBot.Database
             return q;
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.GetAllQuotes(ulong)"/>
         public List<Quote> GetAllQuotes(ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] SAVED Quote TO {guildId}");
@@ -55,6 +60,7 @@ namespace GenericBot.Database
             return _quoteDb.FindAll().ToList();
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.RemoveQuote(int, ulong)"/>
         public bool RemoveQuote(int id, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] DELETE Quote {id} FROM {guildId}");
@@ -73,12 +79,14 @@ namespace GenericBot.Database
             }
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.AddStatus(Status)"/>
         public void AddStatus(Status status)
         {
             var _db = liteDatabase.GetCollection<Status>($"statusLog");
             _db.Insert(status);
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.AddToAuditLog(ParsedCommand, ulong)"/>
         public void AddToAuditLog(ParsedCommand command, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] SAVED AuditLog TO {guildId}");
@@ -86,6 +94,7 @@ namespace GenericBot.Database
             _db.Insert(new AuditCommand(command));
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.GetAuditLog(ulong)"/>
         public List<AuditCommand> GetAuditLog(ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] GOT AuditLog FROM {guildId}");
@@ -93,6 +102,7 @@ namespace GenericBot.Database
             return _db.FindAll().ToList();
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.SaveCustomCommand(CustomCommand, ulong)"/>
         public CustomCommand SaveCustomCommand(CustomCommand command, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] SAVED CustomComand {command.Name} TO {guildId}");
@@ -101,12 +111,14 @@ namespace GenericBot.Database
             return command;
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.GetCustomCommands(ulong)"/>
         public List<CustomCommand> GetCustomCommands(ulong guildId)
         {
             var _db = liteDatabase.GetCollection<CustomCommand>($"{guildId}-commands");
             return _db.FindAll().ToList();
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.DeleteCustomCommand(string, ulong)"/>
         public void DeleteCustomCommand(string name, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] DELETE CustomCommand {name} FROM {guildId}");
@@ -114,6 +126,7 @@ namespace GenericBot.Database
             _db.DeleteMany(c => c.Name == name);
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.GetGiveaways(ulong)"/>
         public List<Giveaway> GetGiveaways(ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDB] GOT giveaways FROM {guildId}");
@@ -122,6 +135,7 @@ namespace GenericBot.Database
             return _db.FindAll().ToList();
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.UpdateOrCreateGiveaway(Giveaway, ulong)"/>
         public Giveaway UpdateOrCreateGiveaway(Giveaway giveaway, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDB] UPDATE giveaways FROM {guildId}");
@@ -130,6 +144,7 @@ namespace GenericBot.Database
             return giveaway;
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.CreateGiveaway(Giveaway, ulong)"/>
         public Giveaway CreateGiveaway(Giveaway giveaway, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] CREATE GIVEAWAY {giveaway.Id} FOR {guildId}");
@@ -142,6 +157,7 @@ namespace GenericBot.Database
             return giveaway;
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.DeleteGiveaway(Giveaway, ulong)"/>
         public void DeleteGiveaway(Giveaway giveaway, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDB] DELETE giveaway {giveaway.Id} FROM {guildId}");
@@ -149,6 +165,7 @@ namespace GenericBot.Database
             _giveawayDb.DeleteMany(g => g.Id == giveaway.Id);
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.GetUserFromGuild(ulong, ulong, bool)"/>
         public DatabaseUser GetUserFromGuild(ulong userId, ulong guildId, bool log = true)
         {
             if (log)
@@ -159,6 +176,7 @@ namespace GenericBot.Database
             else return new DatabaseUser(userId);
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.SaveUserToGuild(DatabaseUser, ulong, bool)"/>
         public DatabaseUser SaveUserToGuild(DatabaseUser user, ulong guildId, bool log = true)
         {
             if (log)
@@ -168,12 +186,14 @@ namespace GenericBot.Database
             return user;
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.GetAllUsers(ulong)"/>
         public List<DatabaseUser> GetAllUsers(ulong guildId)
         {
             var _db = liteDatabase.GetCollection<DatabaseUser>($"{guildId}-users");
             return _db.FindAll().ToList();
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.RemoveBanFromGuild(ulong, ulong)"/>
         public void RemoveBanFromGuild(ulong banId, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDB] DELETE Ban {banId} FROM {guildId}");
@@ -183,6 +203,7 @@ namespace GenericBot.Database
                 _db.DeleteMany(b => b.Id == banId);
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.GetBansFromGuild(ulong, bool)"/>
         public List<GenericBan> GetBansFromGuild(ulong guildId, bool log = true)
         {
             Core.Logger.LogGenericMessage($"[LiteDB] GET bans FROM {guildId}");
@@ -190,6 +211,7 @@ namespace GenericBot.Database
             return _db.FindAll().ToList();
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.SaveBanToGuild(GenericBan, ulong)"/>
         public GenericBan SaveBanToGuild(GenericBan ban, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] SAVED Ban {ban.Id} TO {guildId}");
@@ -198,6 +220,7 @@ namespace GenericBot.Database
             return ban;
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.SaveGuildConfig(GuildConfig)"/>
         public GuildConfig SaveGuildConfig(GuildConfig guildConfig)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] SAVED GuildConfig TO {guildConfig.Id}");
@@ -207,6 +230,7 @@ namespace GenericBot.Database
             return guildConfig;
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.GetGuildConfig(ulong)"/>
         public GuildConfig GetGuildConfig(ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDB] GOT GuildConfig FROM {guildId}");
@@ -217,6 +241,7 @@ namespace GenericBot.Database
                 return new GuildConfig(guildId);
         }
 
+        ///<inheritdoc cref="IDatabaseEngine.AddVerification(ulong, ulong)"/>
         public void AddVerification(ulong userId, ulong guildId)
         {
             Core.Logger.LogGenericMessage($"[LiteDb] ADD VERIFICATION {userId} TO {guildId}");
@@ -225,12 +250,6 @@ namespace GenericBot.Database
 
             var _event = new VerificationEvent(guildId, userId);
             _db.Insert(_event);
-        }
-
-        public List<string> GetGuildIdsFromDb()
-        {
-            var collectionNames = liteDatabase.GetCollectionNames().Select(s => s.Split('-')[1]).Distinct();
-            return collectionNames.ToList();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace GenericBot.Database
 {
+    // TODO: Come up with a more consistent naming scheme
     /// <summary>
     /// Describes all the methods the database engine should provide. The implementation of the methods is
     /// up to each individual engine. Failure to provide a valid (but not necesarrily correct) object may 
