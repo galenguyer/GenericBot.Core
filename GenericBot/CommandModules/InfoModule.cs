@@ -237,7 +237,7 @@ namespace GenericBot.CommandModules
 
                 foreach (var shard in Core.DiscordClient.Shards)
                 {
-                    stats += $"Shard `{shard.ShardId}`: `{shard.Guilds.Count}` Guilds (`{shard.Guilds.Sum(g => g.Users.Count)}` Users)\n";
+                    stats += $"Shard `{shard.ShardId}`: `{shard.Guilds.Count}` Guilds (`{shard.Guilds.Sum(g => g.MemberCount)}` Users)\n";
                 }
 
                 await context.Message.ReplyAsync(stats);
