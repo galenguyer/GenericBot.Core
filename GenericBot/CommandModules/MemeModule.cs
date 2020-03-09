@@ -1,6 +1,8 @@
-﻿using GenericBot.Entities;
+using GenericBot.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace GenericBot.CommandModules
@@ -42,6 +44,25 @@ namespace GenericBot.CommandModules
             };
             commands.Add(clap);
 
+            Command kanye = new Command("kanye"); //Module by Venus (Wickn), with a ton of help from chef, and other kind souls. And Google.
+            kanye.WorksInDms = true;
+            kanye.Usage = "Pastes a Kanye West quote, courtesy of kanye.rest";
+            kanye.ToExecute += async (context) =>
+            {
+                string[] badWords = {"COSBY", "2024", "sex", "titties", "porn", "Trump", "Ni**as", "titty", "suppress"};
+                string kanyeQuote = string.Empty;
+                using (var webclient = new WebClient())
+                {
+                    kanyeQuote = webclient.DownloadString(new Uri("https://api.kanye.rest/?format=text"));
+                    while(badWords.Any(kanyeQuote.Contains))
+                    {
+                        kanyeQuote = webclient.DownloadString(new Uri("https://api.kanye.rest/?format=text"));
+                    }
+                await context.Message.ReplyAsync("> " + kanyeQuote + "\n- Kanye West"); 
+                }
+            };
+            commands.Add(kanye);
+            
             return commands;
         }
     }
