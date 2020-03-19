@@ -46,7 +46,8 @@ namespace GenericBot.CommandModules
 
             Command kanye = new Command("kanye"); //Module by Venus (Wickn), with a ton of help from chef, and other kind souls. And Google.
             kanye.WorksInDms = true;
-            kanye.Usage = "Pastes a Kanye West quote, courtesy of kanye.rest";
+            kanye.Usage = ">kanye";
+            kanye.Description = "Pastes a Kanye West quote, courtesy of kanye.rest";
             kanye.ToExecute += async (context) =>
             {
                 string[] badWords = {"COSBY", "2024", "sex", "titties", "porn", "Trump", "Ni**as", "titty", "suppress"};
