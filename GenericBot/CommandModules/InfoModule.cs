@@ -68,7 +68,8 @@ namespace GenericBot.CommandModules
                     .AddField($"Getting Started", $"See everything you can make me do with `{prefix}help`. {config}")
                     .AddField($"Self Assignable Roles", $"One of the most common public features GenericBot is used for is roles a user can assign to themself. To see all the avaible roles, do `{prefix}userroles`. You can join a role with `{prefix}iam [rolename]` or leave a role with `{prefix}iamnot [rolename]`.")
                     .AddField($"Moderation", $"GenericBot provides a wide range of tools for moderators to track users and infractions. It keeps track of all of a user's usernames, nicknames, and logged infractions, including kicks and timed or permanent bans. Users can be searched for either by ID, or by username or nickname, whether it be current or an old name. (All data is stored in an encrypted database, and data from one server is completely inaccessible by another server)")
-                    .AddField($"Fun!", $"In addition to being a highly effective moderator toolkit, GenericBot has some fun commands, such as `{prefix}dog`, `{prefix}cat`, or `{prefix}jeff`. You can also create your own custom commands for rapid-fire memery or whatever else tickles your fancy");
+                    .AddField($"Fun!", $"In addition to being a highly effective moderator toolkit, GenericBot has some fun commands, such as `{prefix}dog`, `{prefix}cat`, or `{prefix}jeff`. You can also create your own custom commands for rapid-fire memery or whatever else tickles your fancy")
+                    .AddField($"Donate", $"If you'd like to help keep GenericBot running and getting better, there's a few ways you can donate to help out. I have a [Patreon](https://www.patreon.com/mastrchefrocks) and [Ko-Fi](https://www.ko-fi.com/mastrchefrocks). You can also donate via Bitcoin at `3Lz7GSZ2aSHpXjppJB8GPKQtiNKjA86fVn` or Ethereum at `0x80fA0fb7eB6AeaaA50B3D6Df07015972f512213b`. If you'd like to find another way to donate, let me know!") ;
                 var embed = builder.Build();
 
                 await context.Channel.SendMessageAsync("", embed: embed);
@@ -229,6 +230,7 @@ namespace GenericBot.CommandModules
                                //$"Build Number: `{GenericBot.BuildId}`\n\n" +
                                $"Servers: `{Core.DiscordClient.Guilds.Count}`\n" +
                                $"Users: `{Core.DiscordClient.Guilds.Sum(g => g.MemberCount)}`\n" +
+                               $"Messages: `{Core.Messages}` received\n" +
                                $"Shards: `{Core.DiscordClient.Shards.Count}`\n" +
                                //$"CPU Usage: `{Math.Round(GenericBot.CpuCounter.NextValue())}`% \n" +
                                $"Memory: `{Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB`\n" +
@@ -236,7 +238,7 @@ namespace GenericBot.CommandModules
 
                 foreach (var shard in Core.DiscordClient.Shards)
                 {
-                    stats += $"Shard `{shard.ShardId}`: `{shard.Guilds.Count}` Guilds (`{shard.Guilds.Sum(g => g.Users.Count)}` Users)\n";
+                    stats += $"Shard `{shard.ShardId}`: `{shard.Guilds.Count}` Guilds (`{shard.Guilds.Sum(g => g.MemberCount)}` Users)\n";
                 }
 
                 await context.Message.ReplyAsync(stats);

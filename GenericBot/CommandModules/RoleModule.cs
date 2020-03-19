@@ -96,7 +96,7 @@ namespace GenericBot.CommandModules
                             var role = roles.Any(r => r.Name.ToLower() == roleName.ToLower())
                                 ? roles.First(r => r.Name.ToLower() == roleName.ToLower())
                                 : roles.First();
-                            if (context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                            if (context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == role.Id))
                             {
                                 messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"You already have that role!").WithColor(new Color(0xFFFF00)).Build()).Result);
                             }
@@ -169,7 +169,7 @@ namespace GenericBot.CommandModules
                             var role = roles.Any(r => r.Name.ToLower() == roleName.ToLower())
                                 ? roles.First(r => r.Name.ToLower() == roleName.ToLower())
                                 : roles.First();
-                            if (!context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == roles.First().Id))
+                            if (!context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == role.Id))
                             {
                                 messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"You don't have that role!").WithColor(new Color(0xFFFF00)).Build()).Result);
                             }
@@ -374,6 +374,63 @@ namespace GenericBot.CommandModules
                 await context.Message.ReplyAsync(reply);
             };
             commands.Add(verify);
+
+            Command verifyall = new Command("verifyall");
+            verifyall.RequiredPermission = Command.PermissionLevels.User;
+            verifyall.ToExecute += async (context) =>
+            {
+                var guildConfig = Core.GetGuildConfig(context.Guild.Id);
+
+                if (guildConfig.VerifiedRole == 0)
+                {
+                    await context.Message.ReplyAsync($"Verification is disabled on this server");
+                    return;
+                }
+                if (string.IsNullOrEmpty(guildConfig.VerifiedMessage) || guildConfig.VerifiedMessage.Split().Length < 32 || !context.Guild.Roles.Any(r => r.Id == guildConfig.VerifiedRole))
+                {
+                    await context.Message.ReplyAsync(
+                        $"It looks like verifiction is configured improperly (either the message is too short or the role does not exist.) Please contact your server administrator to resolve it.");
+                    return;
+                }
+
+                List<SocketGuildUser> users = context.Guild.Users.Where(u => !u.Roles.Any(r => r.Id == guildConfig.VerifiedRole)).ToList();
+
+                List<SocketUser> failed = new List<SocketUser>();
+                List<SocketUser> success = new List<SocketUser>();
+                foreach (var user in users)
+                {
+                    string message = $"Hey {user.Username}! To get verified on **{context.Guild.Name}** reply to this message with the hidden code in the message below\n\n"
+                                     + Core.GetGuildConfig(context.Guild.Id).VerifiedMessage;
+
+                    string verificationMessage =
+                        VerificationEngine.InsertCodeInMessage(message, VerificationEngine.GetVerificationCode(user.Id, context.Guild.Id));
+
+                    try
+                    {
+                        await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(verificationMessage);
+                        success.Add(user);
+                    }
+                    catch (Exception ex)
+                    {
+                        await Core.Logger.LogErrorMessage(ex, context);
+                        failed.Add(user);
+                    }
+                }
+
+                string reply = "";
+                if (success.Any())
+                {
+                    reply += $"I've sent {success.Count} users instructions!";
+                }
+                if (failed.Any())
+                {
+                    reply += $" {failed.Select(u => u.Username).ToList().SumAnd()} ({failed.Count} users) could not be messaged.";
+                }
+
+                foreach(var message in reply.MessageSplit())
+                    await context.Message.ReplyAsync(reply);
+            };
+            commands.Add(verifyall);
 
             return commands;
         }

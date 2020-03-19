@@ -22,11 +22,10 @@ namespace GenericBot.CommandModules
             cat.SendTyping = false;
             cat.ToExecute += async (context) =>
             {
-                var catStruct = new { file = string.Empty };
                 using (var webclient = new WebClient())
                 {
-                    var catResult = JsonConvert.DeserializeAnonymousType(webclient.DownloadString(new Uri("http://aws.random.cat/meow")), catStruct);
-                    await context.Message.ReplyAsync(catResult.file);
+                    var catResult = webclient.DownloadString("https://random.cat.galenguyer.com/api/random/");
+                    await context.Message.ReplyAsync("https://random.cat.galenguyer.com" + catResult);
                 }
 
             };

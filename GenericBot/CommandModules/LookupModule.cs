@@ -26,7 +26,7 @@ namespace GenericBot.CommandModules
 
                 if (context.Message.MentionedUsers.Any())
                 {
-                    foundUsers.AddRange(context.Message.MentionedUsers.Select(m => 
+                    foundUsers.AddRange(context.Message.MentionedUsers.Select(m =>
                     Core.GetUserFromGuild(m.Id, context.Guild.Id)));
                 }
                 else if ((context.ParameterString.Length > 16 && context.ParameterString.Length < 19) && ulong.TryParse(context.ParameterString, out ulong id))
@@ -45,7 +45,7 @@ namespace GenericBot.CommandModules
                     {
                         try
                         {
-                            if (user != null && user.Nicknames != null && !user.Nicknames.IsEmpty())
+                            if (!user.Nicknames.IsEmpty())
                             {
                                 if (user.Nicknames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
                                 {
@@ -53,7 +53,7 @@ namespace GenericBot.CommandModules
                                 }
                             }
 
-                            if (user != null && user.Usernames != null && !user.Usernames.IsEmpty())
+                            if (!user.Usernames.IsEmpty())
                             {
                                 if (user.Usernames.Any(n => n.ToLower().Contains(context.ParameterString.ToLower())))
                                 {
@@ -63,7 +63,6 @@ namespace GenericBot.CommandModules
                         }
                         catch (Exception ex)
                         {
-                            await Core.Logger.LogErrorMessage(ex, context);
                             if (new Command("test").GetPermissions(context) >= Command.PermissionLevels.GlobalAdmin)
                                 await context.Message.ReplyAsync($"```\n{ex.Message}\n{ex.StackTrace}\n{user.Id} : {user.Usernames.Count} | {user.Nicknames.Count}\n```");
                         }
@@ -91,7 +90,7 @@ namespace GenericBot.CommandModules
 
                 foreach (var dbUser in foundUsers)
                 {
-                    string nicks = "", usernames = "", warnings = "";
+                    string nicks = "", usernames = "";
                     if (dbUser.Usernames != null && !dbUser.Usernames.IsEmpty())
                     {
                         usernames = dbUser.Usernames.Distinct().Select(n => $"`{n.Replace("`", "'")}`").ToList().SumAnd();
@@ -102,149 +101,47 @@ namespace GenericBot.CommandModules
                         nicks = dbUser.Nicknames.Distinct().Select(n => $"`{n.Replace("`", "'")}`").ToList().SumAnd();
                     }
 
+
+                    string info = $"User: <@!{dbUser.Id}>\nUser Id:  `{dbUser.Id}`\n";
+                    info += $"Past Usernames: {usernames}\n";
+                    info += $"Past Nicknames: {nicks}\n";
+                    SocketGuildUser user = context.Message.GetGuild().GetUser(dbUser.Id);
+                    if (user != null && user.Id != context.Message.Author.Id)
+                    {
+                        info +=
+                            $"Created At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.CreatedAt.LocalDateTime)}GMT` " +
+                            $"(about {(DateTime.UtcNow - user.CreatedAt).Days} days ago)\n";
+                    }
+
+                    if (user != null && user.Id != context.Message.Author.Id && user.JoinedAt.HasValue)
+                        info +=
+                            $"Joined At: `{string.Format("{0:yyyy-MM-dd HH\\:mm\\:ss zzzz}", user.JoinedAt.Value.LocalDateTime)}GMT`" +
+                            $"(about {(DateTime.UtcNow - user.JoinedAt.Value).Days} days ago)\n";
                     if (dbUser.Warnings != null && !dbUser.Warnings.IsEmpty())
+                        info += $"`{dbUser.Warnings.Count}` Warnings: {dbUser.Warnings.SumAnd()}";
+
+                    foreach (var str in info.MessageSplit(','))
                     {
-                        warnings = string.Join("\n", dbUser.Warnings);
+                        await context.Message.ReplyAsync(str.TrimStart(','));
                     }
-
-                    // Fetch the Discord user from the cache or the API
-                    // This works even if the user has left the server, and allows us to extract *some* information
-                    IUser user = Core.DiscordClient.GetUser(dbUser.Id);
-
-                    // Fetch the per-server user data, this returns null if the user has left the server
-                    SocketGuildUser guildUser = context.Message.GetGuild().GetUser(dbUser.Id);
-
-                    // Build the embed!
-                    EmbedBuilder eb = new EmbedBuilder();
-                    if (user != null) eb.WithAuthor(user);
-                    else
-                    {
-                        // User has deleted their account, fall back and show last known username
-                        var usernameString = dbUser.Usernames.LastOrDefault() ?? "(unknown)";
-                        eb.WithAuthor($"{usernameString} (last known)");
-                    }
-
-                    // We put short-form data in the description field (appears at the top of the card),
-                    // separated by a newline
-                    var description = $"**ID:** {dbUser.Id}\n**Mention:** <@!{dbUser.Id}>\n";
-
-                    if (user == null) description += "**Status:** User deleted\n";
-                    else if (guildUser == null) description += "**Status:** Not on server\n";
-                    else if (guildUser.Status == UserStatus.Idle) description += "**Status:** Idle\n";
-                    else if (guildUser.Status == UserStatus.Invisible) description += "**Status:** Invisible\n";
-                    else if (guildUser.Status == UserStatus.Offline) description += "**Status:** Offline\n";
-                    else if (guildUser.Status == UserStatus.Online) description += "**Status:** Online\n";
-                    else if (guildUser.Status == UserStatus.AFK) description += "**Status:** AFK\n";
-                    else if (guildUser.Status == UserStatus.DoNotDisturb) description += "**Status:** Do not Disturb\n";
-
-                    var createdDate = SnowflakeUtils.FromSnowflake(dbUser.Id).LocalDateTime;
-                    description += $"**Created at:** {createdDate:yyyy-MM-dd HH\\:mm\\:ss zzzz} GMT (about {(DateTime.UtcNow - createdDate).Days} days ago)\n";
-                    
-                    if (guildUser != null)
-                    {
-                        // Only relevant if the user is on-server
-                        if (guildUser.JoinedAt.HasValue)
-                            description += $"**Joined at:** {guildUser.JoinedAt.Value.LocalDateTime:yyyy-MM-dd HH\\:mm\\:ss zzzz} GMT (about {(DateTime.UtcNow - guildUser.JoinedAt.Value).Days} days ago)\n ";
-                    }
-                    
-                    if ((dbUser.Usernames?.Count ?? 0) > 0)
-                        eb.AddField($"Past usernames ({dbUser.Usernames.Count})", usernames.Truncate(1024, $"\u2026 (`{Core.GetPrefix(context)}names {dbUser.Id}`)"));
-                    
-                    if ((dbUser.Nicknames?.Count ?? 0) > 0)
-                        eb.AddField($"Past nicknames ({dbUser.Nicknames.Count})", nicks.Truncate(1024, $"\u2026 (`{Core.GetPrefix(context)}nicks {dbUser.Id}`)"));
-                    
-                    if ((dbUser.Warnings?.Count ?? 0) > 0)
-                        eb.AddField($"Warnings ({dbUser.Warnings.Count})", warnings.Truncate(1024, $"\u2026 (`{Core.GetPrefix(context)}warns {dbUser.Id}`)"));
-                    
-                    eb.WithDescription(description);
-
-                    await context.Channel.SendMessageAsync(embed: eb.Build());
                 }
             };
             commands.Add(find);
-            
-            Command names = new Command("names");
-            names.RequiredPermission = Command.PermissionLevels.Moderator;
-            names.Aliases = new List<string>() {"usernames"};
-            names.Usage = "name <id>";
-            names.Description = "Shows the full list of logged usernames for a given user by their ID";
-            names.ToExecute += async (context) =>
+
+            Command lookup = new Command("lookup");
+            lookup.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
+            lookup.Description = "Look up a user's stats across all the bot's guilds";
+            lookup.ToExecute += async (context) =>
             {
-                if (!ulong.TryParse(context.ParameterString, out var id))
-                {
-                    await context.Message.ReplyAsync($"You must pass a plain user ID.");
-                    return;
-                }
+                var user = Core.DiscordClient.GetUser(ulong.Parse(context.Parameters[0]));
+                var mutualServers = Core.DiscordClient.Guilds.Where(g => g.Users.Any(u => u.Id == user.Id));
+                string data = $"User info for `{user.ToString()}`:\n" +
+                $"Mutual Servers ({mutualServers.Count()}): {mutualServers.Select(s => $"{s.Name} (`{s.Id}`)").ToList().SumAnd()}\n";
 
-                var user = Core.GetUserFromGuild(id, context.Guild.Id);
-                if (user == null)
-                {
-                    await context.Message.ReplyAsync($"User not found in database for this guild.");
-                    return;
-                }
-                
-                var usernames = user.Usernames.Distinct().Select(n => $"`{n.Replace("`", "'")}`").ToList().SumAnd();
-                foreach (var s in $"<@!{user.Id}> has had the following nicknames: {usernames}".MessageSplit(',')) 
-                    await context.Message.ReplyAsync(s);
+                await context.Message.ReplyAsync(data);
             };
-            commands.Add(names);
+            commands.Add(lookup);
             
-            Command nicksCmd = new Command("nicks");
-            nicksCmd.RequiredPermission = Command.PermissionLevels.Moderator;
-            nicksCmd.Aliases = new List<string>() {"nicknames"};
-            nicksCmd.Usage = "nicknames <id>";
-            nicksCmd.Description = "Shows the full list of logged nicknames for a given user by their ID";
-            nicksCmd.ToExecute += async (context) =>
-            {
-                if (!ulong.TryParse(context.ParameterString, out var id))
-                {
-                    await context.Message.ReplyAsync($"You must pass a plain user ID.");
-                    return;
-                }
-
-                var user = Core.GetUserFromGuild(id, context.Guild.Id);
-                if (user == null)
-                {
-                    await context.Message.ReplyAsync($"User not found in database for this guild.");
-                    return;
-                }
-                
-                var nicknames = user.Nicknames.Distinct().Select(n => $"`{n.Replace("`", "'")}`").ToList().SumAnd();
-                foreach (var s in $"<@!{user.Id}> has had the following nicknames: {nicknames}".MessageSplit(',')) 
-                    await context.Message.ReplyAsync(s);
-            };
-            commands.Add(nicksCmd);
-            
-            Command warnsCmd = new Command("warns");
-            warnsCmd.RequiredPermission = Command.PermissionLevels.Moderator;
-            warnsCmd.Usage = "warns <id>";
-            warnsCmd.Description = "Shows the full list of warnings logged for a given user";
-            warnsCmd.ToExecute += async (context) =>
-            {
-                if (!ulong.TryParse(context.ParameterString, out var id))
-                {
-                    await context.Message.ReplyAsync($"You must pass a plain user ID.");
-                    return;
-                }
-
-                var user = Core.GetUserFromGuild(id, context.Guild.Id);
-                if (user == null)
-                {
-                    await context.Message.ReplyAsync($"User not found in database for this guild.");
-                    return;
-                }
-
-                var str = $"Warnings for <@!{user.Id}>\n\n";
-                foreach (var warning in user.Warnings)
-                {
-                    str += warning + "\n";
-                }
-
-                foreach (var s in str.MessageSplit('\n')) 
-                    await context.Message.ReplyAsync(s);
-            };
-            commands.Add(warnsCmd);
-
             Command repairDb = new Command("repairdb");
             repairDb.RequiredPermission = Command.PermissionLevels.GlobalAdmin;
             repairDb.ToExecute += async (context) =>

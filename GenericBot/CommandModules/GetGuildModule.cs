@@ -49,19 +49,29 @@ namespace GenericBot.CommandModules
                 if(context.Parameters.Count == 1)
                 {
                     var messages = channel.GetMessagesAsync().Flatten().ToList().Result;
-                    File.WriteAllText("messages.txt", messages.Select(m => $"{m.Author.Username}: {m.Content}").Reverse().Aggregate((a, b) => a + "\n" + b));
+                    string data = "";
+                    messages.Reverse();
+                    foreach(var msg in messages)
+                    {
+                        data += $"{msg.Author.Username}: {msg.Content}\n";
+                        if (msg.Attachments.Any())
+                            foreach (var a in msg.Attachments)
+                                data += $"    Attachment: {a.ProxyUrl}\n";
+                    }
+                    File.WriteAllText("messages.txt", data);
                     await context.Channel.SendFileAsync("messages.txt");
                     File.Delete("messages.txt");
                     return;
                 }
-                string message = context.ParameterString.Substring(context.ParameterString.IndexOf(' '));
 
+                string message = context.ParameterString.Substring(context.ParameterString.IndexOf(' ')).Trim();
                 await channel.SendMessageAsync(message);
                 await context.Message.ReplyAsync($"Sent `{message}` to {Core.DiscordClient.GetUser(ulong.Parse(context.Parameters[0]))}");
             };
             commands.Add(dmuser);
 
             Command getGuildCommand = new Command("getguild");
+            getGuildCommand.Aliases = new List<string> { "getguilds" };
             getGuildCommand.Usage = "getguild <user|guild|name>";
             getGuildCommand.Description = "Gets information about guilds this bot is in.";
             getGuildCommand.RequiredPermission = Command.PermissionLevels.GlobalAdmin;

@@ -25,6 +25,7 @@ namespace GenericBot
             result = result.Replace(@"_", @"\_");
             result = result.Replace(@"~", @"\~");
             result = result.Replace(@"`", @"\`");
+            result = result.Replace(@"|", @"\|");
 
             return result;
         }

@@ -305,4 +305,4 @@ $RECYCLE.BIN/
 # Custom
 *.bat
 
-files/config.json
+GenericBot/files/config.json

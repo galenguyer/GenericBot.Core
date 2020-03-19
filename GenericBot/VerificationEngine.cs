@@ -25,10 +25,13 @@ namespace GenericBot
 
                 if (Core.DiscordClient.Guilds.HasElement(g => g.Id.ToString().Contains(gid.ToString()),
                     out SocketGuild guild))
+                {
+                    Core.AddVerificationEvent(userId, guild.Id);
                     return guild;
+                }
                 return null;
             }
-            catch (Exception ex)
+            catch
             {
                 // This log throws way too much. It's fine to ignore errors, 
                 // because it means there was a string parsing error. There's no 
@@ -91,6 +94,26 @@ namespace GenericBot
             message = Regex.Replace(message, "{{usermention}}", user.Mention, RegexOptions.IgnoreCase);
             message = Regex.Replace(message, "{{user}}", user.Mention, RegexOptions.IgnoreCase);
             return message;
+        }
+    }
+
+    public class VerificationEvent
+    {
+        public ulong GuildId { get; set; }
+        public ulong UserId { get; set; }
+        public DateTimeOffset DateTime { get; set; }
+        public bool IsRevoked { get; set; }
+
+        public VerificationEvent(ulong guildId, ulong userId)
+        {
+            this.GuildId = guildId;
+            this.UserId = userId;
+            this.DateTime = DateTimeOffset.UtcNow;
+            this.IsRevoked = false;
+        }
+        public VerificationEvent()
+        {
+
         }
     }
 }

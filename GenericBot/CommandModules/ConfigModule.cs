@@ -564,7 +564,8 @@ namespace GenericBot.CommandModules
                 ulong uIdToSearch = 0;
                 if (!context.Parameters.IsEmpty())
                     if (ulong.TryParse(context.Parameters[0], out uIdToSearch))
-                        log = log.Where(l => l.UserId == uIdToSearch).OrderByDescending(l => l.MessageId).ToList();
+                        log = log.Where(l => l.UserId == uIdToSearch).ToList();
+                log = log.OrderByDescending(l => l.MessageId).ToList();
 
                 string message = string.Empty;
                 int i = 0;

@@ -52,6 +52,10 @@ namespace GenericBot.Entities
         /// </summary>
         public string GithubToken { get; set; }
 
+        public string OAuthClientId { get; set; }
+        public string OAuthClientSecret { get; set; }
+        public string RedirectUri { get; set; }
+
         /// <summary>
         /// Load the config file if it exists, otherwise create a blank one and save it
         /// for the user to edit
