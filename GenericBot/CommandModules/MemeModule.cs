@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GenericBot.CommandModules
 {
@@ -41,6 +42,26 @@ namespace GenericBot.CommandModules
                 await context.Message.ReplyAsync(context.Parameters.Rejoin(" :clap: ") + " :clap:");
             };
             commands.Add(clap);
+
+            Command uwu = new Command("uwu");
+            uwu.WorksInDms = true;
+            uwu.Description = "Uwu-ify text";
+            uwu.Usage = "uwu <text>";
+            uwu.ToExecute += async (context) =>
+            {
+                string uwuified = context.ParameterString;
+                uwuified = new Regex("(?:r|l)").Replace(uwuified, "w");
+                uwuified = new Regex("(?:R|L)").Replace(uwuified, "W");
+                uwuified = new Regex("n([aeiou])").Replace(uwuified, "ny$1");
+                uwuified = new Regex("N([aeiou])").Replace(uwuified, "Ny$1");
+                uwuified = new Regex("N([AEIOU])").Replace(uwuified, "Ny$1");
+                uwuified = new Regex("ove").Replace(uwuified, "uv");
+                uwuified = new Regex("th").Replace(uwuified, "f");
+                uwuified = new Regex("Th").Replace(uwuified, "f");
+
+                await context.Message.ReplyAsync(uwuified);
+            };
+            commands.Add(uwu);
 
             return commands;
         }
