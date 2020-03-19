@@ -22,7 +22,7 @@ namespace GenericBot.Controllers
         [HttpGet("{guildid}")]
         public IEnumerable<Quote> Get(ulong guildid)
         {
-            return Core.GetAllQuotes(id);
+            return Core.GetAllQuotes(guildid);
         }
     }
 }
