@@ -223,6 +223,9 @@ namespace GenericBot
         public static void AddVerificationEvent(ulong userId, ulong guildId) =>
             DatabaseEngine.AddVerification(userId, guildId);
 
+        public static List<Quote> GetAllQuotes(ulong guildId) =>
+            DatabaseEngine.GetAllQuotes(guildId);
+
         public static ExceptionReport AddOrUpdateExceptionReport(ExceptionReport report)
         {
             report = DatabaseEngine.AddOrUpdateExceptionReport(report);
