@@ -45,7 +45,8 @@ namespace GenericBot.CommandModules
 
             Command uwu = new Command("uwu");
             uwu.WorksInDms = true;
-            uwu.Usage = "Uwu-ify text";
+            uwu.Description = "Uwu-ify text";
+            uwu.Usage = "uwu <text>";
             uwu.ToExecute += async (context) =>
             {
                 string uwuified = context.ParameterString;
