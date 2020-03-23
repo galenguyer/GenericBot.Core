@@ -78,8 +78,8 @@ namespace GenericBot.CommandModules
                 uwuified = new Regex("N([aeiou])").Replace(uwuified, "Ny$1");
                 uwuified = new Regex("N([AEIOU])").Replace(uwuified, "Ny$1");
                 uwuified = new Regex("ove").Replace(uwuified, "uv");
-                uwuified = new Regex("th").Replace(uwuified, "f");
-                uwuified = new Regex("Th").Replace(uwuified, "f");
+                uwuified = new Regex("th").Replace(uwuified, "d");
+                uwuified = new Regex("Th").Replace(uwuified, "D");
 
                 await context.Message.ReplyAsync(uwuified);
             };
