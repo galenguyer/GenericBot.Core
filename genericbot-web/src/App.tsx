@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Sidebar from './Routing/Sidebar';
+import Quote from './Quotes/Quote';
 import {
   BrowserRouter as Router,
   Switch,
@@ -15,8 +16,8 @@ function App() {
       <Sidebar/>
       <div className="App">
       <Switch>
-        <Route path="/testone">
-          <h1>Test One Page</h1>
+        <Route path="/quotes">
+          <Quote quoteId={2} content="aa" submitter={false} admin={false}/>
         </Route>
         <Route path="/">
           <h1>Home</h1>

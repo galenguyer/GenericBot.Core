@@ -12,7 +12,7 @@ function Sidebar() {
         <h3>Web Dashboard</h3>
       </Link>
       <hr />
-        <SidebarLink name="Link One" url="/testone"/>
+        <SidebarLink name="Quotes" url="/quotes"/>
     </div>
   );
 }

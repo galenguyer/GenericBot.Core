@@ -1,0 +1,10 @@
+.Quote {
+    border: 2px solid rgba(34, 211, 211, 0.438);
+    border-radius: 8px;
+    padding: 4px 12px;
+    margin: 24px 48px 12px 24px;
+    font-size: 1rem;
+}
+.Quote>p{
+    margin: 6px;
+}
