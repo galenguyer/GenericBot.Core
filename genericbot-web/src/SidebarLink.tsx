@@ -1,4 +1,10 @@
 import React from 'react';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
 import logo from './logo.svg';
 import './SidebarLink.css';
 
@@ -11,11 +17,11 @@ class SidebarLink extends React.Component<SidebarLinkProps, {}> {
     render() {
         const {name, url} = this.props;
         return (
-            <a href={url}>
+            <Link to={url}>
                 <div className="SidebarLink">
                     {name}
                 </div>
-            </a>
+            </Link>
         );
     }
 }

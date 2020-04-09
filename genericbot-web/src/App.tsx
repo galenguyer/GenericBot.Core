@@ -2,20 +2,28 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Sidebar from './Sidebar';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from 'react-router-dom'
 
 function App() {
   return (
-    <>
+    <Router>
       <Sidebar/>
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-        </header>
+      <Switch>
+        <Route path="/testone">
+          <h1>Test One Page</h1>
+        </Route>
+        <Route path="/">
+          <h1>Home</h1>
+        </Route>
+      </Switch>
       </div>
-    </>
+    </Router>
   );
 }
 
