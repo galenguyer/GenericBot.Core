@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Sidebar from './Sidebar';
+import Sidebar from './Routing/Sidebar';
 import {
   BrowserRouter as Router,
   Switch,
