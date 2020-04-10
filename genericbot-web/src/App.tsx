@@ -7,6 +7,7 @@ import {
   Switch,
   Route,
 } from 'react-router-dom'
+import Login from './Authentication/Login';
 
 function App() {
   return (
@@ -17,8 +18,11 @@ function App() {
         <Route path="/quotes">
           <Quotes />
         </Route>
+        <Route path="/login">
+          <Login />
+        </Route>
         <Route path="/">
-          <h1>Home</h1>
+          <h1 className="PageTitle">Home</h1>
         </Route>
       </Switch>
       </div>
