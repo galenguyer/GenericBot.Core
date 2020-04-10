@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './Sidebar.css';
 import SidebarLink from './SidebarLink';
 import { Link } from 'react-router-dom';
