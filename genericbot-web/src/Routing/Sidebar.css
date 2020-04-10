@@ -1,7 +1,7 @@
 .Sidebar{ 
     width: 230px;
     height:100%;
-    background-color:#394357;
+    background-color: #181b20;
     position:fixed!important;
     z-index:1;
     overflow:auto;
