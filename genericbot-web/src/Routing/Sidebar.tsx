@@ -1,6 +1,7 @@
 import React from 'react';
 import './Sidebar.css';
 import SidebarLink from './SidebarLink';
+import LoginState from '../Authentication/LoginState'
 import { Link } from 'react-router-dom';
  
 function Sidebar() {
@@ -11,7 +12,9 @@ function Sidebar() {
         <h3>Web Dashboard</h3>
       </Link>
       <hr />
-        <SidebarLink name="Quotes" url="/quotes"/>
+      <SidebarLink name="Quotes" url="/quotes"/>
+
+      <LoginState/>
     </div>
   );
 }
