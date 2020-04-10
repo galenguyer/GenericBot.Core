@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import Sidebar from './Routing/Sidebar';
-import Quote from './Quotes/Quote';
+import Quotes from './Quotes/Quotes';
 import {
   BrowserRouter as Router,
   Switch,
@@ -15,7 +15,7 @@ function App() {
       <div className="App">
       <Switch>
         <Route path="/quotes">
-          <Quote quoteId={2} content="Funny quote haha - me lol" admin={true}/>
+          <Quotes />
         </Route>
         <Route path="/">
           <h1>Home</h1>

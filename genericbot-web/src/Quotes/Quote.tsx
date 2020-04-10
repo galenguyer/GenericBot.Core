@@ -2,14 +2,14 @@ import React from 'react';
 import './Quote.css';
 
 export interface QuoteData {
-    quoteId: number,
+    id: number,
     content: string,
     admin: boolean
 }
 
-class Quote extends React.Component<QuoteData, {}> {
+export class Quote extends React.Component<QuoteData, {}> {
     render() {
-        const {quoteId, content, admin} = this.props;
+        const {id, content, admin} = this.props;
         var button = null;
         var contentName = "QuoteContent"
         if(admin){
@@ -18,12 +18,10 @@ class Quote extends React.Component<QuoteData, {}> {
         }
         return (
             <div className="Quote">
-                <span className="QuoteIdBox"><span className="QuoteId">{quoteId}</span></span>
+                <span className="QuoteIdBox"><span className="QuoteId">{id}</span></span>
                 <span className={contentName}>{content}</span>
                 {button}
             </div>
         );
     }
 }
-
-export default Quote;
