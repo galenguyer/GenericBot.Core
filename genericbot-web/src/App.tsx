@@ -8,6 +8,7 @@ import {
   Route,
 } from 'react-router-dom'
 import Login from './Authentication/Login';
+import Callback from './Authentication/Callback';
 
 function App() {
   return (
@@ -15,11 +16,14 @@ function App() {
       <Sidebar/>
       <div className="App">
       <Switch>
-        <Route path="/quotes">
+        <Route path="/quotes/:paramId">
           <Quotes />
         </Route>
         <Route path="/login">
           <Login />
+        </Route>
+        <Route path="/callback">
+          <Callback />
         </Route>
         <Route path="/">
           <h1 className="PageTitle">Home</h1>
