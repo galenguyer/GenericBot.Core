@@ -7,7 +7,7 @@ function Callback() {
     
     useEffect(() => {
         if(code==""||code=="yolo") {return;}
-        fetch("https://genericbot.galenguyer.com/api/callback?code="+code)
+        fetch("/api/callback?code="+code)
         .then(result => {
             return result.text();    
         })

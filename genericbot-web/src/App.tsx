@@ -15,20 +15,23 @@ function App() {
     <Router>
       <Sidebar/>
       <div className="App">
-      <Switch>
-        <Route path="/quotes/:paramId">
-          <Quotes />
-        </Route>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/callback">
-          <Callback />
-        </Route>
-        <Route path="/">
-          <h1 className="PageTitle">Home</h1>
-        </Route>
-      </Switch>
+        <Switch>
+          <Route path="/quotes/:paramId">
+            <Quotes />
+          </Route>
+          <Route path="/quotes">
+            <Quotes />
+          </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/callback">
+            <Callback />
+          </Route>
+          <Route path="/">
+            <h1 className="PageTitle">Home</h1>
+          </Route>
+        </Switch>
       </div>
     </Router>
   );

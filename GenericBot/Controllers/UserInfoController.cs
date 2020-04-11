@@ -17,7 +17,7 @@ namespace GenericBot.Controllers
             {
                 WebClient client = new WebClient();
 
-                client.Headers.Add("Authorization", $"Bearer {Request.Cookies["Authorization"]}");
+                client.Headers.Add("Authorization", $"Bearer {Request.Headers["Authorization"]}");
                 string userData = client.DownloadString("https://discordapp.com/api/v6/users/@me");
 
                 PartialUser pUser = JsonConvert.DeserializeObject<PartialUser>(userData);
