@@ -432,6 +432,44 @@ namespace GenericBot.CommandModules
             };
             commands.Add(verifyall);
 
+            Command roleeveryone = new Command("roleeveryone");
+            roleeveryone.Aliases = new List<string> { "roleveryone" };
+            roleeveryone.Description = "Give or remove a role from everyone";
+            roleeveryone.Usage = "roleveryone [add|remove] <roleID>";
+            roleeveryone.RequiredPermission = Command.PermissionLevels.Admin;
+            roleeveryone.ToExecute += async (context) =>
+            {
+                if (!(context.Parameters[0].ToLower().Equals("add") || context.Parameters[0].ToLower().Equals("remove")))
+                {
+                    await context.Message.ReplyAsync($"Invalid option `{context.Parameters[0]}`");
+                }
+                ulong id;
+                if (ulong.TryParse(context.Parameters[1], out id) && context.Guild.Roles.Any(r => r.Id == id))
+                {
+                    int i = 0;
+                    await context.Guild.DownloadUsersAsync();
+                    var role = context.Guild.GetRole(id);
+                    foreach (var u in context.Guild.Users)
+                    {
+                        if (context.Parameters[0].ToLower().Equals("remove") && u.Roles.Any(r => r.Id == id))
+                        {
+                            await u.RemoveRoleAsync(role);
+                            i++;
+                        }
+                        if (context.Parameters[0].ToLower().Equals("add") && !u.Roles.Any(r => r.Id == id))
+                        {
+                            await u.AddRoleAsync(role);
+                            i++;
+                        }
+                    }
+                    string addrem = context.Parameters[0].ToLower().Equals("add") ? "Added" : "Removed";
+                    string tofrom = context.Parameters[0].ToLower().Equals("add") ? "to" : "from";
+                    await context.Message.ReplyAsync($"{addrem} `{role.Name}` {tofrom} `{i}` users.");
+                }
+                else await context.Message.ReplyAsync("Invalid Role Id");
+            };
+            commands.Add(roleeveryone);
+
             return commands;
         }
     }
