@@ -376,7 +376,7 @@ namespace GenericBot.CommandModules
             commands.Add(verify);
 
             Command verifyall = new Command("verifyall");
-            verifyall.RequiredPermission = Command.PermissionLevels.User;
+            verifyall.RequiredPermission = Command.PermissionLevels.Admin;
             verifyall.ToExecute += async (context) =>
             {
                 var guildConfig = Core.GetGuildConfig(context.Guild.Id);
