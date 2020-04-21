@@ -70,7 +70,7 @@ namespace GenericBot.CommandModules
                 var builder = new EmbedBuilder()
                     .WithTitle("GenericBot: An All-Purpose Almost-Decent Bot")
                     .WithDescription("GenericBot aims to provide an almost full featured moderation and fun box experience in one convenient package")
-                    .WithUrl("https://github.com/MasterChief-John-117/GenericBot")
+                    .WithUrl("https://github.com/galenguyer/GenericBot")
                     .WithColor(new Color(0xFF))
                     .WithFooter(footer =>
                     {
@@ -79,7 +79,7 @@ namespace GenericBot.CommandModules
                             .WithIconUrl(Core.DiscordClient.GetUser(169918990313848832).GetAvatarUrl());
                     })
                     .WithThumbnailUrl(Core.DiscordClient.CurrentUser.GetAvatarUrl().Replace("size=128", "size=2048"))
-                    .AddField($"Links", $"GenericBot is, and always will be, free to use. To invite it, click [here](https://discordapp.com/oauth2/authorize?client_id=295329346590343168&scope=bot&permissions=2110258303)\nAlso, the source code is public on [github](https://github.com/MasterChief-John-117/GenericBot). You can also open bug reports on GitHub ")
+                    .AddField($"Links", $"GenericBot is, and always will be, free to use. To invite it, click [here](https://discordapp.com/oauth2/authorize?client_id=295329346590343168&scope=bot&permissions=2110258303)\nAlso, the source code is public on [github](https://github.com/galenguyer/GenericBot). You can also open bug reports on GitHub ")
                     .AddField($"Getting Started", $"See everything you can make me do with `{prefix}help`. {config}")
                     .AddField($"Self Assignable Roles", $"One of the most common public features GenericBot is used for is roles a user can assign to themself. To see all the avaible roles, do `{prefix}userroles`. You can join a role with `{prefix}iam [rolename]` or leave a role with `{prefix}iamnot [rolename]`.")
                     .AddField($"Moderation", $"GenericBot provides a wide range of tools for moderators to track users and infractions. It keeps track of all of a user's usernames, nicknames, and logged infractions, including kicks and timed or permanent bans. Users can be searched for either by ID, or by username or nickname, whether it be current or an old name. (All data is stored in an encrypted database, and data from one server is completely inaccessible by another server)")
@@ -102,7 +102,7 @@ namespace GenericBot.CommandModules
                 var builder = new EmbedBuilder()
                     .WithTitle("GenericBot: Config Information")
                     .WithDescription($"The `{prefix}config` command is huge and confusing. This aims to make it a bit simpler (For more general assistance, try `{prefix}info`)")
-                    .WithUrl("https://github.com/MasterChief-John-117/GenericBot")
+                    .WithUrl("https://github.com/galenguyer/GenericBot")
                     .WithColor(new Color(0xEF4347))
                     .WithFooter(new EmbedFooterBuilder().WithText($"If you have questions or notice any errors, please contact {Core.DiscordClient.GetUser(169918990313848832).ToString()}"))
                     .WithThumbnailUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Gear_1.svg/1000px-Gear_1.svg.png")

@@ -25,7 +25,7 @@ namespace GenericBot
             {
                 if(parameterMessage.Content.ToLower().Contains("open an issue") && parameterMessage.Author.Id == Core.DiscordClient.GetApplicationInfoAsync().Result.Owner.Id)
                 {
-                    parameterMessage.Channel.SendMessageAsync("https://github.com/MasterChief-John-117/GenericBot/issues");
+                    parameterMessage.Channel.SendMessageAsync("https://github.com/galenguyer/GenericBot/issues");
                 }
             }
             catch { }
