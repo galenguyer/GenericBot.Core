@@ -46,7 +46,9 @@ namespace GenericBot
                     }
                     else
                     {
-                        var msg = Core.DiscordClient.GetApplicationInfoAsync().Result.Owner.GetOrCreateDMChannelAsync().Result
+                        IUserMessage alertMessage = null;
+                        if (Core.GlobalConfig.CriticalLoggingChannel != 0)
+                            alertMessage = ((ITextChannel)Core.DiscordClient.GetChannel(Core.GlobalConfig.CriticalLoggingChannel))
                             .SendMessageAsync($"```\nDM from: {parameterMessage.Author}({parameterMessage.Author.Id})\nContent: {parameterMessage.Content}\n```").Result;
                         if (parameterMessage.Content.Trim().Split().Length == 1)
                         {
@@ -64,8 +66,9 @@ namespace GenericBot
                                     logChannel.SendMessageAsync($"`{DateTime.UtcNow.ToString(@"yyyy-MM-dd HH:mm tt")}`:  `{parameterMessage.Author}` (`{parameterMessage.Author.Id}`) just verified");
                                 }
                                 parameterMessage.ReplyAsync($"You've been verified on **{guild.Name}**!");
-                                msg.ModifyAsync(m =>
-                                    m.Content = $"```\nDM from: {parameterMessage.Author}({parameterMessage.Author.Id})\nContent: {parameterMessage.Content.SafeSubstring(1900)}\nVerified on {guild.Name}\n```");
+                                if (alertMessage != null)
+                                    alertMessage.ModifyAsync(m =>
+                                        m.Content = $"```\nDM from: {parameterMessage.Author}({parameterMessage.Author.Id})\nContent: {parameterMessage.Content.SafeSubstring(1900)}\nVerified on {guild.Name}\n```");
                             }
                         }
                     }

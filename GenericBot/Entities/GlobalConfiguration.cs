@@ -47,6 +47,7 @@ namespace GenericBot.Entities
         /// Webhook URL to send critical messages to
         /// </summary>
         public string CriticalLoggingWebhookUrl { get; set; }
+        public ulong CriticalLoggingChannel { get; set; }
         /// <summary>
         /// Token to use to authenticate with GitHub for opening issues
         /// </summary>
