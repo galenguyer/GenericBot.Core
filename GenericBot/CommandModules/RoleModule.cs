@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+using GenericBot.Database;
 using GenericBot.Entities;
 
 namespace GenericBot.CommandModules
@@ -73,6 +74,7 @@ namespace GenericBot.CommandModules
             iam.ToExecute += async (context) =>
             {
                 List<IMessage> messagesToDelete = new List<IMessage>();
+                DatabaseUser dbUser = Core.GetUserFromGuild(context.Author.Id, context.Guild.Id);
 
                 if (context.Parameters.IsEmpty())
                 {
@@ -96,6 +98,7 @@ namespace GenericBot.CommandModules
                             var role = roles.Any(r => r.Name.ToLower() == roleName.ToLower())
                                 ? roles.First(r => r.Name.ToLower() == roleName.ToLower())
                                 : roles.First();
+                            dbUser.AddStoredRole(role.Id);
                             if (context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == role.Id))
                             {
                                 messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"You already have that role!").WithColor(new Color(0xFFFF00)).Build()).Result);
@@ -113,6 +116,7 @@ namespace GenericBot.CommandModules
                         }
                     }
                 }
+                Core.SaveUserToGuild(dbUser, context.Guild.Id);
 
                 await Task.Delay(15 * 1000);
                 try
@@ -146,6 +150,7 @@ namespace GenericBot.CommandModules
             iamnot.ToExecute += async (context) =>
             {
                 List<IMessage> messagesToDelete = new List<IMessage>();
+                DatabaseUser dbUser = Core.GetUserFromGuild(context.Author.Id, context.Guild.Id);
 
                 if (context.Parameters.IsEmpty())
                 {
@@ -169,6 +174,7 @@ namespace GenericBot.CommandModules
                             var role = roles.Any(r => r.Name.ToLower() == roleName.ToLower())
                                 ? roles.First(r => r.Name.ToLower() == roleName.ToLower())
                                 : roles.First();
+                            dbUser.RemoveStoredRole(role.Id);
                             if (!context.Guild.GetUser(context.Author.Id).Roles.Any(r => r.Id == role.Id))
                             {
                                 messagesToDelete.Add(context.Channel.SendMessageAsync("", embed: new EmbedBuilder().WithDescription($"You don't have that role!").WithColor(new Color(0xFFFF00)).Build()).Result);
@@ -186,6 +192,7 @@ namespace GenericBot.CommandModules
                         }
                     }
                 }
+                Core.SaveUserToGuild(dbUser, context.Guild.Id);
 
                 await Task.Delay(15 * 1000);
                 try
