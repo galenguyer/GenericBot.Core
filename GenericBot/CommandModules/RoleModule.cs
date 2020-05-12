@@ -518,8 +518,36 @@ namespace GenericBot.CommandModules
                         await context.Message.ReplyAsync($"You have `{storedRoles.Count()}` roles you will be able to restore now");
                         Core.SaveUserToGuild(dbUser, context.Guild.Id);
                     }
-                    else
+                    else if (context.Parameters[0].ToLower().Equals("restore"))
                     {
+                        var storedRoles = dbUser.GetStoredRoles()
+                            .Intersect(context.Guild.Roles.Select(r => r.Id))
+                            .Where(r => !(context.Author as SocketGuildUser).Roles.Any(u => u.Id == r))
+                            .Intersect(userRoles);
+                        if(storedRoles.Count() == 0)
+                        {
+                            await context.Message.ReplyAsync($"You are missing no saved roles");
+                        }
+                        else
+                        {
+                            try
+                            {
+                                await (context.Author as SocketGuildUser).AddRolesAsync(storedRoles.Select(r => context.Guild.GetRole(r)));
+                                await context.Message.ReplyAsync($"Successfully restored `{storedRoles.Count()}` roles for you!");
+                            }
+                            catch
+                            {
+
+                                var missingRoles = dbUser.GetStoredRoles()
+                                    .Intersect(context.Guild.Roles.Select(r => r.Id))
+                                    .Where(r => !(context.Author as SocketGuildUser).Roles.Any(u => u.Id == r))
+                                    .Intersect(userRoles);
+                                await context.Message.ReplyAsync($"Uh oh. You had `{storedRoles.Count()}` roles that could be restored, but `{missingRoles.Count()}` couldn't be restored.");
+                            }
+                        }
+                    }
+                    else
+                            {
                         await context.Message.ReplyAsync("Invalid parameter. Use rolestore with no parameters to see available roles, or `save` or `restore`");
                     }
                 }
