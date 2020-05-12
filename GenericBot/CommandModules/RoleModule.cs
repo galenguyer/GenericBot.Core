@@ -483,7 +483,7 @@ namespace GenericBot.CommandModules
                     var storedRoles = dbUser.GetStoredRoles()
                         .Intersect(context.Guild.Roles.Select(r => r.Id));
                     var restoreableRoles = storedRoles
-                        .Where(r => (context.Author as SocketGuildUser).Roles.Any(u => u.Id == r))
+                        .Where(r => !(context.Author as SocketGuildUser).Roles.Any(u => u.Id == r))
                         .Intersect(userRoles);
                     if (storedRoles.Any())
                     {
