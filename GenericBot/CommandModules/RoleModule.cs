@@ -470,6 +470,48 @@ namespace GenericBot.CommandModules
             };
             commands.Add(roleeveryone);
 
+            Command rolestore = new Command("rolestore");
+            rolestore.Description = "Save or restore all of your userroles";
+            rolestore.Usage = "roleveryone [save|restore]";
+            rolestore.ToExecute += async (context) =>
+            {
+                var dbUser = Core.GetUserFromGuild(context.Author.Id, context.Guild.Id);
+                if (context.Parameters.Count == 0)
+                {
+                    var storedRoles = dbUser.GetStoredRoles()
+                        .Intersect(context.Guild.Roles.Select(r => r.Id));
+                    var restoreableRoles = storedRoles
+                        .Where(r => (context.Author as SocketGuildUser).Roles.Any(u => u.Id == r));
+                    if (storedRoles.Any())
+                    {
+                        if (restoreableRoles.Any())
+                        {
+                            await context.Message
+                                .ReplyAsync($"You have `{storedRoles.Count()}` saved roles, and `{restoreableRoles.Count()}` that can be restored! " +
+                                $"The restoreable roles are: {restoreableRoles.Select(r => $"`{context.Guild.GetRole(r).Name}`").ToList().SumAnd()}");
+                        }
+                        else
+                        {
+                            await context.Message
+                                .ReplyAsync($"You have `{storedRoles.Count()}` saved roles, but you already have them all, so none of them can be restored!");
+                        }
+                    }
+                    else
+                    {
+                        await context.Message.ReplyAsync("You have no saved roles!");
+                    }
+                }
+                else if (context.Parameters.Count == 0)
+                {
+
+                }
+                else
+                {
+
+                }
+            };
+            commands.Add(rolestore);
+
             return commands;
         }
     }
