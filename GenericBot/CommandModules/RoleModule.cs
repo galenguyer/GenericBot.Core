@@ -516,6 +516,7 @@ namespace GenericBot.CommandModules
                             .Intersect(context.Guild.Roles.Select(r => r.Id))
                             .Intersect(userRoles);
                         await context.Message.ReplyAsync($"You have `{storedRoles.Count()}` roles you will be able to restore now");
+                        Core.SaveUserToGuild(dbUser, context.Guild.Id);
                     }
                     else
                     {
