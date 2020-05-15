@@ -101,7 +101,7 @@ namespace GenericBot.CommandModules
         private async Task PerformGuildSearch(ParsedCommand context, string searchQuery)
         {
             var foundGuilds = Core.DiscordClient.Guilds.Where(g => g.Name.Contains(searchQuery, StringComparison.InvariantCultureIgnoreCase)).ToList();
-
+            foundGuilds.OrderByDescending(g => g.MemberCount);
             if (foundGuilds.Count == 0)
             {
                 await context.Message.ReplyAsync($"Search query `{searchQuery}` did not return any resulting guilds.");
