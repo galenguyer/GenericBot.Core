@@ -41,7 +41,7 @@ namespace GenericBot.CommandModules
                     message += "\n";
                 }
 
-                if (config.UserRoles[""].Count > 0)
+                if (config.UserRoles.Keys.Contains("") && config.UserRoles[""].Count > 0)
                 {
                     message += $"**Ungrouped:** ";
                     foreach (var role in context.Guild.Roles
