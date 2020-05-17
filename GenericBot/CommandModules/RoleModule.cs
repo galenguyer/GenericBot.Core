@@ -25,6 +25,14 @@ namespace GenericBot.CommandModules
                 string prefix = Core.GetPrefix(context);
                 string message = $"You can use `{prefix}iam` and `{prefix}iamnot` with any of these roles:\n _\\*(Pro tip: You can add/remove more than one role at a time by seperating each role with a comma like `{prefix}iam role0, role1, role2, etc`)*_\n";
                 var config = Core.GetGuildConfig(context.Guild.Id);
+                if(config.UserRoles.Count < 1 || 
+                    config.UserRoles
+                        .Sum(kvp => kvp.Value
+                            .Count(r => context.Guild.Roles.Any(gr => gr.Id == r))) < 1)
+                {
+                    await context.Message.ReplyAsync("It looks like there are no available user roles on this server. If you believe this is in error, please talk to your server administrators!");
+                    return;
+                }
                 foreach (var group in config.UserRoles.Where(g => !string.IsNullOrEmpty(g.Key) && g.Value.Count > 0).OrderBy(g => g.Key))
                 {
                     message += $"**{group.Key}:** ";
@@ -58,7 +66,7 @@ namespace GenericBot.CommandModules
                 }
 
                 message = message.Trim(' ', ',', '\n');
-                //message += $"\n You can also use `{prefix}rolestore save` to backup your assigned roles";
+                message += $"\n You can also use `{prefix}rolestore save` to backup your assigned roles";
 
                 foreach (var str in message.MessageSplit())
                 {
