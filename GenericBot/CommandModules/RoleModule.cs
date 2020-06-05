@@ -491,6 +491,12 @@ namespace GenericBot.CommandModules
             rolestore.ToExecute += async (context) =>
             {
                 var dbUser = Core.GetUserFromGuild(context.Author.Id, context.Guild.Id);
+                if (Core.GetGuildConfig(context.Guild.Id).UserRoles == null || Core.GetGuildConfig(context.Guild.Id).UserRoles.Count < 1
+                    || Core.GetGuildConfig(context.Guild.Id).UserRoles.Values.Aggregate((a, b) => a.Concat(b).ToList()).Count < 1)
+                {
+                    await context.Message.ReplyAsync("This server has no user-assignable roles!");
+                    return;
+                }
                 var userRoles = Core.GetGuildConfig(context.Guild.Id).UserRoles.Values.Aggregate((a, b) => a.Concat(b).ToList());
 
                 if (context.Parameters.Count == 0)
