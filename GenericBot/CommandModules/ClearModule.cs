@@ -60,7 +60,7 @@ namespace GenericBot.CommandModules
                     }
                     msgs = msgs.Where(m => DateTime.Now - m.CreatedAt < TimeSpan.FromDays(14)).ToList(); // Only keep last 2 weeks of messages (API Limits)
                     var logChannelId = Core.GetGuildConfig(context.Guild.Id).LoggingChannelId;
-                    if (context.Guild.Channels.Any(c => c.Id == logChannelId))
+                    if (context.Guild.Channels.Any(c => c.Id == logChannelId) && !Core.GetGuildConfig(context.Guild.Id).MessageLoggingIgnoreChannels.Contains(context.Channel.Id))
                     {
                         string fileName = $"files/{context.Message.Channel.Name}-cleared-{context.Message.Id.ToString().Substring(14, 4)}.txt";
                         File.WriteAllText(fileName, JsonConvert.SerializeObject(new
