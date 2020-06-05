@@ -72,6 +72,8 @@ namespace GenericBot.CommandModules
             uwu.ToExecute += async (context) =>
             {
                 string uwuified = context.ParameterString;
+                if (context.Parameters.Count == 0)
+                    uwuified = "You need to give me a message to uwu-ify!";
                 uwuified = new Regex("(?:r|l)").Replace(uwuified, "w");
                 uwuified = new Regex("(?:R|L)").Replace(uwuified, "W");
                 uwuified = new Regex("n([aeiou])").Replace(uwuified, "ny$1");
