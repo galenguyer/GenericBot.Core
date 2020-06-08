@@ -145,7 +145,7 @@ namespace GenericBot.CommandModules
 
 
                 var guildconfig = Core.GetGuildConfig(context.Guild.Id);
-                if (guildconfig.MutedUsers.Contains(userId))
+                if (guildconfig.MutedUsers != null && guildconfig.MutedUsers.Contains(userId))
                     guildconfig.MutedUsers.Remove(userId);
                 Core.SaveGuildConfig(guildconfig);
                 var bannedUser = Core.GetUserFromGuild(user.Id, context.Guild.Id)
