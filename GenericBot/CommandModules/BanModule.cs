@@ -430,6 +430,7 @@ namespace GenericBot.CommandModules
             };
             commands.Add(kick);
 
+            // TODO: flow here sucks and fails silently at many points
             Command unban = new Command("unban");
             unban.Description = "Unban a user given their ID";
             unban.RequiredPermission = Command.PermissionLevels.Moderator;
