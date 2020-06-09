@@ -22,7 +22,7 @@ namespace GenericBot.CommandModules
             ban.Usage = $"{ban.Name} <user> <time> <reason>";
             ban.ToExecute += async (context) =>
             {
-                // Check for commands
+                // Fail fast if no parameters are provided
                 if (context.Parameters.IsEmpty())
                 {
                     await context.Message.ReplyAsync($"You need to add some arguments. A user, perhaps?");
@@ -33,25 +33,25 @@ namespace GenericBot.CommandModules
                 ulong userId;
                 if (!ulong.TryParse(context.Parameters[0].TrimStart('<', '@', '!').TrimEnd('>'), out userId))
                 {
-                    await context.Message.ReplyAsync("Try specifying someone to ban first");
+                    await context.Message.ReplyAsync("Please provide a UserId or mention the user you want to ban");
                     return;
                 }
 
-                // Prevent banning me
+                // Prevent banning the bot owner
                 if (userId == Core.DiscordClient.GetApplicationInfoAsync().Result.Owner.Id)
                 {
                     await context.Message.ReplyAsync("Haha lol no");
                     return;
                 }
 
-                // Remove UserId from param stack
+                // Remove UserId from the parameter list
                 context.Parameters.RemoveAt(0);
 
                 // Get the time to ban the user for
                 var time = new DateTimeOffset();
                 try
                 {
-                    if ((context.Parameters[0] == "0" || context.Parameters[0] == "0d"))
+                    if (context.Parameters[0] == "0" || context.Parameters[0] == "0d")
                         time = DateTimeOffset.MaxValue;
                     else
                         time = context.Parameters[0].ParseTimeString();
@@ -66,10 +66,11 @@ namespace GenericBot.CommandModules
                 {
                     time = DateTimeOffset.MaxValue;
                 }
+                // If something very wrong happened
                 catch (Exception ex)
                 {
                     await Core.Logger.LogErrorMessage(ex, context);
-                    await context.Message.ReplyAsync($"An unknown error has occured, and the developer has been notified. Please try again or with different options");
+                    await context.Message.ReplyAsync($"An unknown error has occured while trying to parse the time to ban, and the developer has been notified. Please try again or with different options");
                     return;
                 }
                 string timeMessage = time == DateTimeOffset.MaxValue ? "permanently" : $"for `{(time.AddSeconds(1) - DateTimeOffset.UtcNow).FormatTimeString()}`";
@@ -79,7 +80,7 @@ namespace GenericBot.CommandModules
                 if (bans.Any(b => b.User.Id == userId))
                 {
                     await context.Message.ReplyAsync(
-                        $"`{bans.First(b => b.User.Id == userId).User}` is already banned for `{bans.First(b => b.User.Id == userId).Reason}`");
+                        $"`{bans.First(b => b.User.Id == userId).User}` is already banned with the message `{bans.First(b => b.User.Id == userId).Reason}`");
                     return;
                 }
                 string reason = context.Parameters.IsEmpty() ? "No Reason Given" : context.Parameters.Rejoin();
@@ -96,7 +97,8 @@ namespace GenericBot.CommandModules
                 }
                 catch (Exception ex)
                 {
-                    await Core.Logger.LogErrorMessage(ex, context);
+                    // Disable this for now, we don't need to report failed ban messages
+                    //await Core.Logger.LogErrorMessage(ex, context);
                     dmSuccess = false;
                 }
 
@@ -118,9 +120,9 @@ namespace GenericBot.CommandModules
                     return;
                 }
 
-                bans = context.Guild.GetBansAsync().Result;
-                var user = bans.First(u => u.User.Id == userId).User;
+                var user = context.Guild.GetBansAsync().Result.First(u => u.User.Id == userId).User;
                 string banMessage = $"Banned `{user}` (`{user.Id}`)";
+                // TODO: check if this adds a double :ok_hand:
                 if (string.IsNullOrEmpty(reason))
                     banMessage += $" 👌";
                 else
@@ -144,6 +146,7 @@ namespace GenericBot.CommandModules
                     });
 
 
+                // Load the guild configs and databases, unmute the user, and add a note to their database profile
                 var guildconfig = Core.GetGuildConfig(context.Guild.Id);
                 if (guildconfig.MutedUsers != null && guildconfig.MutedUsers.Contains(userId))
                     guildconfig.MutedUsers.Remove(userId);
@@ -164,6 +167,7 @@ namespace GenericBot.CommandModules
             };
             commands.Add(ban);
 
+            // TODO: purgeing only works on users on the server, but this isn't reflected in the code
             Command purgeban = new Command("purgeban");
             purgeban.Description = "Ban a user from the server, whether or not they're on it, and delete the last 24 hours of their messages";
             purgeban.Delete = false;
