@@ -91,7 +91,7 @@ namespace GenericBot
             Commands = Commands.Where(c => !CommandsToExclude.Contains(c.Name)).ToList();
         }
 
-        public static bool CheckBlacklisted(ulong UserId) => GlobalConfig.BlacklistedIds.Contains(UserId);
+        public static bool CheckBlacklisted(ulong UserId) => GlobalConfig.BlacklistedIds != null && GlobalConfig.BlacklistedIds.Contains(UserId);
         public static ulong GetCurrentUserId() => DiscordClient.CurrentUser.Id;
         public static ulong GetOwnerId() => DiscordClient.GetApplicationInfoAsync().Result.Owner.Id;
         public static string GetGlobalPrefix() => GlobalConfig.DefaultPrefix;
