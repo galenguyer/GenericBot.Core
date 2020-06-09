@@ -47,12 +47,16 @@ namespace GenericBot.Entities
         /// Webhook URL to send critical messages to
         /// </summary>
         public string CriticalLoggingWebhookUrl { get; set; }
+        /// <summary>
+        /// Channel ID for sending DM logs to
+        /// </summary>
         public ulong CriticalLoggingChannel { get; set; }
         /// <summary>
         /// Token to use to authenticate with GitHub for opening issues
         /// </summary>
         public string GithubToken { get; set; }
 
+        // OAuth secrets for use with web API
         public string OAuthClientId { get; set; }
         public string OAuthClientSecret { get; set; }
         public string RedirectUri { get; set; }

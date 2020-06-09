@@ -12,8 +12,15 @@ using System.Threading.Tasks;
 
 namespace GenericBot
 {
+    /// <summary>
+    /// The Core client, responsible for loading everything on startup and wrapping
+    /// any methods that interact with the database or configuration
+    /// </summary>
     public static class Core
     {
+        /// <summary>
+        /// The shared configuration for the entire bot
+        /// </summary>
         public static GlobalConfiguration GlobalConfig { get; private set; }
         public static DiscordShardedClient DiscordClient { get; private set; }
         public static List<Command> Commands { get; set; }
@@ -26,12 +33,17 @@ namespace GenericBot
 
         static Core()
         {
-            // Load global configs
+            // Load the global configuration
             GlobalConfig = new GlobalConfiguration().Load();
+            // Initialize a new logger with the current data and time
             Logger = new Logger();
+            // Intialize a new, empty list of commands and custom commands
             Commands = new List<Command>();
+            // CustomCommands are structured as GuildID -> List<CustomCommand>
             CustomCommands = new Dictionary<ulong, List<CustomCommand>>();
+            // Load custom commands from enabled modules
             LoadCommands(GlobalConfig.CommandsToExclude);
+            // Create the database engine
             DatabaseEngine = new MongoEngine();
             LoadedGuildConfigs = new List<GuildConfig>();
             Messages = 0;
@@ -43,6 +55,7 @@ namespace GenericBot
                 AlwaysDownloadUsers = true,
                 MessageCacheSize = 100,
             });
+            // Set up event handlers
             DiscordClient.Log += Logger.LogClientMessage;
             DiscordClient.MessageReceived += MessageEventHandler.MessageRecieved;
             DiscordClient.MessageUpdated += MessageEventHandler.HandleEditedCommand;
@@ -54,6 +67,11 @@ namespace GenericBot
             DiscordClient.ShardReady += ShardReady;
         }
 
+        /// <summary>
+        /// Set the playing message on each sharded instance once the bot reports it as Ready
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
         private static async Task ShardReady(DiscordSocketClient arg)
         {
             if (File.Exists("version.txt"))
@@ -66,6 +84,10 @@ namespace GenericBot
             }
         }
 
+        /// <summary>
+        /// Load all enabled modules into the Commands list
+        /// </summary>
+        /// <param name="CommandsToExclude"></param>
         private static void LoadCommands(List<string> CommandsToExclude = null)
         {
             Commands.Clear();
@@ -91,19 +113,47 @@ namespace GenericBot
             Commands = Commands.Where(c => !CommandsToExclude.Contains(c.Name)).ToList();
         }
 
-        public static bool CheckBlacklisted(ulong UserId) => GlobalConfig.BlacklistedIds != null && GlobalConfig.BlacklistedIds.Contains(UserId);
+        /// <summary>
+        /// Check if a user is blacklisted from running bot commands globally
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        public static bool CheckBlacklisted(ulong UserId) => 
+            GlobalConfig.BlacklistedIds != null && GlobalConfig.BlacklistedIds.Contains(UserId);
+        /// <summary>
+        /// Return the UserID of the bot
+        /// </summary>
+        /// <returns></returns>
         public static ulong GetCurrentUserId() => DiscordClient.CurrentUser.Id;
+        /// <summary>
+        /// Return the UserID of the owner of the bot account
+        /// </summary>
+        /// <returns></returns>
         public static ulong GetOwnerId() => DiscordClient.GetApplicationInfoAsync().Result.Owner.Id;
         public static string GetGlobalPrefix() => GlobalConfig.DefaultPrefix;
+        /// <summary>
+        /// Return the appropriate prefix for a command, based on where the comand was run
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static string GetPrefix(ParsedCommand context)
         {
-            if (!(context.Message.Channel is SocketDMChannel) && (context.Guild == null || !string.IsNullOrEmpty(GetGuildConfig(context.Guild.Id).Prefix)))
+            // TODO: This if check seems weird, the second statement looks very wrong
+            if (!(context.Message.Channel is SocketDMChannel) 
+                && (context.Guild == null || !string.IsNullOrEmpty(GetGuildConfig(context.Guild.Id).Prefix)))
                 return GetGuildConfig(context.Guild.Id).Prefix;
             return GetGlobalPrefix();
         }
         public static bool CheckGlobalAdmin(ulong UserId) => GlobalConfig.GlobalAdminIds.Contains(UserId);
+        // TODO: Fix name, whoops
         public static SocketGuild GetGuid(ulong GuildId) => DiscordClient.GetGuild(GuildId);
 
+        // TODO: Caching for the next two methods (GetGuildConfig and SaveGuildConfig) looks inconsistent and may cause issues
+        /// <summary>
+        /// Get the config for a guild by ID
+        /// </summary>
+        /// <param name="GuildId"></param>
+        /// <returns></returns>
         public static GuildConfig GetGuildConfig(ulong GuildId)
         {
             if (LoadedGuildConfigs.Any(c => c.Id == GuildId))
@@ -116,6 +166,11 @@ namespace GenericBot
             }
             return DatabaseEngine.GetGuildConfig(GuildId);
         }
+        /// <summary>
+        /// Write a GuildConfig to the database
+        /// </summary>
+        /// <param name="guildConfig"></param>
+        /// <returns></returns>
         public static GuildConfig SaveGuildConfig(GuildConfig guildConfig)
         {
             //if (LoadedGuildConfigs.Any(c => c.Id == guildConfig.Id))
@@ -124,6 +179,12 @@ namespace GenericBot
 
             return DatabaseEngine.SaveGuildConfig(guildConfig);
         }
+
+        /// <summary>
+        /// Retrieve a list of custom commands for a guild
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <returns></returns>
         public static List<CustomCommand> GetCustomCommands(ulong guildId)
         {
             if (CustomCommands.ContainsKey(guildId))
@@ -135,6 +196,14 @@ namespace GenericBot
                 return cmds;
             }
         }
+
+        // TODO: Ensure database/cache consistency for custom commands
+        /// <summary>
+        /// Add or overrwite a custom command to the cache and database
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="guildId"></param>
+        /// <returns></returns>
         public static CustomCommand SaveCustomCommand(CustomCommand command, ulong guildId)
         {
             if (CustomCommands.ContainsKey(guildId))
@@ -153,6 +222,11 @@ namespace GenericBot
             return command;
         }
 
+        /// <summary>
+        /// Delete a custom command from the database by name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="guildId"></param>
         public static void DeleteCustomCommand(string name, ulong guildId)
         {
             if (CustomCommands.ContainsKey(guildId))
@@ -167,15 +241,24 @@ namespace GenericBot
         public static bool RemoveQuote(int id, ulong guildId) =>
             DatabaseEngine.RemoveQuote(id, guildId);
 
+        /// <summary>
+        /// Retrieve a quote from the database. 
+        /// If no string is provided, a random quote is returned.
+        /// If a number is provided, the quote with that ID is attempted to be returned.
+        /// Otherwise, a plaintext search is performed and a random matching quote is returned.
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <param name="guildId"></param>
+        /// <returns></returns>
         public static Quote GetQuote(string quote, ulong guildId)
         {
-            var quotes = DatabaseEngine.GetAllQuotes(guildId);
+            var quotes = GetAllQuotes(guildId);
 
             if (string.IsNullOrEmpty(quote))
             {
                 return quotes.GetRandomItem();
             }
-            else if (int.TryParse(quote, out int id))
+            else if (int.TryParse(quote, out int id) && id <= quotes.Count)
             {
                 return quotes.Any(q => q.Id == id) ? quotes.Find(q => q.Id == id) : new Quote("Not Found", 0);
             }
@@ -219,13 +302,29 @@ namespace GenericBot
 
         public static void DeleteGiveaway(Giveaway giveaway, ulong guildId) =>
             DatabaseEngine.DeleteGiveaway(giveaway, guildId);
-
+        
+        // TODO: Figure out what to do with this
+        /// <summary>
+        /// Create a VerificationEvent and add it to the database
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="guildId"></param>
         public static void AddVerificationEvent(ulong userId, ulong guildId) =>
             DatabaseEngine.AddVerification(userId, guildId);
 
+        /// <summary>
+        /// Get all quotes from the database for a guild
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <returns></returns>
         public static List<Quote> GetAllQuotes(ulong guildId) =>
             DatabaseEngine.GetAllQuotes(guildId);
 
+        /// <summary>
+        /// Add or update an ExceptionReport to the database, and open an issue on GitHub if possible
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns></returns>
         public static ExceptionReport AddOrUpdateExceptionReport(ExceptionReport report)
         {
             report = DatabaseEngine.AddOrUpdateExceptionReport(report);
