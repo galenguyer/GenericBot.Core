@@ -245,6 +245,7 @@ namespace GenericBot
 
                     var issue = client.Issue.Create(client.User.Current().Result.Login, "GenericBot", issueToCreate).Result;
                     report.Reported = true;
+                    report = DatabaseEngine.AddOrUpdateExceptionReport(report);
                 }
                 catch (Exception ex)
                 {
