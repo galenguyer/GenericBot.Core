@@ -24,8 +24,7 @@ namespace GenericBot.CommandModules
             {
                 using (var webclient = new WebClient())
                 {
-                    var catResult = webclient.DownloadString("https://random.cat.galenguyer.com/api/random/");
-                    await context.Message.ReplyAsync("https://random.cat.galenguyer.com" + catResult);
+                    await context.Message.ReplyAsync(webclient.DownloadString("https://randomanimal.pictures/cats/raw"));
                 }
 
             };
