@@ -35,16 +35,10 @@ namespace GenericBot.CommandModules
             dog.SendTyping = false;
             dog.ToExecute += async (context) =>
             {
-                string url = string.Empty;
                 using (var webclient = new WebClient())
                 {
-                    url = webclient.DownloadString(new Uri("https://random.dog/woof")); 
-                    while (url.EndsWith("mp4")) 
-                    {
-                        url = webclient.DownloadString(new Uri("https://random.dog/woof")); 
-                    }
+                    await context.Message.ReplyAsync(webclient.DownloadString("https://randomanimal.pictures/dogs/raw"));
                 }
-                await context.Message.ReplyAsync("http://random.dog/" + url);
             };
             commands.Add(dog);
 
