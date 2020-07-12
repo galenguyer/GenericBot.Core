@@ -54,6 +54,18 @@ namespace GenericBot.CommandModules
             };
             commands.Add(possum);
 
+            Command bird = new Command("bird");
+            bird.Description = "Link a bird pic";
+            bird.SendTyping = false;
+            bird.ToExecute += async (context) =>
+            {
+                using (var webclient = new WebClient())
+                {
+                    await context.Message.ReplyAsync(webclient.DownloadString("https://randomanimal.pictures/birds/raw"));
+                }
+            };
+            commands.Add(bird);
+
             Command jeff = new Command("jeff");
             jeff.ToExecute += async (context) =>
             {
