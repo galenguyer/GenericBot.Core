@@ -132,18 +132,21 @@ namespace GenericBot
 
         public static List<IMessage> GetManyMessages(this SocketTextChannel channel, int count)
         {
+            return null;
+            /*
             count++;
-            var msgs = (channel as IMessageChannel).GetMessagesAsync().Flatten().ToList().Result;
+            List<IMessage> msgs = (channel as IMessageChannel).GetMessagesAsync().ToListAsync().Result;
 
             while (true)
             {
-                var newmsgs = (channel as IMessageChannel).GetMessagesAsync(msgs.Last(), Direction.Before)
-                    .Flatten().ToList().Result;
+                var newmsgs = (channel as IMessageChannel).GetMessagesAsync(msgs.Last().Last().Id, Direction.Before, 100, CacheMode.AllowDownload, null)
+                    .ToListAsync().Result;
                 msgs = msgs.Concat(newmsgs).ToList();
                 if (newmsgs.Count() < 100 || msgs.Count() > count) break;
             }
 
             return msgs.Distinct().Take(count).ToList();
+            */
         }
 
         public static T GetRandomItem<T>(this List<T> list)

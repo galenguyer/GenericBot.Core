@@ -48,7 +48,7 @@ namespace GenericBot.CommandModules
                 var channel = Core.DiscordClient.GetUser(ulong.Parse(context.Parameters[0])).GetOrCreateDMChannelAsync().Result;
                 if(context.Parameters.Count == 1)
                 {
-                    var messages = channel.GetMessagesAsync().Flatten().ToList().Result;
+                    var messages = channel.GetMessagesAsync().Flatten().ToListAsync().Result;
                     string data = "";
                     messages.Reverse();
                     foreach(var msg in messages)

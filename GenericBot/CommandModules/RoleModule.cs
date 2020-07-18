@@ -285,7 +285,7 @@ namespace GenericBot.CommandModules
             {
                 RestRole role;
 
-                role = context.Guild.CreateRoleAsync(context.ParameterString, GuildPermissions.None).Result;
+                role = context.Guild.CreateRoleAsync(name: context.ParameterString, permissions: GuildPermissions.None, null, false, null).Result;
                 await context.Message.ReplyAsync($"Created new role `{role.Name}` with ID `{role.Id}`");
             };
             commands.Add(createRole);
@@ -298,7 +298,7 @@ namespace GenericBot.CommandModules
             {
                 RestRole role;
 
-                role = context.Guild.CreateRoleAsync(context.ParameterString, GuildPermissions.None).Result;
+                role = context.Guild.CreateRoleAsync(context.ParameterString, GuildPermissions.None, null, false, null).Result;
                 var gc = Core.GetGuildConfig(context.Guild.Id);
                 if (gc.UserRoles.ContainsKey(""))
                     gc.UserRoles[""].Add(role.Id);
