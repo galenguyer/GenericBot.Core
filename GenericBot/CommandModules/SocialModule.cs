@@ -137,10 +137,9 @@ namespace GenericBot.CommandModules
             markov.Usage = "markov";
             markov.ToExecute += async (context) =>
             {
-                var messages = context.Message.Channel.GetMessagesAsync(limit: 100).Flatten().OrderByDescending(m => m.Id).ToListAsync().Result;
-                messages.AddRange(messages.Take(50));
+                var messages = context.Message.Channel.GetMessagesAsync(limit: 50).Flatten().OrderByDescending(m => m.Id).ToListAsync().Result;
                 messages.AddRange(messages.Take(25));
-                messages.AddRange(messages.Take(25));
+                messages = messages.Where(m => m.Content.ToLower() != ">markov").ToList();
 
                 var markovChain = new MarkovChain();
                 markovChain.Train(messages.Select(m => m.Content).ToArray());
