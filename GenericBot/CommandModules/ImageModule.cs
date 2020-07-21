@@ -288,6 +288,18 @@ namespace GenericBot.CommandModules
             };
             commands.Add(star);
 
+            Command wolf = new Command("wolf");
+            wolf.Description = "Link a wolf pic";
+            wolf.SendTyping = false;
+            wolf.ToExecute += async (context) =>
+            {
+                using (var webclient = new WebClient())
+                {
+                    await context.Message.ReplyAsync(webclient.DownloadString("https://randomanimal.pictures/wolves/raw"));
+                }
+            };
+            commands.Add(wolf);
+
             return commands;
         }
     }
