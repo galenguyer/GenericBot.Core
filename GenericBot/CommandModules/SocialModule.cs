@@ -1,5 +1,7 @@
 ﻿using Discord;
 using GenericBot.Entities;
+using Octokit;
+using SharperMark;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -130,7 +132,23 @@ namespace GenericBot.CommandModules
                 }
             };
             commands.Add(say);
-            
+
+            Command markov = new Command("markov");
+            markov.Usage = "markov";
+            markov.ToExecute += async (context) =>
+            {
+                var messages = context.Message.Channel.GetMessagesAsync(limit: 100).Flatten().OrderByDescending(m => m.Id).ToListAsync().Result;
+                messages.AddRange(messages.TakeLast(50));
+                messages.AddRange(messages.TakeLast(25));
+                messages.AddRange(messages.TakeLast(25));
+
+                var markovChain = new MarkovChain();
+                markovChain.Train(messages.Select(m => m.Content).ToArray());
+
+                await context.Message.ReplyAsync(markovChain.GenerateSentence());
+            };
+            commands.Add(markov);
+
             return commands;
         }
     }
