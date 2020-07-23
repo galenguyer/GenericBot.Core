@@ -583,6 +583,51 @@ namespace GenericBot.CommandModules
             };
             commands.Add(audit);
 
+            Command runas = new Command("runas");
+            runas.RequiredPermission = Command.PermissionLevels.BotOwner;
+            runas.ToExecute += async (context) =>
+            {
+                if (context.Parameters.Count < 2 || context.Message.GetMentionedUsers().Count != 1)
+                {
+                    await context.Message.ReplyAsync("Please make sure to provide a userid and a command to run");
+                    return;
+                }
+                try
+                {
+                    // >runas [UserId] [Command] [Params]
+                    ParsedCommand runContext = new ParsedCommand();
+                    runContext = context;
+                    string message = context.ParameterString.Trim();
+                    var runAsUser = context.Guild.GetUser(ulong.Parse(context.Parameters[0].Trim("<@! >".ToCharArray())));
+
+                    if (Core.Commands.HasElement(c => context.Parameters[1].Equals(c.Name) || c.Aliases.Any(a => context.Parameters[1].Equals(a)), out Command cmd))
+                    {
+                        runContext.RawCommand = cmd;
+                        // remove first two params (uid and command)
+                        message = new Regex(Regex.Escape(context.Parameters[0])).Replace(message, "", 1).TrimStart();
+                        message = new Regex(Regex.Escape(context.Parameters[1])).Replace(message, "", 1).Trim();
+
+                        // set new parameters
+                        runContext.ParameterString = message;
+                        runContext.Parameters = message.Split().Where(p => !string.IsNullOrEmpty(p.Trim())).ToList();
+                        runContext.Author = runAsUser;
+
+                        await runContext.Execute();
+                    }
+                    else
+                    {
+                        await context.Message.ReplyAsync("Invalid command");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await context.Message.ReplyAsync($"```{ex.Message}```");
+                    await context.Message.ReplyAsync($"```{ex.StackTrace}```");
+                    throw ex;
+                }
+            };
+            commands.Add(runas);
+
             return commands;
         }
     }

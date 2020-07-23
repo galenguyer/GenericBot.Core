@@ -13,7 +13,8 @@ namespace GenericBot.Entities
         public string ParameterString;
         public SocketMessage Message;
 
-        public SocketUser Author { get { return Message.Author; } }
+        private SocketUser _author = null;
+        public SocketUser Author { get { return _author != null ? _author : Message.Author; } set { _author = value; } }
         public SocketGuild Guild { get
             {
                 if (Message.Channel.GetType().ToString().Contains("DM")) return null;
