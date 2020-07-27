@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using GenericBot.Entities;
 using Octokit;
 using SharperMark;
@@ -137,8 +138,8 @@ namespace GenericBot.CommandModules
             markov.Usage = "markov";
             markov.ToExecute += async (context) =>
             {
-                var messages = context.Message.Channel.GetMessagesAsync(limit: 50).Flatten().OrderByDescending(m => m.Id).ToListAsync().Result;
-                messages.AddRange(messages.Take(25));
+                var messages = (context.Channel as SocketTextChannel).GetManyMessages(200);
+                messages.AddRange(messages.Take(50));
                 messages = messages.Where(m => m.Content.ToLower() != ">markov").ToList();
 
                 var markovChain = new MarkovChain();
