@@ -258,7 +258,7 @@ namespace GenericBot
             {
                 return quotes.GetRandomItem();
             }
-            else if (int.TryParse(quote, out int id) && id <= quotes.Count)
+            else if (int.TryParse(quote, out int id) && id <= quotes.Max(q => q.Id))
             {
                 return quotes.Any(q => q.Id == id) ? quotes.Find(q => q.Id == id) : new Quote("Not Found", 0);
             }
