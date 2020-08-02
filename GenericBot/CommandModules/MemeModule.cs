@@ -17,6 +17,7 @@ namespace GenericBot.CommandModules
             Command mock = new Command("mock");
             mock.WorksInDms = true;
             mock.Description = "MOcKinG sPoNgeBoB TeXt";
+            mock.Delete = true;
             mock.ToExecute += async (context) =>
             {
                 string mockedMessage = "";
@@ -39,6 +40,7 @@ namespace GenericBot.CommandModules
             Command clap = new Command("clap");
             clap.WorksInDms = true;
             clap.Usage = "Put the clap emoji between each word";
+            clap.Delete = true;
             clap.ToExecute += async (context) =>
             {
                 await context.Message.ReplyAsync(context.Parameters.Rejoin(" :clap: ") + " :clap:");
@@ -69,8 +71,10 @@ namespace GenericBot.CommandModules
             uwu.WorksInDms = true;
             uwu.Description = "Uwu-ify text";
             uwu.Usage = "uwu <text>";
+            uwu.Delete = true;
             uwu.ToExecute += async (context) =>
             {
+                messagesToDelete.ForEach(m => GenericBot.ClearedMessageIds.Add(m.Id));
                 string uwuified = context.ParameterString;
                 if (context.Parameters.Count == 0)
                     uwuified = "You need to give me a message to uwu-ify!";
