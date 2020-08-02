@@ -74,7 +74,6 @@ namespace GenericBot.CommandModules
             uwu.Delete = true;
             uwu.ToExecute += async (context) =>
             {
-                messagesToDelete.ForEach(m => GenericBot.ClearedMessageIds.Add(m.Id));
                 string uwuified = context.ParameterString;
                 if (context.Parameters.Count == 0)
                     uwuified = "You need to give me a message to uwu-ify!";
