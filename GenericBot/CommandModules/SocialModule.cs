@@ -151,6 +151,7 @@ namespace GenericBot.CommandModules
             commands.Add(markov);
 
             Command danni = new Command("danni");
+            danni.Aliases = new List<string> { "bottom" };
             danni.ToExecute += async (context) =>
             {
                 if (context.Channel.Id != 660877782980624385)
