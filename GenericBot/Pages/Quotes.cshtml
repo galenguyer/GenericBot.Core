@@ -8,6 +8,9 @@
 {
     <h1>Quotes - @Core.DiscordClient.Guilds.First(g => g.Id == Model.GuildId).Name</h1>
 
+    <div id="gb-quote-search" class="gb-quote">
+        <input placeholder="Search..." id="search" class="gb-quote-search" oninput="updateSearch()" type="text">
+    </div>
     @foreach (GenericBot.Entities.Quote quote in Model.Quotes)
     {
         <div class="gb-quote">
@@ -15,6 +18,26 @@
             <span class="gb-quote-content">@quote.Content</span>
         </div>
     }
+
+    <script>
+        function updateSearch() {
+            console.log(document.getElementById("search").value.toLowerCase());
+            Array.prototype.forEach.call(document.getElementsByClassName("gb-quote"), function (quote) {
+                if (quote.id == "gb-quote-search") {
+                    return;
+                }
+                if (document.getElementById("search").value == "") {
+                    quote.style.display = "flex";
+                }
+                else if (quote.innerText.toLowerCase().includes(document.getElementById("search").value.toLowerCase())) {
+                    quote.style.display = "flex";
+                }
+                else {
+                    quote.style.display = "none";
+                }
+            });
+        }
+    </script>
 }
 else
 {

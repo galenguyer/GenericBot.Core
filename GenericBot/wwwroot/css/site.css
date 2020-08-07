@@ -87,7 +87,14 @@ body {
     line-height: 1.5rem;
     display: flex;
 }
-
+.gb-quote-search {
+    padding: 4px 12px;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    border: 2px solid rgba(186, 174, 255, 0.438);
+    border-radius: 8px;
+    flex-grow: 2;
+}
 .gb-quote-id-box {
     display: flex;
     min-width: 36px;
@@ -95,7 +102,6 @@ body {
     border: 2px solid rgba(186, 174, 255, 0.438);
     border-radius: 8px 2px 2px 8px;
     background: rgb(186, 174, 255);
-    padding: 2px 2px 2px 4px;
     margin-right: 4px;
 }
 
