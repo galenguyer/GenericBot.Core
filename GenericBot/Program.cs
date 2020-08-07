@@ -13,7 +13,7 @@ using Discord.WebSocket;
 
 namespace GenericBot
 {
-    public class GenericBot
+    public class Program
     {
         public static string BuildId = string.Empty;
         public static List<ulong> ClearedMessageIds = new List<ulong>();

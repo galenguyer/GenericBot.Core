@@ -91,7 +91,7 @@ namespace GenericBot.CommandModules
                         context.Guild.GetTextChannel(logChannelId).SendFileAsync(fileName, "");
                         File.Delete(fileName);
                     }
-                    msgs.ForEach(m => GenericBot.ClearedMessageIds.Add(m.Id));
+                    msgs.ForEach(m => Program.ClearedMessageIds.Add(m.Id));
 
                     await (context.Message.Channel as ITextChannel).DeleteMessagesAsync(msgs);
 

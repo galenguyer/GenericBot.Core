@@ -129,7 +129,7 @@ namespace GenericBot.CommandModules
                 await Task.Delay(15 * 1000);
                 try
                 {
-                    messagesToDelete.ForEach(m => GenericBot.ClearedMessageIds.Add(m.Id));
+                    messagesToDelete.ForEach(m => Program.ClearedMessageIds.Add(m.Id));
                     messagesToDelete.Add(context.Message);
                     await (context.Channel as ITextChannel).DeleteMessagesAsync(messagesToDelete);
                 }
@@ -205,7 +205,7 @@ namespace GenericBot.CommandModules
                 await Task.Delay(15 * 1000);
                 try
                 {
-                    messagesToDelete.ForEach(m => GenericBot.ClearedMessageIds.Add(m.Id));
+                    messagesToDelete.ForEach(m => Program.ClearedMessageIds.Add(m.Id));
                     messagesToDelete.Add(context.Message);
                     await (context.Channel as ITextChannel).DeleteMessagesAsync(messagesToDelete);
                 }

@@ -340,7 +340,7 @@ namespace GenericBot
                     issueToCreate.Body = $"Stacktrace:\n" +
                         $"{report.StackTrace}\n" +
                         $"\n" +
-                        $"Reporting Build (if available): {GenericBot.BuildId}\n";
+                        $"Reporting Build (if available): {Program.BuildId}\n";
 
                     var issue = client.Issue.Create(client.User.Current().Result.Login, "GenericBot", issueToCreate).Result;
                     report.Reported = true;
