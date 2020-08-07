@@ -66,6 +66,14 @@ namespace GenericBot.CommandModules
             };
             commands.Add(quote);
 
+            Command quotes = new Command("quotes");
+            quotes.Description = "";
+            quotes.ToExecute += async (context) =>
+            {
+                await context.Message.ReplyAsync($"For a list of all quotes with search, click https://genericbot.galenguyer.com/quotes?guildid={context.Guild.Id}");
+            };
+            commands.Add(quotes);
+
             return commands;
         }
     }
