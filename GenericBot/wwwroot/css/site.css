@@ -69,3 +69,44 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+
+#container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: left;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    padding-left: 24px;
+    padding-top: 18px;
+}
+.gb-quote {
+    padding: 4px 12px;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    display: flex;
+}
+
+.gb-quote-id-box {
+    display: flex;
+    min-width: 36px;
+    align-items: center;
+    border: 2px solid rgba(186, 174, 255, 0.438);
+    border-radius: 8px 2px 2px 8px;
+    background: rgb(186, 174, 255);
+    padding: 2px 2px 2px 4px;
+    margin-right: 4px;
+}
+
+.gb-quote-id {
+    text-align: center;
+    flex-grow: 1;
+}
+
+.gb-quote-content {
+    border: 2px solid rgba(186, 174, 255, 0.438);
+    border-radius: 2px 8px 8px 2px;
+    padding: 2px 2px 2px 6px;
+    flex-grow: 2;
+}}

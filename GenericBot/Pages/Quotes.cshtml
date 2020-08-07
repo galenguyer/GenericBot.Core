@@ -1,0 +1,23 @@
+﻿@page
+@model QuotesModel
+@{
+    ViewData["Title"] = "Quotes";
+}
+
+@if (Model.GuildIdIsValid)
+{
+    <h1>Quotes - @Core.DiscordClient.Guilds.First(g => g.Id == Model.GuildId).Name</h1>
+
+    @foreach (GenericBot.Entities.Quote quote in Model.Quotes)
+    {
+        <div class="gb-quote">
+            <span class="gb-quote-id-box"><span class="gb-quote-id">@quote.Id</span></span> 
+            <span class="gb-quote-content">@quote.Content</span>
+        </div>
+    }
+}
+else
+{
+    <h1>Quotes</h1>
+    <p>It looks like that's not a valid GuildId. Run >quotes in any server with GenericBot to get a valid link!</p>
+}
