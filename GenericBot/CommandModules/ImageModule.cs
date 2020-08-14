@@ -17,6 +17,19 @@ namespace GenericBot.CommandModules
         public List<Command> Load()
         {
             List<Command> commands = new List<Command>();
+            
+            Command baloo = new Command("baloo");
+            baloo.Description = "Link a pic of my dog Baloo!";
+            baloo.SendTyping = false;
+            baloo.ToExecute += async (context) =>
+            {
+                using (var webclient = new WebClient())
+                {
+                    await context.Message.ReplyAsync(webclient.DownloadString("https://randomanimal.pictures/baloo/raw"));
+                }
+            };
+            commands.Add(baloo);
+            
             Command cat = new Command("cat");
             cat.Description = "Link a cat pic";
             cat.SendTyping = false;
@@ -26,7 +39,6 @@ namespace GenericBot.CommandModules
                 {
                     await context.Message.ReplyAsync(webclient.DownloadString("https://randomanimal.pictures/cats/raw"));
                 }
-
             };
             commands.Add(cat);
 
