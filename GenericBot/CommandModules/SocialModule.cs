@@ -137,6 +137,7 @@ namespace GenericBot.CommandModules
 
             Command markov = new Command("markov");
             markov.Usage = "markov";
+            markov.Delete = true;
             markov.ToExecute += async (context) =>
             {
                 var messages = (context.Channel as SocketTextChannel).GetManyMessages(200);
@@ -151,6 +152,7 @@ namespace GenericBot.CommandModules
             commands.Add(markov);
 
             Command danni = new Command("danni");
+            danni.Delete = true;
             danni.Aliases = new List<string> { "bottom" };
             danni.ToExecute += async (context) =>
             {
