@@ -1,5 +1,4 @@
 # GenericBot: An All-Purpose Almost-Decent Bot
-[![Build status](https://mastrchef.visualstudio.com/GenericBot/_apis/build/status/GenericBot-ASP.NET%20Core-CI)](https://mastrchef.visualstudio.com/GenericBot/_build/latest?definitionId=1)
 
 GenericBot aims to provide an almost full featured moderation and fun box experience in one convenient package
 
