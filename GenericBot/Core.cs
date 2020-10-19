@@ -140,7 +140,8 @@ namespace GenericBot
         {
             // TODO: This if check seems weird, the second statement looks very wrong
             if (!(context.Message.Channel is SocketDMChannel) 
-                && (context.Guild == null || !string.IsNullOrEmpty(GetGuildConfig(context.Guild.Id).Prefix)))
+                && context.Guild != null 
+                && !string.IsNullOrEmpty(GetGuildConfig(context.Guild.Id).Prefix))
                 return GetGuildConfig(context.Guild.Id).Prefix;
             return GetGlobalPrefix();
         }
