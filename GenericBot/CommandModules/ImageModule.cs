@@ -79,6 +79,8 @@ namespace GenericBot.CommandModules
             commands.Add(bird);
 
             Command jeff = new Command("jeff");
+            jeff.Description = "Have Jeff hold up an image. Holds up your icon by default, optionally specify a user or link";
+            jeff.Usage = "jeff [user|image link]";
             jeff.ToExecute += async (context) =>
             {
                 string filename = "";
