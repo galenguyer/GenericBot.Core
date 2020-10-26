@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace GenericBot
 {
@@ -33,6 +34,11 @@ namespace GenericBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
             services.AddAuthentication(options =>
             {
                 // If an authentication cookie is present, use it to get authentication information
@@ -55,7 +61,7 @@ namespace GenericBot
 
                 // After the user signs in, an authorization code will be sent to a callback
                 // in this app. The OAuth middleware will intercept it
-                options.CallbackPath = new PathString(Core.GlobalConfig.CallbackUri);
+                options.CallbackPath = new PathString("/api/v1/callback");
 
                 // The OAuth middleware will send the ClientId, ClientSecret, and the
                 // authorization code to the token endpoint, and get an access token in return
@@ -99,6 +105,8 @@ namespace GenericBot
             }
 
             app.UseRouting();
+
+            app.UseForwardedHeaders();
 
             app.UseAuthentication();
 
