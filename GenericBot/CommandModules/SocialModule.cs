@@ -137,6 +137,7 @@ namespace GenericBot.CommandModules
 
             Command markov = new Command("markov");
             markov.Usage = "markov";
+            markov.Description = "generate a markov chain from the last 200 messages";
             markov.Delete = true;
             markov.ToExecute += async (context) =>
             {
@@ -150,22 +151,6 @@ namespace GenericBot.CommandModules
                 await context.Message.ReplyAsync(markovChain.GenerateSentence());
             };
             commands.Add(markov);
-
-            Command danni = new Command("danni");
-            danni.Delete = true;
-            danni.Aliases = new List<string> { "bottom" };
-            danni.ToExecute += async (context) =>
-            {
-                if (context.Channel.Id != 660877782980624385)
-                {
-                    await context.Message.ReplyAsync("This command is not enabled for this channel");
-                    return;
-                }
-                string list = new WebClient().DownloadString("https://isdanniabottom.com/i/index");
-                string filename = list.Split().ToList().GetRandomItem();
-                await context.Message.ReplyAsync($"https://isdanniabottom.com/i/{filename}");
-            };
-            commands.Add(danni);
 
             return commands;
         }
