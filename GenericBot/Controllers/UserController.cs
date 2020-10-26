@@ -20,9 +20,15 @@ namespace GenericBot.Controllers
             ulong userId = ulong.Parse(User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
             var user = Core.DiscordClient.GetUser(userId);
 
-            var userData = new { 
-                username = user.Username, 
-                discriminator = user.Discriminator 
+            var userData = new {
+                id = user.Id,
+                username = user.Username,
+                discriminator = user.Discriminator,
+                guilds = Core.DiscordClient.Guilds.Where(g => g.Users.Any(u => u.Id == userId)).Select(g => new 
+                { 
+                    id = g.Id, 
+                    name = g.Name 
+                })
             };
 
             return new JsonResult(userData);
