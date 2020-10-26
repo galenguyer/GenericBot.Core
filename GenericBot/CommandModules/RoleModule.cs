@@ -312,6 +312,7 @@ namespace GenericBot.CommandModules
 
             Command verify = new Command("verify");
             verify.RequiredPermission = Command.PermissionLevels.User;
+            verify.Description = "Send the verification DM to the user who ran the command or was mentioned, if enabled";
             verify.ToExecute += async (context) =>
             {
                 List<SocketUser> users = new List<SocketUser>();
@@ -392,6 +393,7 @@ namespace GenericBot.CommandModules
 
             Command verifyall = new Command("verifyall");
             verifyall.RequiredPermission = Command.PermissionLevels.Admin;
+            verifyall.Description = "send the verification DM to all users who don't have the verified role";
             verifyall.ToExecute += async (context) =>
             {
                 var guildConfig = Core.GetGuildConfig(context.Guild.Id);
