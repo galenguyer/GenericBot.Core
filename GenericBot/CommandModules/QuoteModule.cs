@@ -72,7 +72,7 @@ namespace GenericBot.CommandModules
             {
                 await context.Message.ReplyAsync($"For a list of all quotes with search, click https://genericbot.galenguyer.com/quotes?guildid={context.Guild.Id}");
             };
-            commands.Add(quotes);
+            //commands.Add(quotes);
 
             return commands;
         }
