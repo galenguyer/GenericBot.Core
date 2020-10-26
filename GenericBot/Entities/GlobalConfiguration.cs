@@ -59,7 +59,7 @@ namespace GenericBot.Entities
         // OAuth secrets for use with web API
         public string OAuthClientId { get; set; }
         public string OAuthClientSecret { get; set; }
-        public string RedirectUri { get; set; }
+        public string CallbackUri { get; set; }
 
         /// <summary>
         /// Load the config file if it exists, otherwise create a blank one and save it

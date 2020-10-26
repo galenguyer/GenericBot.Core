@@ -55,7 +55,7 @@ namespace GenericBot
 
                 // After the user signs in, an authorization code will be sent to a callback
                 // in this app. The OAuth middleware will intercept it
-                options.CallbackPath = new PathString("/api/v1/callback");
+                options.CallbackPath = new PathString(Core.GlobalConfig.CallbackUri);
 
                 // The OAuth middleware will send the ClientId, ClientSecret, and the
                 // authorization code to the token endpoint, and get an access token in return
