@@ -21,6 +21,7 @@ namespace GenericBot.CommandModules
             Command baloo = new Command("baloo");
             baloo.Description = "Link a pic of my dog Baloo!";
             baloo.SendTyping = false;
+            baloo.WorksInDms = true;
             baloo.ToExecute += async (context) =>
             {
                 using (var webclient = new WebClient())
@@ -33,6 +34,7 @@ namespace GenericBot.CommandModules
             Command cat = new Command("cat");
             cat.Description = "Link a cat pic";
             cat.SendTyping = false;
+            cat.WorksInDms = true;
             cat.ToExecute += async (context) =>
             {
                 using (var webclient = new WebClient())
@@ -45,6 +47,7 @@ namespace GenericBot.CommandModules
             Command dog = new Command("dog");
             dog.Description = "Link a dog pic";
             dog.SendTyping = false;
+            dog.WorksInDms = true;
             dog.ToExecute += async (context) =>
             {
                 using (var webclient = new WebClient())
@@ -54,9 +57,23 @@ namespace GenericBot.CommandModules
             };
             commands.Add(dog);
 
+            Command wolf = new Command("wolf");
+            wolf.Description = "Link a wolf pic";
+            wolf.SendTyping = false;
+            wolf.WorksInDms = true;
+            wolf.ToExecute += async (context) =>
+            {
+                using (var webclient = new WebClient())
+                {
+                    await context.Message.ReplyAsync(webclient.DownloadString("https://randomanimal.pictures/wolves/raw"));
+                }
+            };
+            commands.Add(wolf);
+
             Command possum = new Command("possum");
             possum.Description = "Link a possum pic";
             possum.SendTyping = false;
+            possum.WorksInDms = true;
             possum.ToExecute += async (context) =>
             {
                 using (var webclient = new WebClient())
@@ -69,6 +86,7 @@ namespace GenericBot.CommandModules
             Command bird = new Command("bird");
             bird.Description = "Link a bird pic";
             bird.SendTyping = false;
+            bird.WorksInDms = true;
             bird.ToExecute += async (context) =>
             {
                 using (var webclient = new WebClient())
@@ -81,6 +99,7 @@ namespace GenericBot.CommandModules
             Command jeff = new Command("jeff");
             jeff.Description = "Have Jeff hold up an image. Holds up your icon by default, optionally specify a user or link";
             jeff.Usage = "jeff [user|image link]";
+            jeff.WorksInDms = true;
             jeff.ToExecute += async (context) =>
             {
                 string filename = "";
@@ -151,6 +170,9 @@ namespace GenericBot.CommandModules
             commands.Add(jeff);
 
             Command warm = new Command("warm");
+            warm.Description = "Show you who warms my (robotic) heart";
+            warm.Usage = "warm [user|image link]";
+            warm.WorksInDms = true;
             warm.ToExecute += async (context) =>
             {
                 string filename = "";
@@ -221,6 +243,9 @@ namespace GenericBot.CommandModules
             commands.Add(warm);
 
             Command star = new Command("star");
+            star.Description = "You're the star on my non-denominational winter holiday tree! (quite literally)";
+            star.Usage = "star [user|image link]";
+            star.WorksInDms = true;
             star.ToExecute += async (context) =>
             {
                 string filename = "";
@@ -301,18 +326,6 @@ namespace GenericBot.CommandModules
                 }
             };
             commands.Add(star);
-
-            Command wolf = new Command("wolf");
-            wolf.Description = "Link a wolf pic";
-            wolf.SendTyping = false;
-            wolf.ToExecute += async (context) =>
-            {
-                using (var webclient = new WebClient())
-                {
-                    await context.Message.ReplyAsync(webclient.DownloadString("https://randomanimal.pictures/wolves/raw"));
-                }
-            };
-            commands.Add(wolf);
 
             return commands;
         }

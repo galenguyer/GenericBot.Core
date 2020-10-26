@@ -67,7 +67,7 @@ namespace GenericBot.CommandModules
             commands.Add(quote);
 
             Command quotes = new Command("quotes");
-            quotes.Description = "";
+            quotes.Description = "Link the search page for all quotes for the server";
             quotes.ToExecute += async (context) =>
             {
                 await context.Message.ReplyAsync($"For a list of all quotes with search, click https://genericbot.galenguyer.com/quotes?guildid={context.Guild.Id}");

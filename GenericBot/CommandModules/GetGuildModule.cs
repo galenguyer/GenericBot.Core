@@ -17,6 +17,9 @@ namespace GenericBot.CommandModules
 
             Command getInvite = new Command("getinvite");
             getInvite.RequiredPermission = Command.PermissionLevels.BotOwner;
+            getInvite.Description = "Get an invite link to a guild if possible";
+            getInvite.Usage = "getinvite <guildId>";
+            getInvite.WorksInDms = true;
             getInvite.ToExecute += async (context) =>
             {
                 ulong guildId;
@@ -43,6 +46,9 @@ namespace GenericBot.CommandModules
 
             Command dmuser = new Command("dmuser");
             dmuser.RequiredPermission = Command.PermissionLevels.BotOwner;
+            dmuser.Description = "Sent a DM to the specified user";
+            dmuser.Usage = "dmuser <userId> [message]";
+            dmuser.WorksInDms = true;
             dmuser.ToExecute += async (context) =>
             {
                 var channel = Core.DiscordClient.GetUser(ulong.Parse(context.Parameters[0])).GetOrCreateDMChannelAsync().Result;
