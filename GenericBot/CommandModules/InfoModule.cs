@@ -17,6 +17,7 @@ namespace GenericBot.CommandModules
 
             Command checkdbtime = new Command("checkdbtime");
             checkdbtime.RequiredPermission = Command.PermissionLevels.BotOwner;
+            checkdbtime.Description = "get the time to retrieve the guild config (though this'll probably hit memory)";
             checkdbtime.ToExecute += async (context) =>
             {
                 Stopwatch watch = new Stopwatch();
