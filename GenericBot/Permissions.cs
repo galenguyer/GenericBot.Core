@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GenericBot.Web_Api
+namespace GenericBot
 {
     public static class Permissions
     {
