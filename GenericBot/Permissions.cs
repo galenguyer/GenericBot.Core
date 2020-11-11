@@ -60,6 +60,18 @@ namespace GenericBot
             return PermissionLevels.User;
         }
 
+        public static bool IsPermitted(ulong userId, ulong guildId, PermissionLevels level)
+        {
+            try
+            {
+                return GetPermissions(userId, guildId) >= level;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private static bool SocketIsGuildAdmin(SocketGuildUser user, SocketGuild guild)
         {
             if (guild.Owner.Id == user.Id)

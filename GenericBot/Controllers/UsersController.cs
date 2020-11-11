@@ -18,7 +18,7 @@ namespace GenericBot.Controllers
         {
             ulong userId = ulong.Parse(User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
-            if (Permissions.GetPermissions(userId, guildId) < Permissions.PermissionLevels.Moderator)
+            if (!Permissions.IsPermitted(userId, guildId, Permissions.PermissionLevels.Moderator))
                 return new StatusCodeResult(403);
 
             return new JsonResult(Core.GetAllUsers(guildId));
