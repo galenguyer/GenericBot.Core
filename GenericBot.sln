@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericBot", "GenericBot\GenericBot.csproj", "{11C1304B-D47F-4D5E-9878-5FD95F131303}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11C1304B-D47F-4D5E-9878-5FD95F131303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11C1304B-D47F-4D5E-9878-5FD95F131303}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11C1304B-D47F-4D5E-9878-5FD95F131303}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11C1304B-D47F-4D5E-9878-5FD95F131303}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C727CFB0-7B06-4475-9EA8-CE402C6E251B}
+	EndGlobalSection
+EndGlobal
